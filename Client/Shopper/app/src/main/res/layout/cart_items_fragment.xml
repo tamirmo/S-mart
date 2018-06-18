@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background_color">
+    <TextView
+        android:id="@+id/cart_header_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/curr_cart_header_text"
+        style="@style/header"/>
+    <LinearLayout
+        android:id="@+id/add_cart_item_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="10dp">
+        <ImageButton
+            android:id="@+id/add_item_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cart_add_item"
+            android:background="@null" />
+        <TextView
+            android:id="@+id/add_item_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="@string/add_item_btn_text"
+            android:textColor="@color/app_text_color"
+            android:textSize="24sp"
+            android:layout_marginLeft="20dp" />
+    </LinearLayout>
+    <ListView
+        android:id="@+id/cart_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal">
+        <TextView
+            android:id="@+id/cart_total_sum__title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/app_text_color"
+            android:textSize="30sp"
+            android:text="@string/cart_sum_text"
+            android:layout_marginRight="10sp"/>
+        <TextView
+            android:id="@+id/cart_total_sum_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/app_text_color"
+            android:layout_toRightOf="@id/cart_total_sum__title_text_view"
+            android:textSize="30sp"/>
+    </RelativeLayout>
+
+</LinearLayout>

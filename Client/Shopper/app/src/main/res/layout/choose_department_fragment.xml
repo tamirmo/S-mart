@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background_color">
+
+    <TextView
+        android:id="@+id/cart_header_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_department_text"
+        style="@style/header"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/cart_header_text_view">
+
+        <tamirmo.shopper.WrapContentViewPager
+            android:id="@+id/departments_view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <me.relex.circleindicator.CircleIndicator
+            android:id="@+id/departments_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom|center"
+            app:ci_drawable="@drawable/white_radius" />
+    </FrameLayout>
+
+</RelativeLayout>

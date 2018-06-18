@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background_color">
+
+    <TextView
+        android:id="@+id/department_title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/header"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/search_department_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_below="@id/department_title_text_view"
+        android:textColor="@color/app_text_color"
+        android:textSize="25sp"
+        android:layout_margin="10dp"
+        android:hint="@string/search_department_hint"
+        android:drawableLeft="@android:drawable/ic_search_category_default" />
+
+    <ListView
+        android:id="@+id/departments_products_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="7"
+        android:layout_below="@id/search_department_edit_text"
+        android:layout_margin="10dp"/>
+
+</RelativeLayout>

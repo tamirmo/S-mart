@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_navigation_menu">#0f5015</color>
+    <color name="discounted_price_color">#0f5015</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="app_background_color">#6496c8</color>
+    <color name="app_background_color_old">@android:color/holo_green_dark</color>
+    <color name="app_text_color">@android:color/white</color>
+</resources>
