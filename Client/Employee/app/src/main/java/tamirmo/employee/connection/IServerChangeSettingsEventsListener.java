@@ -1,4 +1,4 @@
-package tamirmo.shopper.connection;
+package tamirmo.employee.connection;
 
 /**
  * Created by Tamir on 18/06/2018.
@@ -14,4 +14,5 @@ public interface IServerChangeSettingsEventsListener {
 
     // No response from the server
     void onServerResultTimeout();
+
 }

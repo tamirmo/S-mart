@@ -282,11 +282,6 @@ public class Server implements IUdpMessageReceived {
 		return response;
 	}
 	
-	private String changeEmployeeSettings(long employeeId, Message messageReceived){
-		// TODO:
-		return null;
-	}
-	
 	/**
 	 * Updates the email of the shopper with the given id
 	 * to the email in the given message
@@ -374,6 +369,86 @@ public class Server implements IUdpMessageReceived {
 		return response;
 	}
 
+	private String changeEmployeeSettings(long employeeId, Message messageReceived){
+		String response = "";
+		
+		try{
+			// The second character has the type of settings change
+			int reqCode = Character.getNumericValue(messageReceived.getMessageContent().charAt(1));
+			
+			switch(reqCode){
+			case CHANGE_EMAIL:
+				response = changeEmployeeEmail(employeeId, messageReceived);
+				break;
+			case CHANGE_PASSWORD:
+				response = changeEmployeePassword(employeeId, messageReceived);
+				break;
+			}
+		}catch(Exception ex){
+			System.out.println("Error during changeShopperSettings");
+			ex.printStackTrace();
+			response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
+		}
+		return response;
+	}
+	
+	/**
+	 * Updates the email of the employee with the given id
+	 * to the email in the given message
+	 * @param employeeId long, The id of the employee to update
+	 * @param messageReceived Message the message sent, containing the new email
+	 * @return String, result string to send back to the employee
+	 */
+	private String changeEmployeeEmail(long employeeId, Message messageReceived){
+		String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
+
+		// Pulling the email from the message
+		String newEmail = getParameterFromMessage(messageReceived.getMessageContent(), "email");
+		
+		EmployeeDetails employeeDetails = SmartDataManager.getInstance().getEmployeeDetailsById(employeeId);
+		
+		if(employeeDetails != null){
+			// Setting the email and saving to file
+			employeeDetails.setEmail(newEmail);
+			SmartDataManager.getInstance().saveEmployeesDetailsToFile(SmartDataManager.EMPLOYEES_FILE, 
+					SmartDataManager.getInstance().getEmployees());
+			// All went well
+			response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
+		}
+		
+		return response;
+	}
+	
+	/**
+	 * Updates the password of the employee with the given id
+	 * to the password in the given message
+	 * @param employeeId long, The id of the employee to update
+	 * @param messageReceived Message the message sent, containing the new password
+	 * @return String, result string to send back to the employee
+	 */
+	private String changeEmployeePassword(long employeeId, Message messageReceived){
+		String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
+		
+		// Pulling the passwords from the message
+		String oldPass = getParameterFromMessage(messageReceived.getMessageContent(), "old_pass");
+		String newPass = getParameterFromMessage(messageReceived.getMessageContent(), "new_pass");
+		
+		EmployeeDetails employeeDetails = SmartDataManager.getInstance().getEmployeeDetailsById(employeeId);
+
+		if(employeeDetails != null){
+			// First checking if the password sent is the current one
+			if(employeeDetails.getPassword().equals(oldPass)){
+				// Setting the password and saving to file
+				employeeDetails.setPassword(newPass);
+				SmartDataManager.getInstance().saveEmployeesDetailsToFile(SmartDataManager.EMPLOYEES_FILE, 
+						SmartDataManager.getInstance().getEmployees());
+				// All went well
+				response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
+			}
+		}
+		
+		return response;
+	}
 	
 	private boolean logInShooper(Message messageReceived){
 		long loggenInShopperId = checkShopperLogin(messageReceived.getMessageContent());

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background_color"
+    android:id="@+id/main_layout">
+    <LinearLayout
+        android:id="@+id/login_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="2">
+
+        <!--TODO: Add logo in this image view !-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1.25"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <EditText
+                android:id="@+id/email_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email_edit_text_title"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/app_text_color"
+                android:textSize="25sp"
+                android:layout_margin="10dp"/>
+            <EditText
+                android:id="@+id/password_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password_edit_text_title"
+                android:layout_below="@id/email_edit_text"
+                android:inputType="textPassword"
+                android:textColor="@color/app_text_color"
+                android:textSize="25sp"
+                android:layout_margin="10dp"/>
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/log_in_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/log_in_btn_text"
+                android:textAllCaps="false"
+                android:layout_below="@id/password_edit_text"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@drawable/log_in_button_background"
+                android:textSize="25sp"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+        <ProgressBar
+            android:id="@+id/indeterminateBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="7dp"/>
+        <TextView
+            android:id="@+id/loading_game_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connecting"
+            android:textSize="30sp"
+            android:textColor="@color/app_text_color"/>
+    </LinearLayout>
+</FrameLayout>

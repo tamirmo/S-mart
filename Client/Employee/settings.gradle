@@ -1,0 +1,5 @@
+include ':app', ':SmartData', ':communication'
+project(':communication').projectDir = new File(settingsDir, '../Shopper/communication')
+project(':SmartData').projectDir = new File(settingsDir, '../Shopper/SmartData')
+
+

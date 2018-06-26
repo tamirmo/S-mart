@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Employee</string>
+
+    <string name="email_edit_text_title">Enter Email</string>
+    <string name="password_edit_text_title">Enter Password</string>
+    <string name="log_in_btn_text">Log in</string>
+    <string name="connecting">Almost there!</string>
+    <string name="connection_err">Connection error</string>
+    <string name="log_in_err">Log in failed, wrong password or email</string>
+
+    <string name="settings_menu_title">Settings</string>
+    <string name="tasks_menu_title">Tasks</string>
+
+    <string name="settings_fragment_header">Configuration</string>
+    <string name="change_email_header">Change email</string>
+    <string name="change_password_header">Change password</string>
+    <string name="change_credit_header">Change credit card</string>
+    <string name="notifications_settings_header">Notifications settings</string>
+
+    <string name="change_email_hint">Enter new email</string>
+    <string name="change_credit_hint">Enter new credit</string>
+    <string name="old_password_hint">Enter old password</string>
+    <string name="new_password_hint">Enter new password</string>
+    <string name="confirm_btn_text">Confirm</string>
+
+    <string name="email_changed_dialog_text">Email changed successfully</string>
+    <string name="password_changed_dialog_text">Password changed successfully</string>
+    <string name="credit_changed_dialog_text">Credit changed successfully</string>
+    <string name="password_change_dialog_err">Password not changed, Try again.</string>
+    <string name="email_change_dialog_err">Email not changed, Try again.</string>
+    <string name="credit_change_dialog_err">Credit not changed, Try again.</string>
+
+    <string name="changing_settings_progress_dialog_text">Working on it</string>
+
+    <string name="vibration_switch_header">Vibration</string>
+    <string name="sound_switch_header">Sound</string>
+
+</resources>

@@ -157,6 +157,23 @@ public class SmartDataManager {
 		return foundDetails;
 	}
 
+	/**
+	 * Pulling the details of the employee with the given id.
+	 * @param employeeId long, The id of the employee to look for
+	 * @return EmployeeDetails, The details of the employee
+	 */
+	public EmployeeDetails getEmployeeDetailsById(long employeeId){
+		EmployeeDetails foundDetails = null;
+
+		for(EmployeeDetails employeeDetails : employees){
+			if(employeeDetails.getId() == employeeId){
+				foundDetails = employeeDetails;
+			}
+		}
+
+		return foundDetails;
+	}
+	
 	// Methods for reading lists of data from json file:
 
 	public List<Department> readDepartmentsFromFile(String fileName){
