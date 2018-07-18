@@ -1,1 +1,1 @@
-[{"amount":1,"isPicked":true,"productId":1},{"amount":1,"isPicked":false,"productId":2}]
+[{"amount":2,"productId":1,"isPicked":false},{"amount":2,"productId":3,"isPicked":false}]
