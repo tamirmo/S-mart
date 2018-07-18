@@ -1,3 +1,5 @@
+package Application;
+import BusinessLogic.Server;
 
 // Starts S-Mart Main Server
 public class MainServer {

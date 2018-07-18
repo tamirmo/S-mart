@@ -1,9 +1,11 @@
+package BusinessLogic;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
+import Database.SmartDataLoader;
 import communicationUtilities.Message;
 import smart.data.EmployeeDetails;
 import smart.data.ShopperDetails;
@@ -92,10 +94,15 @@ public class Server implements IUdpMessageReceived {
 				onItemPicked(shopperId, employeeId, itemId);
 			}
 		}
-		
 		input.close();
+		
+		exit();
+	}
+	
+	// Closes S-Mart main server
+	public void exit() {
+		System.out.println("\n4. Closes S-Mart main server\n");
 		socketHandler.stopListening();
-		System.out.println("\n4. Closes S-Mart main server");
 	}
 	
 	private void onItemPicked(long shopperPickerId, long employeeToAlertId, long itemPickedId){
