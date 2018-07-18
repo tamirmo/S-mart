@@ -67,42 +67,42 @@ public class Server implements IUdpMessageReceived {
 	}
 	
 	// Starts S-Mart main server
-	public void run(){
-		Scanner input = new Scanner(System.in);
-		String line = "";
-		
+	public void start(){
 		System.out.println("\n2. Starts S-Mart main server");
 		socketHandler.startListening();
 		
-		// Receives input from the console until "End" is received
 		System.out.println("\n3. Waits for connections : ");
-		while(!line.equals("End")){
-			line = input.nextLine();
-			System.out.println(line);
-			
-			// Action alerting a shopper has picked an item
-			if(line.startsWith("pick")){
-				System.out.println("Shopper Id: ");
-				long shopperId = input.nextLong();
-				
-				System.out.println("Item Id: ");
-				long itemId = input.nextInt();
-				
-				System.out.println("Employee Id: ");
-				long employeeId = input.nextInt();
-				
-				onItemPicked(shopperId, employeeId, itemId);
-			}
-		}
-		input.close();
+		pickup();
 		
+		System.out.println("\n4. Closes S-Mart main server\n");
 		exit();
 	}
 	
-	// Closes S-Mart main server
-	public void exit() {
-		System.out.println("\n4. Closes S-Mart main server\n");
-		socketHandler.stopListening();
+	// Creates a shopper picked up a product event
+	public void pickup() {
+		Scanner input = new Scanner(System.in);
+		String line = "";
+
+		// Receives input from the console until "End" is received
+		while (!line.equals("End")) {
+			line = input.nextLine();
+
+			// Action alerting a shopper has picked an item
+			if (line.startsWith("pick")) {
+				System.out.println("Shopper Id: ");
+				long shopperId = input.nextLong();
+
+				System.out.println("Item Id: ");
+				long itemId = input.nextInt();
+
+				System.out.println("Employee Id: ");
+				long employeeId = input.nextInt();
+
+				onItemPicked(shopperId, employeeId, itemId);
+			}
+		}
+
+		input.close();
 	}
 	
 	private void onItemPicked(long shopperPickerId, long employeeToAlertId, long itemPickedId){
@@ -121,6 +121,11 @@ public class Server implements IUdpMessageReceived {
 		}else{
 			System.out.println("Not sending item picked to shopper, Not logged in");
 		}
+	}
+	
+	// Closes S-Mart main server
+	public void exit() {
+		socketHandler.stopListening();
 	}
 
 	@Override
