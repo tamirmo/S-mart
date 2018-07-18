@@ -38,65 +38,78 @@ public class Server implements IUdpMessageReceived {
 	private static final int LOGIN_WRONG_RESPONSE = 0;
 	private static final int LOGIN_OK_RESPONSE = 1;
 	
-	// Maps for shoppers and employees that has logged in 
-	// (saving their ip to get back to them)
-	private HashMap<Long, InetAddress> shoppers;
-	private HashMap<Long, InetAddress> employees;
+	// Maps to track online shoppers, and employees, using their IP-Address 
+	private HashMap<Long, InetAddress> onlineShoppers;
+	private HashMap<Long, InetAddress> onlineEmployees;
 	
+	// UDP Socket for all communications
+	UdpSocketHandler socketHandler;
+	
+	// Builds S-Mart main server
 	public Server() {
-		shoppers = new HashMap<>();
-		employees = new HashMap<>();
-	}
-	
-	public void run(){
+		System.out.println("\n1. Builds S-Mart main server");
+		System.out.println(" 1. Loads all server data : ");
 		SmartDataLoader.loadDepartments();
 		SmartDataLoader.loadEmployees();
 		SmartDataLoader.loadProducts();
 		SmartDataLoader.loadShoppers();
 		SmartDataLoader.loadDiscounts();
 		
-		UdpSocketHandler socketHandler = new UdpSocketHandler(SERVER_PORT);
-		socketHandler.addNewMessageRecievedListener(this);
-		socketHandler.startListening();
+		System.out.println(" 2. Creates online user lists");
+		onlineShoppers = new HashMap<>();
+		onlineEmployees = new HashMap<>();
 		
-		Scanner sc = new Scanner(System.in);
+		System.out.println(" 3. Creates a UDP socket for communication");
+		socketHandler = new UdpSocketHandler(SERVER_PORT);
+		socketHandler.addNewMessageRecievedListener(this);
+	}
+	
+	// Starts S-Mart main server
+	public void run(){
+		Scanner input = new Scanner(System.in);
 		String line = "";
 		
-		// Starting to get input from the console until "End" is received
-		while(!line.equals("End")){
-			line = sc.nextLine();
+		System.out.println("\n2. Starts S-Mart main server");
+		socketHandler.startListening();
 		
+		// Receives input from the console until "End" is received
+		System.out.println("\n3. Waits for connections : ");
+		while(!line.equals("End")){
+			line = input.nextLine();
+			System.out.println(line);
+			
 			// Action alerting a shopper has picked an item
 			if(line.startsWith("pick")){
 				System.out.println("Shopper Id: ");
-				long shopperId = sc.nextLong();
+				long shopperId = input.nextLong();
 				
 				System.out.println("Item Id: ");
-				long itemId = sc.nextInt();
+				long itemId = input.nextInt();
 				
 				System.out.println("Employee Id: ");
-				long employeeId = sc.nextInt();
+				long employeeId = input.nextInt();
 				
 				onItemPicked(shopperId, employeeId, itemId);
 			}
 		}
 		
+		input.close();
 		socketHandler.stopListening();
-		sc.close();
+		System.out.println("\n4. Closes S-Mart main server");
 	}
 	
 	private void onItemPicked(long shopperPickerId, long employeeToAlertId, long itemPickedId){
 		// Alerting the employee:
-		if(employees.containsKey(employeeToAlertId)){
-			InetAddress employeeAddress = employees.get(employeeToAlertId);
+		if(onlineEmployees.containsKey(employeeToAlertId)){
+			InetAddress employeeAddress = onlineEmployees.get(employeeToAlertId);
 			udp.UdpSender.getInstance().sendMessage("OUT_OF_STOCK:" + itemPickedId, employeeAddress, SERVER_PORT);
 		}else{
 			System.out.println("Not sending item picked to employee, Not logged in");
 		}
 		
 		// Alerting the shopper:
-		if(shoppers.containsKey(shopperPickerId)){
-			InetAddress employeeAddress = shoppers.get(employeeToAlertId);
+		if(onlineShoppers.containsKey(shopperPickerId)){
+			InetAddress employeeAddress = onlineShoppers.get(employeeToAlertId);
 			udp.UdpSender.getInstance().sendMessage("ITEM_PICKED:" + itemPickedId, employeeAddress, SERVER_PORT);
 		}else{
 			System.out.println("Not sending item picked to shopper, Not logged in");
@@ -173,7 +186,7 @@ public class Server implements IUdpMessageReceived {
 		long shopperId = INVALID_LOGIN_ID;
 		
 		// Pulling the id of the shopper by the ip:
-		for(Entry<Long, InetAddress> entry : shoppers.entrySet()){
+		for(Entry<Long, InetAddress> entry : onlineShoppers.entrySet()){
 			if (entry.getValue().equals(shopperAddress)){
 				// Saving the id found
 				shopperId = entry.getKey();
@@ -193,7 +206,7 @@ public class Server implements IUdpMessageReceived {
 		long employeeId = INVALID_LOGIN_ID;
 		
 		// Pulling the id of the employee by the ip:
-		for(Entry<Long, InetAddress> entry : employees.entrySet()){
+		for(Entry<Long, InetAddress> entry : onlineEmployees.entrySet()){
 			if (entry.getValue().equals(employeeAddress)){
 				// Saving the id found
 				employeeId = entry.getKey();
@@ -453,7 +466,7 @@ public class Server implements IUdpMessageReceived {
 	private boolean logInShooper(Message messageReceived){
 		long loggenInShopperId = checkShopperLogin(messageReceived.getMessageContent());
 		if(loggenInShopperId != INVALID_LOGIN_ID){
-			shoppers.put(loggenInShopperId, messageReceived.getAddress());
+			onlineShoppers.put(loggenInShopperId, messageReceived.getAddress());
 			return true;
 		}
 		return false;
@@ -462,7 +475,7 @@ public class Server implements IUdpMessageReceived {
 	private boolean logInEmployee(Message messageReceived){
 		long loggenInEmployeeId = checkEmployeeLogin(messageReceived.getMessageContent());
 		if(loggenInEmployeeId != INVALID_LOGIN_ID){
-			employees.put(loggenInEmployeeId, messageReceived.getAddress());
+			onlineEmployees.put(loggenInEmployeeId, messageReceived.getAddress());
 			return true;
 		}
 		return false;
