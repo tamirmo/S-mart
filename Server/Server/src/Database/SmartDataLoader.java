@@ -88,7 +88,7 @@ public final class SmartDataLoader {
 		File shopFile = new File(SmartDataManager.SHOPPERS_FILE);
 		
 		if(shopFile.exists()){
-			SmartDataManager.getInstance().readSoppersDetailsFromFile(SmartDataManager.SHOPPERS_FILE);
+			SmartDataManager.getInstance().readShoppersDetailsFromFile(SmartDataManager.SHOPPERS_FILE);
 		}else{
 			// Creating the default data
 			List<ShopperDetails> shoppers = new ArrayList<>();
