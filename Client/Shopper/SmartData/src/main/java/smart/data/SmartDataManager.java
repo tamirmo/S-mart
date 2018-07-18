@@ -190,7 +190,7 @@ public class SmartDataManager {
 		return data;
 	}
 
-	public List<ShopperDetails> readSoppersDetailsFromFile(String fileName){
+	public List<ShopperDetails> readShoppersDetailsFromFile(String fileName){
 		List<ShopperDetails> data = readListFromFile(fileName, SHOPPER_DETAILS_TYPE);
 		shoppers = data;
 

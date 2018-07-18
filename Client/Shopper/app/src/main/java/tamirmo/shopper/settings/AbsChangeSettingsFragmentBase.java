@@ -3,6 +3,7 @@ package tamirmo.shopper.settings;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -34,9 +35,9 @@ public abstract class AbsChangeSettingsFragmentBase extends Fragment implements 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanseState)
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState)
     {
-        View view = provideFragmentView(inflater,parent,savedInstanseState);
+        View view = provideFragmentView(inflater,parent,savedInstanceState);
         view.findViewById(R.id.confirm_btn).setOnClickListener(this);
         mainFrame = view.findViewById(R.id.main_layout);
         changeSettingLayout = view.findViewById(R.id.change_setting_layout);
@@ -48,6 +49,12 @@ public abstract class AbsChangeSettingsFragmentBase extends Fragment implements 
         ServerConnectionHandler.getInstance().setServerChangeSettingsEvents(this);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        clearFields();
     }
 
     protected void showLoading(){
@@ -129,4 +136,8 @@ public abstract class AbsChangeSettingsFragmentBase extends Fragment implements 
     public abstract void onConfirmClicked();
     public abstract int getSettingChangedDialogMessageResId();
     public abstract int getSettingWrongDialogMessageResId();
+    /**
+     * Clearing the text fields from last time the user was in the fragment
+     */
+    public abstract void clearFields();
 }

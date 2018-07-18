@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/change_email_header"
-            style="@style/header"/>
+            style="@style/header" />
 
         <EditText
             android:id="@+id/edit_email_edit_text"
@@ -25,7 +25,10 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:hint="@string/change_email_hint"
-            android:inputType="textEmailAddress"/>
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:lines="1"
+            android:singleLine="true"/>
 
         <Button
             android:layout_width="match_parent"

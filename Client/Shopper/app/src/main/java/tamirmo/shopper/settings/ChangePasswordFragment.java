@@ -47,4 +47,13 @@ public class ChangePasswordFragment extends AbsChangeSettingsFragmentBase  {
     public int getSettingWrongDialogMessageResId() {
         return R.string.password_change_dialog_err;
     }
+
+    @Override
+    public void clearFields() {
+        if(oldPasswordEditText != null && newPasswordEditText != null) {
+            // Clearing the text from the last time
+            oldPasswordEditText.setText("");
+            newPasswordEditText.setText("");
+        }
+    }
 }

@@ -44,4 +44,11 @@ public class ChangeCreditFragment extends AbsChangeSettingsFragmentBase {
         return R.string.credit_change_dialog_err;
     }
 
+    @Override
+    public void clearFields() {
+        if(creditEditText != null) {
+            creditEditText.setText("");
+        }
+    }
+
 }
