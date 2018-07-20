@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shopper</string>
+    <string name="app_name">S-Mart</string>
 
     <string name="connecting">Loading...</string>
     <string name="connection_err">Connection error</string>
