@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Shopper</string>
 
-    <string name="connecting">Almost there!</string>
+    <string name="connecting">Loading...</string>
     <string name="connection_err">Connection error</string>
     <string name="log_in_err">Log in failed, wrong password or email</string>
     <string name="discounts_menu_title">Discounts</string>
@@ -12,7 +12,7 @@
 
     <string name="email_edit_text_title">Enter Email</string>
     <string name="password_edit_text_title">Enter Password</string>
-    <string name="log_in_btn_text">Log in</string>
+    <string name="log_in_btn_text">Login</string>
 
     <string name="edit_current_cart_btn_text">Edit current list</string>
     <string name="history_cart_btn_text">Old lists</string>
