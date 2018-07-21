@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color"
+    android:background="@drawable/s_mart_background"
     android:id="@+id/main_layout">
 
     <LinearLayout
@@ -15,7 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/change_email_header"
-            style="@style/header" />
+            style="@style/header"
+            android:textColor="@android:color/black"/>
 
         <EditText
             android:id="@+id/edit_email_edit_text"
@@ -26,6 +27,7 @@
             android:layout_marginRight="10dp"
             android:hint="@string/change_email_hint"
             android:inputType="textEmailAddress"
+            android:textColor="@android:color/black"
             android:maxLines="1"
             android:lines="1"
             android:singleLine="true"/>
@@ -36,7 +38,11 @@
             android:id="@+id/confirm_btn"
             android:text="@string/confirm_btn_text"
             android:layout_margin="10dp"
-            android:textAllCaps="false"/>
+            android:textAllCaps="false"
+            android:textColor="@color/s_mart_titles_color"
+            android:textSize="25sp"
+            android:textStyle="italic"
+            android:theme="@style/AnimatedButton"/>
     </LinearLayout>
 
     <LinearLayout
@@ -56,8 +62,8 @@
             android:id="@+id/loading_game_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/changing_settings_progress_dialog_text"
+            android:text="@string/changing_email_progress_dialog_text"
             android:textSize="30sp"
-            android:textColor="@color/app_text_color"/>
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 </FrameLayout>
