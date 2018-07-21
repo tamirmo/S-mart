@@ -6,10 +6,10 @@
         android:id="@+id/discount_map_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/discount_menu_icon"/>
+        android:src="@drawable/discount_map_icon"/>
     <ImageView
         android:id="@+id/item_map_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/cart_item"/>
+        android:src="@drawable/cart_item_location"/>
 </RelativeLayout>

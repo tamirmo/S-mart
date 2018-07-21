@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/notifications_settings_header"
-        android:textColor="@android:color/black"
+        android:textColor="@color/s_mart_text_color"
         style="@style/header"/>
 
     <android.support.v7.widget.SwitchCompat
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="@string/active_discounts_switch_header"
         android:layout_margin="20dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
         android:layout_below="@id/notification_settings_header"/>
 
@@ -29,7 +29,7 @@
         android:layout_below="@+id/active_discounts_switch"
         android:layout_margin="20dp"
         android:text="@string/vibration_switch_header"
-        android:textColor="@android:color/black"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp" />
 
     <android.support.v7.widget.SwitchCompat
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sound_switch_header"
         android:layout_margin="20dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
         android:layout_below="@id/vibrations_switch"/>
 

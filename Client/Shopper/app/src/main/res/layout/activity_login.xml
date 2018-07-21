@@ -18,8 +18,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="225dp"
-            android:paddingTop="5dp"
-            android:scaleType="centerInside"
+            android:paddingTop="10dp"
             android:src="@drawable/s_mart_logo" />
 
         <RelativeLayout
@@ -38,7 +37,7 @@
                 android:layout_marginTop="48dp"
                 android:hint="@string/email_edit_text_title"
                 android:inputType="textEmailAddress"
-                android:textColor="@android:color/black"
+                android:textColor="@color/s_mart_text_color"
                 android:textSize="25sp" />
 
             <EditText
@@ -50,7 +49,7 @@
                 android:layout_marginTop="131dp"
                 android:hint="@string/password_edit_text_title"
                 android:inputType="textPassword"
-                android:textColor="@android:color/black"
+                android:textColor="@color/s_mart_text_color"
                 android:textSize="25sp" />
 
             <android.support.v7.widget.AppCompatButton
@@ -91,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/connecting"
-            android:textColor="@android:color/black"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="30sp" />
     </LinearLayout>
 </FrameLayout>

@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/settings_fragment_header"
-        android:textColor="@android:color/black"
+        android:textColor="@color/s_mart_text_color"
         android:textAlignment="center"
         android:textSize="30sp"
         style="@style/header"/>

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/app_background_color">
+    android:background="@drawable/s_mart_background">
+
     <ImageButton
         android:id="@+id/cart_edit_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/cart_edit"
+        android:layout_width="107dp"
+        android:layout_height="134dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:background="@null"
-        android:layout_marginTop="10dp"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/list" />
     <TextView
         android:id="@+id/cart_edit_text_view"
         android:layout_width="wrap_content"
@@ -18,17 +20,18 @@
         android:layout_below="@id/cart_edit_btn"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"/>
 
     <ImageButton
         android:id="@+id/start_shopping_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/cart_go"
+        android:layout_width="135dp"
+        android:layout_height="118dp"
         android:layout_below="@id/cart_edit_text_view"
         android:layout_centerHorizontal="true"
-        android:background="@null"/>
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/shopping" />
     <TextView
         android:id="@+id/start_shopping_btn_text_view"
         android:layout_width="wrap_content"
@@ -36,6 +39,6 @@
         android:text="@string/start_shopping_cart_btn_text"
         android:layout_below="@id/start_shopping_btn"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"/>
 </RelativeLayout>

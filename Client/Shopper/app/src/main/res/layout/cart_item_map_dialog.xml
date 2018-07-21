@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="20sp"
             android:ellipsize="end"
             android:maxLines="1"/>
@@ -45,14 +45,14 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="20sp"/>
         <TextView
             android:id="@+id/curr_cart_item_price"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textStyle="bold"
             android:textSize="20sp"/>
     </LinearLayout>
@@ -61,7 +61,7 @@
         android:id="@+id/curr_cart_item_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textStyle="bold"
         android:textSize="22sp"
         android:layout_alignParentRight="true"

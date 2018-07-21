@@ -14,15 +14,15 @@
     <string name="password_edit_text_title">Enter Password</string>
     <string name="log_in_btn_text">Login</string>
 
-    <string name="edit_current_cart_btn_text">Edit current list</string>
+    <string name="edit_current_cart_btn_text">Edit Shopping list</string>
     <string name="history_cart_btn_text">Old lists</string>
-    <string name="start_shopping_cart_btn_text">Start live Shopping!</string>
+    <string name="start_shopping_cart_btn_text">Start Shopping!</string>
 
     <string name="curr_cart_header_text">Current cart</string>
     <string name="add_item_btn_text">Add item</string>
     <string name="receipt_header_text">Receipt</string>
 
-    <string name="choose_department_text">Choose department</string>
+    <string name="choose_department_text">Choose Department</string>
     <string name="search_department_hint">Find your product</string>
 
     <string name="item_removed_snack_bar_title">Find your product</string>
@@ -35,7 +35,7 @@
     <string name="list_navigation_btn_text">List</string>
     <string name="add_discount_to_cart_btn_text">Add to cart</string>
     <string name="dialog_cancel_btn_text">Cancel</string>
-    <string name="dialog_ok_btn_text">Ok</string>
+    <string name="dialog_ok_btn_text">OK</string>
 
     <string name="no_next_item">None</string>
 

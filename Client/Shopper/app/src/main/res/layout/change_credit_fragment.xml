@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:text="@string/change_credit_header"
             style="@style/header"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/s_mart_text_color"/>
 
         <EditText
             android:id="@+id/edit_credit_edit_text"
@@ -29,7 +29,7 @@
             android:maxLines="1"
             android:lines="1"
             android:singleLine="true"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/s_mart_text_color"/>
 
         <Button
             android:layout_width="match_parent"
@@ -65,6 +65,6 @@
             android:layout_height="wrap_content"
             android:text="@string/changing_card_progress_dialog_text"
             android:textSize="30sp"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/s_mart_text_color"/>
     </LinearLayout>
 </FrameLayout>

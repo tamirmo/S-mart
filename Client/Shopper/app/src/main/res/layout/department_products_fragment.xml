@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color">
+    android:background="@drawable/s_mart_background">
 
     <TextView
         android:id="@+id/department_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textColor="@color/s_mart_text_color"
         style="@style/header"/>
 
     <android.support.v7.widget.AppCompatEditText
@@ -18,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_below="@id/department_title_text_view"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="25sp"
         android:layout_margin="10dp"
         android:hint="@string/search_department_hint"

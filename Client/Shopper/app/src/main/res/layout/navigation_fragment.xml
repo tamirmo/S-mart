@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color">
+    android:background="@color/s_mart_ui_color">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/next_item_title"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="25sp"/>
         <TextView
             android:id="@+id/next_item_amount_text_view"
@@ -24,7 +24,7 @@
             android:maxLines="1"
             android:layout_toRightOf="@id/next_item_title_text_view"
             android:layout_marginLeft="10sp"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="25sp"/>
         <TextView
             android:id="@+id/next_item_text_text_view"
@@ -34,7 +34,7 @@
             android:maxLines="1"
             android:layout_toRightOf="@id/next_item_amount_text_view"
             android:layout_marginLeft="5sp"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="25sp"/>
     </RelativeLayout>
 
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/list_navigation_btn_text"
                 android:layout_below="@id/show_list_btn"
-                android:textColor="@color/app_text_color"
+                android:textColor="@color/s_mart_text_color"
                 android:textSize="20sp"
                 android:layout_centerHorizontal="true"/>
         </RelativeLayout>
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/finish_navigation_btn_text"
-                android:textColor="@color/app_text_color"
+                android:textColor="@color/s_mart_text_color"
                 android:textSize="12sp"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"

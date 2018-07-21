@@ -28,19 +28,16 @@ public class NotificationSettingsFragment extends Fragment implements CompoundBu
 
         // Getting the views
         SwitchCompat vibrationSwitch = rootView.findViewById(R.id.vibrations_switch);
-        SwitchCompat offlineDiscountsSwitch = rootView.findViewById(R.id.offline_discounts_switch);
         SwitchCompat activeDiscountsSwitch = rootView.findViewById(R.id.active_discounts_switch);
         SwitchCompat soundSwitch = rootView.findViewById(R.id.sound_switch);
 
         // Registering to the checked events (to save changes):
         vibrationSwitch.setOnCheckedChangeListener(this);
-        offlineDiscountsSwitch.setOnCheckedChangeListener(this);
         activeDiscountsSwitch.setOnCheckedChangeListener(this);
         soundSwitch.setOnCheckedChangeListener(this);
 
         // Setting the current values
         vibrationSwitch.setChecked(NotificationSettingsHandler.getInstance().isVibrationOn());
-        offlineDiscountsSwitch.setChecked(NotificationSettingsHandler.getInstance().isOfflineNotificationOn());
         activeDiscountsSwitch.setChecked(NotificationSettingsHandler.getInstance().isActiveNotificationOn());
         soundSwitch.setChecked(NotificationSettingsHandler.getInstance().isSoundOn());
 
@@ -53,9 +50,6 @@ public class NotificationSettingsFragment extends Fragment implements CompoundBu
         switch (buttonView.getId()){
             case R.id.vibrations_switch:
                 NotificationSettingsHandler.getInstance().setVibrationOn(isChecked, getActivity());
-                break;
-            case R.id.offline_discounts_switch:
-                NotificationSettingsHandler.getInstance().setOfflineNotificationOn(isChecked, getActivity());
                 break;
             case R.id.active_discounts_switch:
                 NotificationSettingsHandler.getInstance().setActiveNotificationOn(isChecked, getActivity());

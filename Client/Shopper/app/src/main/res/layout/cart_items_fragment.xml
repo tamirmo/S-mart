@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color">
+    android:background="@drawable/s_mart_background">
     <TextView
         android:id="@+id/cart_header_text_view"
         android:layout_width="wrap_content"
@@ -20,14 +20,14 @@
             android:id="@+id/add_item_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/cart_add_item"
+            android:src="@drawable/plus"
             android:background="@null" />
         <TextView
             android:id="@+id/add_item_text_view"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:text="@string/add_item_btn_text"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="24sp"
             android:layout_marginLeft="20dp" />
     </LinearLayout>
@@ -49,7 +49,7 @@
             android:id="@+id/cart_total_sum__title_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:textSize="30sp"
             android:text="@string/cart_sum_text"
             android:layout_marginRight="10sp"/>
@@ -57,7 +57,7 @@
             android:id="@+id/cart_total_sum_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/app_text_color"
+            android:textColor="@color/s_mart_text_color"
             android:layout_toRightOf="@id/cart_total_sum__title_text_view"
             android:textSize="30sp"/>
     </RelativeLayout>

@@ -66,7 +66,7 @@ public class NavigationMapAdapter extends BaseAdapter implements View.OnClickLis
 
         // If there is a cart item for the
         if(cartItem != null){
-            int itemImageResourceId = R.drawable.cart_item;
+            int itemImageResourceId = R.drawable.cart_item_location;
             listViewHolder.item.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
 
             if(cartItem.isPicked()){
