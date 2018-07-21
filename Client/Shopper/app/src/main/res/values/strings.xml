@@ -42,10 +42,10 @@
     <string name="discounts_fragment_header">Discounts</string>
 
     <string name="settings_fragment_header">Configuration</string>
-    <string name="change_email_header">Change email</string>
-    <string name="change_password_header">Change password</string>
-    <string name="change_credit_header">Change credit card</string>
-    <string name="notifications_settings_header">Notifications settings</string>
+    <string name="change_email_header">Change E-mail</string>
+    <string name="change_password_header">Change Password</string>
+    <string name="change_credit_header">Change Credit Card</string>
+    <string name="notifications_settings_header">Notifications Settings</string>
 
     <string name="change_email_hint">Enter new email</string>
     <string name="change_credit_hint">Enter new credit</string>
