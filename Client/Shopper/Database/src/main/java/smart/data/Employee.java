@@ -36,4 +36,8 @@ public class Employee {
 	public boolean isEmailPasswordEquals(String email, String password){
 		return this.email.equals(email) && this.password.equals(password);
 	}
+	
+	public String toString() {
+		return "Employee : EMPLOYEE_SERVER_ID = "+ id + " : EMPLOYEE_EMAIL = " + email +" : EMPLOYEE_PASSWORD = " + password;
+	}
 }

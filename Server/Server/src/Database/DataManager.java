@@ -36,34 +36,112 @@ public class DataManager {
 	private static final String DISCOUNTS_FILE = "discounts.json";
 	
 	// Server data types
-	private static final String DEPARTMENT = "department";
-	private static final String PRODUCT = "product";
-	private static final String SHOPPER = "shopper";
-	private static final String EMPLOYEE = "employee";
-	private static final String DISCOUNT = "discount";
+	private static final String DEPARTMENT_TYPE = "department";
+	private static final String PRODUCT_TYPE = "product";
+	private static final String SHOPPER_TYPE = "shopper";
+	private static final String EMPLOYEE_TYPE = "employee";
+	private static final String DISCOUNT_TYPE = "discount";
+	
+	// Messages
+	private static final String FILE_NOT_FOUND_EXCEPTION = "DataManager couldn't find the file";
+	private static final String UNKNOWN_TYPE_EXCEPTION = "DataManager couldn't identify this data type";
+	
+	// Delimiter :
+	private static final String END_OF_FILE = "\\Z";
 	
 	// A database to manage
 	private Database database;
 	
-	public DataManager() throws FileNotFoundException, Exception {
+	public DataManager() throws Exception {
 		database = new Database();
 		
-		loadFromFile(DEPARTMENTS_FILE,DEPARTMENT);
-		loadFromFile(EMPLOYEES_FILE,EMPLOYEE);
-		loadFromFile(PRODUCTS_FILE,PRODUCT);
-		loadFromFile(SHOPPERS_FILE,SHOPPER);
-		loadFromFile(DISCOUNTS_FILE,DISCOUNT);
+		loadFromFile(DEPARTMENTS_FILE,DEPARTMENT_TYPE);
+		loadFromFile(EMPLOYEES_FILE,EMPLOYEE_TYPE);
+		loadFromFile(PRODUCTS_FILE,PRODUCT_TYPE);
+		loadFromFile(SHOPPERS_FILE,SHOPPER_TYPE);
+		loadFromFile(DISCOUNTS_FILE,DISCOUNT_TYPE);
 	}
 	
 	// Loads all data from a file
-	public void loadFromFile(String fileName, String dataType) throws FileNotFoundException, Exception {
-		Scanner input = new Scanner(new File(fileName));
-		String fileContent = input.useDelimiter("\\Z").next();
+	private void loadFromFile(String fileName, String dataType) throws Exception {
+		String fileContent;
 		
-		database.readListFromString(fileContent, dataType);
-		input.close();
+		try(Scanner input = new Scanner(new File(fileName))){
+			fileContent = input.useDelimiter(END_OF_FILE).next();
+			
+			switch(dataType.toLowerCase()) {
+			case DEPARTMENT_TYPE:
+				database.loadDepartmentsFromString(fileContent);
+				break;
+			case PRODUCT_TYPE:
+				database.loadProductsFromString(fileContent);
+				break;
+			case SHOPPER_TYPE:
+				database.loadShoppersFromString(fileContent);
+				break;
+			case EMPLOYEE_TYPE:
+				database.loadEmployeesFromString(fileContent);
+				break;
+			case DISCOUNT_TYPE:
+				database.loadDiscountsFromString(fileContent);
+				break;
+			default :
+				throw new Exception(UNKNOWN_TYPE_EXCEPTION + " : " + dataType);
+			}
+		}catch(FileNotFoundException ex) {
+			throw new Exception(FILE_NOT_FOUND_EXCEPTION + " : " + fileName);
+		}
 	}
 	
+	// Returns a string of all data of a certain type 
+	public String viewItems(String dataType) throws Exception {
+		String items = null;
+
+		switch (dataType.toLowerCase()) {
+		case DEPARTMENT_TYPE:
+			items = database.getDepartmentsString();
+			break;
+		case PRODUCT_TYPE:
+			items = database.getProductsString();
+			break;
+		case SHOPPER_TYPE:
+			items = database.getShoppersString();
+			break;
+		case EMPLOYEE_TYPE:
+			items = database.getEmployeesString();
+			break;
+		case DISCOUNT_TYPE:
+			items = database.getDiscountsString();
+			break;
+		default:
+			throw new Exception(UNKNOWN_TYPE_EXCEPTION + " : " + dataType);
+		}
+
+		return items;
+	}
+	
+	// Adds an item to the database
+	public void addItem(String dataType, String args) throws Exception {		
+		switch (dataType.toLowerCase()) {
+		case DEPARTMENT_TYPE:
+			database.addDepartment(args);
+			break;
+		case PRODUCT_TYPE:
+			database.addProduct(args);
+			break;
+		case SHOPPER_TYPE:
+			database.addShopper(args);
+			break;
+		case EMPLOYEE_TYPE:
+			database.addEmployee(args);
+			break;
+		case DISCOUNT_TYPE:
+			database.addDiscount(args);
+			break;
+		default:
+			throw new Exception(UNKNOWN_TYPE_EXCEPTION + " : " + dataType);
+		}
+	}
 	
 	/*
 	// Saves all data of a certain type to a file
@@ -72,12 +150,6 @@ public class DataManager {
 	}
 	
 	public boolean validateUser() {
-		
-		return false;
-	}
-	
-	public boolean addItem() {
-		
 		
 		return false;
 	}

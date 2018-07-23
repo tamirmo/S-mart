@@ -1,39 +1,39 @@
- "help" 																- Displays all server commands on console
+ "help" - Displays all server commands on console
  
- "start" 																- Starts the server
+ "start" - Starts the server
  
- "view ITEM_TYPE" 														- Displays items of a certain type from the database
+ "view ITEM_TYPE" - Displays items of a certain type from the database
  	- ITEM_TYPE : {shopper, employee, department, product, discount}
  	 	  
- "add ITEM_TYPE ITEM_ARGS" 												- Adds an item to the database
+ "add ITEM_TYPE ITEM_ARGS" - Adds an item to the database
  	- ITEM_TYPE : {shopper, employee, department, product, discount}
  	- ITEM_ARGS : 
  		- shopper ITEM_ARGS :
- 			- ITEM_ID:long EMAIL:string PASSWORD:string CREDIT_CARD:string
+ 			- SHOPPER_SERVER_ID:long SHOPPER_EMAIL:string SHOPPER_PASSWORD:string SHOPPER_CREDIT_CARD:string
 		- employee ITEM_ARGS : 		
- 			- ITEM_ID:int EMAIL:string PASSWORD:string
+ 			- EMPLOYEE_SERVER_ID:int EMPLOYEE_EMAIL:string EMPLOYEE_PASSWORD:string
  		- department ITEM_ARGS :
- 			- ITEM_ID:int  NAME:string
+ 			- DEPARTMENT_ID:int DEPARTMENT_NAME:string
  		- product ITEM_ARGS :
- 			- ITEM_ID:long NAME:string DEPARTMENT_ID:int UNIT_PRICE:double LOCATION_X:int LOCATION_Y:int UNIT_AMOUNT:double UNIT_TYPE:{DEFAULT, KG, L, G}
+ 			- PRODUCT_ID:long DEPARTMENT_ID:int UNIT_PRICE:double LOCATION_X:int LOCATION_Y:int UNIT_AMOUNT:double UNIT_TYPE:{DEFAULT, KG, L, G} PRODUCT_NAME:string
  		- discount ITEM_ARGS :
- 			- ITEM_ID:long NORMAL_PRICE:double DISCOUNT_PRICE:double SHOPPER_SERVER_ID:{int, "all":string}
+ 			- PRODUCT_ID:long NORMAL_PRICE:double DISCOUNT_PRICE:double SHOPPER_SERVER_ID:{int, "all":string}
  
- "edit itemType itemArgs" 												- Edits an item from the database
+ "edit ITEM_TYPE ITEM_ARGS" - Edits an item from the database
  	- ITEM_TYPE : {shopper, employee, department, product, discount}
  	- ITEM_ARGS : 
  		- shopper ITEM_ARGS :
- 			- ITEM_ID:long EMAIL:string PASSWORD:string CREDIT_CARD:string
+ 			- SHOPPER_SERVER_ID:long SHOPPER_EMAIL:string SHOPPER_PASSWORD:string SHOPPER_CREDIT_CARD:string
 		- employee ITEM_ARGS : 		
- 			- ITEM_ID:int EMAIL:string PASSWORD:string
+ 			- EMPLOYEE_SERVER_ID:int EMPLOYEE_EMAIL:string EMPLOYEE_PASSWORD:string
  		- department ITEM_ARGS :
- 			- ITEM_ID:int  NAME:string
+ 			- DEPARTMENT_ID:int DEPARTMENT_NAME:string
  		- product ITEM_ARGS :
- 			- ITEM_ID:long NAME:string DEPARTMENT_ID:int UNIT_PRICE:double LOCATION_X:int LOCATION_Y:int UNIT_AMOUNT:double UNIT_TYPE:{DEFAULT, KG, L, G}
+ 			- PRODUCT_ID:long DEPARTMENT_ID:int UNIT_PRICE:double LOCATION_X:int LOCATION_Y:int UNIT_AMOUNT:double UNIT_TYPE:{DEFAULT, KG, L, G} PRODUCT_NAME:string
  		- discount ITEM_ARGS :
- 			- ITEM_ID:long NORMAL_PRICE:double DISCOUNT_PRICE:double SHOPPER_SERVER_ID:{int, "all":string}
+ 			- PRODUCT_ID:long NORMAL_PRICE:double DISCOUNT_PRICE:double SHOPPER_SERVER_ID:{int, "all":string}
  
- "remove ITEM_TYPE ITEM_ARGS" 												- Removes an item from the database 
+ "remove ITEM_TYPE ITEM_ARGS" - Removes an item from the database 
  	- ITEM_TYPE : {shopper, employee, department, product, discount}
  	- ITEM_ARGS : 
  		- shopper ITEM_ARGS :
@@ -41,27 +41,27 @@
 		- employee ITEM_ARGS : 		
  			- EMPLOYEE_SERVER_ID:int
  		- department ITEM_ARGS :
- 			- ITEM_ID:int
+ 			- DEPARTMENT_ID:int
  		- product ITEM_ARGS :
- 			- ITEM_ID:long
+ 			- PRODUCT_ID:long
  		- discount ITEM_ARGS :
- 			- ITEM_ID:long SHOPPER_SERVER_ID:{int, "all":string}
+ 			- PRODUCT_ID:long SHOPPER_SERVER_ID:{int, "all":string}
  			
- "pick ITEM_ID SHOPPER_SERVER_ID" 												- Picks up a product from its shelf
- 	- ITEM_ID 	  		 : int
- 	- SHOPPER_SERVER_ID  : int
+ "pick PRODUCT_ID SHOPPER_SERVER_ID" - Picks up a product from its shelf
+ 	- PRODUCT_ID : long
+ 	- SHOPPER_SERVER_ID : int
  
- "return ITEM_ID LOCATION_X LOCATION_Y SHOPPER_SERVER_ID" 						- Returns a product to a shelf
- 	- ITEM_ID 	  		 : int
- 	- LOCATION_X  		 : int
- 	- LOCATION_Y   		 : int
- 	- SHOPPER_SERVER_ID	 : int
+ "return PRODUCT_ID LOCATION_X LOCATION_Y SHOPPER_SERVER_ID" - Returns a product to a shelf
+ 	- PRODUCT_ID : long
+ 	- LOCATION_X : int
+ 	- LOCATION_Y : int
+ 	- SHOPPER_SERVER_ID : int
  
- "place ITEM_ID LOCATION_X LOCATION_Y EMPLOYEE_SERVER_ID" 						- Places a product on a shelf
- 	- ITEM_ID 	  		 : int
- 	- LOCATION_X 		 : int
- 	- LOCATION_Y  		 : int
+ "place PRODUCT_ID LOCATION_X LOCATION_Y EMPLOYEE_SERVER_ID" - Places a product on a shelf
+ 	- PRODUCT_ID : long
+ 	- LOCATION_X : int
+ 	- LOCATION_Y : int
  	- EMPLOYEE_SERVER_ID : int
  
- "exit" 																		- Stops the server 	
+ "exit" - Stops the server 	
  

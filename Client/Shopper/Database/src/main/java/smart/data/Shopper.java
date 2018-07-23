@@ -44,4 +44,8 @@ public class Shopper {
 	public boolean isEmailPasswordEquals(String email, String password){
 		return this.email.equals(email) && this.password.equals(password);
 	}
+	
+	public String toString() {
+		return "Shopper : SHOPPER_SERVER_ID = "+ id+" : SHOPPER_EMAIL = "+ email+" : SHOPPER_PASSWORD = " + password +" : SHOPPER_CREDIT_CARD = " + creditCard;
+	}
 }

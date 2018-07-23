@@ -3,33 +3,20 @@ package BusinessLogic;
 import java.net.InetAddress;
 import java.util.Scanner;
 
-/* Server Commands :
- * a. "help" 										- Displays all server commands on console
- * b. "start" 										- Starts the server
- * c. "view itemType" 								- Displays items of a certain type from the database  
- * d. "add itemType itemID itemArgs" 				- Adds an item to the database
- * e. "edit itemType itemID itemArgs" 				- Edits an item from the database
- * f. "remove itemType itemID" 						- Removes an item from the database 
- * g. "pick itemID shopperID" 						- Picks up a product from its shelf
- * h. "return itemID locationX locationY shopperID" - Returns a product to a shelf
- * i. "place itemID locationX locationY employeeID" - Places a product on a shelf
- * j. "exit" 										- Stops the server 	
- */
-
 public class ServerManager {
 
 	// Distinguish exit console command from the rest
 	private static final String EXIT_COMMAND = "exit";
 
 	// Identify important messages for LogPrinter
-	private static final String ERROR = "error";
-	private static final String SYSTEM = "system";
+	private static final String ERROR_MESSAGE_TYPE = "error";
+	private static final String SYSTEM_MESSAGE_TYPE = "system";
 
 	// Messages
-	private static final String READY = "Waiting for requests...";
+	private static final String SERVER_READY = "Waiting for requests...";
 	
 	// Identity to present to the DataKeeper in order to skip authentication
-	private static final String ADMIN = "admin";
+	private static final String ADMIN_USER = "admin";
 	
 	// A server to manage
 	private Server server;
@@ -45,29 +32,34 @@ public class ServerManager {
 			// Builds the server
 			server = new Server(serverName, serverIPAddress.getHostAddress(), serverPort);
 		} catch (Exception error) {
-			server.printExternalMessage(ERROR, error.getMessage());
+			server.printExternalMessage(ERROR_MESSAGE_TYPE, error.getMessage());
 		}
 		
 	}
 
 	// Starts serverManager to receive commands from the console
 	public void start() {
-		//Scans console for commands
-		Scanner input = new Scanner(System.in);
+		// Scans console for commands
+		Scanner input;
 		String command = "";
-		
-		server.printExternalMessage(SYSTEM, READY);
-		
-		/* Reads commands from the console, and sends them to the server 
-		 * Write "help" for a display of all server commands */
-		while (!command.toLowerCase().equals(EXIT_COMMAND)) {
-			command = input.nextLine();
-			if(!command.toLowerCase().equals(EXIT_COMMAND))
-				server.processCommand(ServerManager.ADMIN, command);
-		}
-		input.close();
 
-		// Stops the server
-		server.stopServer();
+		if (server.getIsAvailable()) {
+			input = new Scanner(System.in);
+			server.printExternalMessage(SYSTEM_MESSAGE_TYPE, SERVER_READY);
+
+			/*
+			 * Reads commands from the console, and sends them to the server 
+			 * Write "help" for a display of all server commands
+			 */
+			while (!command.toLowerCase().equals(EXIT_COMMAND)) {
+				command = input.nextLine();
+				if (!command.toLowerCase().equals(EXIT_COMMAND))
+					server.processCommand(ADMIN_USER, command);
+			}
+			input.close();
+
+			// Stops the server
+			server.stopServer();
+		}
 	}
 }

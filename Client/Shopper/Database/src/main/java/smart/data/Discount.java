@@ -12,7 +12,7 @@ public class Discount {
 	// An id for the shopper this discount belongs to,
 	// (GENERAL_DISCOUNT_SHOPPER_ID for general discounts)
 	private int shopperId;
-    private double originalPrice;
+    private double normalPrice;
     private double discountedPrice;
     // The product this discount belongs to
     // (transient for Gson not to save in the Json file)
@@ -26,8 +26,8 @@ public class Discount {
     	return shopperId;
     }
     
-    public double getOriginalPrice() {
-        return originalPrice;
+    public double getNormalPrice() {
+        return normalPrice;
     }
     
     public double getDiscountedPrice() {
@@ -46,13 +46,19 @@ public class Discount {
         return shopperId != GENERAL_DISCOUNT_SHOPPER_ID;
     }
 
-    public Discount(long productId,
-            double originalPrice,
-            double discountedPrice,
-            int shopperId){
+    public Discount(long productId, double normalPrice, double discountedPrice, int shopperId){
         this.productId = productId;
-        this.originalPrice = originalPrice;
+        this.normalPrice = normalPrice;
         this.discountedPrice = discountedPrice;
         this.shopperId = shopperId;
     }
+    
+    public String toString() {
+    	String id = "All";
+    	
+    	if(shopperId != -1)
+    		id = "" + shopperId;
+    	
+		return "Discount : PRODUCT_ID = " + productId + " : NORMAL_PRICE = " + normalPrice + " : DISCOUNT_PRICE = " + discountedPrice + " : SHOPPER_SERVER_ID = "+ id;  
+	}
 }

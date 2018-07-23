@@ -96,4 +96,8 @@ public class Product {
     public void setAmountPerUnit(double amountPerUnit) {
         this.amountPerUnit = amountPerUnit;
     }
+    
+    public String toString() {
+    	return "Product : PRODUCT_ID = " + productId + " : PRODUCT_NAME = "+ name + " : DEPARTMENT_ID = " + departmentId + " : UNIT_PRICE = "+ pricePerUnit+ " : LOCATION_X = " + locationX + " : LOCATION_Y = "+ locationY + " : UNIT_AMOUNT = " + amountPerUnit +" : UNIT_TYPE = "+ unitType;
+    }
 }

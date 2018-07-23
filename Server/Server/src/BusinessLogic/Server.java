@@ -8,8 +8,8 @@ import Database.DataKeeper;
 
 public class Server {
 	// Excludes error messages from serverManager
-	private static final String ERROR = "error";
-	private static final String SYSTEM = "system";
+	private static final String ERROR_MESSAGE_TYPE = "error";
+	private static final String SYSTEM_MESSAGE_TYPE = "system";
 	
 	// Messages
 	private static final String SUCCESSFUL_BUILD = "A server has been successfully created";
@@ -17,10 +17,9 @@ public class Server {
 	private static final String SERVER_IP = "IP Address : ";
 	private static final String SERVER_PORT = "Port Address : ";
 	private static final String HELP_RECOMMENDATION = "type \"help\" to see available commands";
-	private static final String UNKNOWN_COMMAND = "Unknown command : ";
-	private static final String PRINT_COMMANDS = "Available commands :\n";
+	private static final String PRINT_COMMANDS = "Available commands : ";
 	private static final String START_SERVER = "Starts the server";
-	private static final String VIEW_ITEMS = "Available items :\n";
+	private static final String VIEW_ITEMS = "Available items : ";
 	private static final String SUCCESSFUL_ADD_ITEM = "Item has been successfully added";
 	private static final String SUCCESSFUL_EDIT_ITEM = "Item has been successfully edited";
 	private static final String SUCCESSFUL_REMOVE_ITEM = "Item has been successfully removed";
@@ -28,10 +27,12 @@ public class Server {
 	private static final String RETURN_ITEM = "Item has been returned to a shelf";
 	private static final String PLACE_ITEM = "Item has been placed on a shelf";
 	private static final String SUCCESSFUL_EXIT = "A server has been successfully shut down";
+	private static final String UNKNOWN_COMMAND = "Unknown command";
+	private static final String INVALID_COMMAND = "Invalid command";
 	
 	// String Part :
-	private static final int HEAD = 0;
-	private static final int TAIL = 1;
+	private static final int HEAD_PART = 0;
+	private static final int TAIL_PART = 1;
 	
 	// Command type :
 	private static final String HELP_COMMAND = "help";
@@ -47,21 +48,26 @@ public class Server {
 	// Server Files :
 	private static final String COMMAND_FILE = "commands.txt";
 	
+	// Delimiter :
+	private static final String END_OF_FILE = "\\Z";
+	
 	/* Identities of users
 	*  It is used for distinguishing their requests in the console log*/ 
 	private static final String ADMIN = "admin";
-	private static final String SHOPPER = "shopper";
+	private static final String SHOPPER= "shopper";
 	private static final String EMPLOYEE = "employee";
 	
 	private String serverName;
 	private String serverIPAddress;
 	private int serverPort;
+	private boolean isAvailable;
 	
-	// A server adapter for all communication with S-Mart applications
 	private ServerAdapter connection;
 	private DataKeeper dataKeeper;
 	
 	public Server(String serverName, String serverIPAddress ,int serverPort) {
+		isAvailable = false;
+		
 		try {
 			this.serverName = serverName;
 			this.serverIPAddress = serverIPAddress;
@@ -74,51 +80,71 @@ public class Server {
 			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SERVER_IP + this.serverIPAddress);
 			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SERVER_PORT + this.serverPort);
 			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, HELP_RECOMMENDATION);
+			isAvailable = true;
 		} catch (Exception error) {
 			LogPrinter.printMessage(LogPrinter.MessageType.ERROR, error.getMessage());
 		}
 	}
 	
-	// Process a command from the serverManager
-	public void processCommand(String accountType, String command) {
-		// Splits the command into head, and tail, to get the command type 
-		String stringParts[] = command.split(" ", 2);
-		
-		try {
-		switch(stringParts[HEAD].toLowerCase()) {
-		case HELP_COMMAND: printHelp();
-			break;
-		case START_COMMAND: startServer();
-			break;
-		case VIEW_COMMAND: viewItems();
-			break;
-		case ADD_COMMAND: addItem();
-			break;
-		case EDIT_COMMAND: editItem();
-			break;
-		case REMOVE_COMMAND: removeItem();
-			break;
-		case PICK_COMMAND: pickItem();
-			break;
-		case RETURN_COMMAND: returnItem();
-			break;
-		case PLACE_COMMAND: placeItem();
-			break;
-		default:
-			throw new Exception(UNKNOWN_COMMAND + command);
-			}
-		}
-		catch(Exception error) {
-			LogPrinter.printMessage(LogPrinter.MessageType.ERROR, error.getMessage());
-		}
+	// Checks if the server is available
+	public boolean getIsAvailable() {
+		return isAvailable;
 	}
 	
-	// Prints all server commands
-	public void printHelp() throws FileNotFoundException {
+	// Process a command from the serverManager
+	public void processCommand(String accountType, String command) {
+		// Splits the command into head, and tail, to get the command type
+		String commandParts[] = command.split(" ", 2);
+		String error = "";
+
+		try {
+			switch (commandParts[HEAD_PART].toLowerCase()) {
+			case HELP_COMMAND:
+				printHelp();
+				break;
+			case START_COMMAND:
+				startServer();
+				break;
+			case VIEW_COMMAND:
+				viewItems(accountType, commandParts[TAIL_PART]);
+				break;
+			case ADD_COMMAND:
+				addItem(accountType, commandParts[TAIL_PART]);
+				break;
+			case EDIT_COMMAND:
+				editItem(accountType, commandParts[TAIL_PART]);
+				break;
+			case REMOVE_COMMAND:
+				removeItem(accountType, commandParts[TAIL_PART]);
+				break;
+			case PICK_COMMAND:
+				pickItem();
+				break;
+			case RETURN_COMMAND:
+				returnItem();
+				break;
+			case PLACE_COMMAND:
+				placeItem();
+				break;
+			default:
+				throw new Exception(UNKNOWN_COMMAND);
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			error = INVALID_COMMAND;
+		} catch (Exception ex) {
+			error = ex.getMessage();
+		}
+
+		if (!error.isEmpty())
+			LogPrinter.printMessage(LogPrinter.MessageType.ERROR, error + " : " + command);
+	}
+	
+	// Presents all server commands
+	public void printHelp() throws Exception {
 		Scanner input = new Scanner(new File(COMMAND_FILE));
 		
-		// Reads all file
-		String content = input.useDelimiter("\\Z").next();
+		// Reads all commands file
+		String content = input.useDelimiter(END_OF_FILE).next();
 		
 		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, PRINT_COMMANDS+"\n"+content);
 			
@@ -129,24 +155,31 @@ public class Server {
 	public void startServer() {
 		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, START_SERVER);
 	}
+		
+	// Presents all items of a certain type from the database
+	public void viewItems(String accountType, String dataType) throws Exception {
+		String items = dataKeeper.viewItems(accountType, dataType);
 
-	// Views items of a certain type from the database
-	public void viewItems() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, VIEW_ITEMS);
+		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, VIEW_ITEMS + "\n" + items);
 	}
-
+	
 	// Adds an item to the database
-	public void addItem() {
+	public void addItem(String accountType, String command) throws Exception {
+		String commandParts[] = command.split(" ", 2);
+		String dataType = commandParts[HEAD_PART];
+		
+		dataKeeper.addItem(accountType, dataType, commandParts[TAIL_PART]);
+		
 		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_ADD_ITEM);
 	}
 
 	// Edits an item from the database
-	public void editItem() {
+	public void editItem(String accountType, String command) {
 		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_EDIT_ITEM);
 	}
 
 	// Removes an item from the database
-	public void removeItem() {
+	public void removeItem(String accountType, String command) {
 		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_REMOVE_ITEM);
 	}
 
@@ -175,9 +208,9 @@ public class Server {
 		LogPrinter.MessageType type = LogPrinter.MessageType.UNKNOWN;
 		
 		switch(messageType.toLowerCase()) {
-		case ERROR : type = LogPrinter.MessageType.ERROR;
+		case ERROR_MESSAGE_TYPE : type = LogPrinter.MessageType.ERROR;
 			break;
-		case SYSTEM : type = LogPrinter.MessageType.SYSTEM;
+		case SYSTEM_MESSAGE_TYPE : type = LogPrinter.MessageType.SYSTEM;
 			break;
 		}
 		
