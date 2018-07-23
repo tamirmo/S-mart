@@ -5,7 +5,7 @@ import java.util.Random;
 
 import smart.data.CartItem;
 import smart.data.Discount;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.cart.IOnItemPickedListener;
 
@@ -41,7 +41,7 @@ public class DiscountsHandler implements IOnItemPickedListener {
     }
 
     public void setDiscounts(String jsonCart){
-        discounts = SmartDataManager.getInstance().readDiscountsFromJsonString(jsonCart);
+        discounts = Database.getInstance().readDiscountsFromJsonString(jsonCart);
 
         // Placing the discounts in their place in the map matrix
         for(Discount currDiscount: discounts) {
@@ -50,13 +50,13 @@ public class DiscountsHandler implements IOnItemPickedListener {
     }
 
     private DiscountsHandler(){
-        discountsAsMatrix = new Discount[SmartDataManager.MAP_ROWS_COUNT][SmartDataManager.MAP_COLS_COUNT];
+        discountsAsMatrix = new Discount[Database.MAP_ROWS_COUNT][Database.MAP_COLS_COUNT];
         CartHandler.getInstance().addItemPickedListener(this);
     }
 
     public Discount getDiscountByMapCoordinates(int position){
-        int row = position / SmartDataManager.MAP_COLS_COUNT;
-        int column = position % SmartDataManager.MAP_COLS_COUNT;
+        int row = position / Database.MAP_COLS_COUNT;
+        int column = position % Database.MAP_COLS_COUNT;
 
         return discountsAsMatrix[row][column];
     }

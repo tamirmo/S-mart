@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import smart.data.CartItem;
 import smart.data.Discount;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.R;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.discounts.DiscountsHandler;
@@ -31,8 +31,8 @@ public class NavigationMapAdapter extends BaseAdapter implements View.OnClickLis
 
     @Override
     public int getCount() {
-        int rows = SmartDataManager.MAP_ROWS_COUNT;
-        int columns = SmartDataManager.MAP_COLS_COUNT;
+        int rows = Database.MAP_ROWS_COUNT;
+        int columns = Database.MAP_COLS_COUNT;
         return rows * columns;
     }
 
@@ -114,8 +114,8 @@ public class NavigationMapAdapter extends BaseAdapter implements View.OnClickLis
     @Override
     public void onClick(View v) {
         // TODO: This is for debug, needs to be deleted:
-        int row = (int)v.getTag() / SmartDataManager.MAP_COLS_COUNT;
-        int column = (int)v.getTag() % SmartDataManager.MAP_COLS_COUNT;
+        int row = (int)v.getTag() / Database.MAP_COLS_COUNT;
+        int column = (int)v.getTag() % Database.MAP_COLS_COUNT;
         Toast.makeText(context, row + " , " + column, Toast.LENGTH_LONG).show();
 
 

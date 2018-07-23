@@ -18,37 +18,37 @@
 		<link>
 			<name>src/smart/data/CartItem.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/CartItem.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/CartItem.java</locationURI>
+		</link>
+		<link>
+			<name>src/smart/data/Database.java</name>
+			<type>1</type>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Database.java</locationURI>
 		</link>
 		<link>
 			<name>src/smart/data/Department.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/Department.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Department.java</locationURI>
 		</link>
 		<link>
 			<name>src/smart/data/Discount.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/Discount.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Discount.java</locationURI>
 		</link>
 		<link>
-			<name>src/smart/data/EmployeeDetails.java</name>
+			<name>src/smart/data/Employee.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/EmployeeDetails.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Employee.java</locationURI>
 		</link>
 		<link>
 			<name>src/smart/data/Product.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/Product.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Product.java</locationURI>
 		</link>
 		<link>
-			<name>src/smart/data/ShopperDetails.java</name>
+			<name>src/smart/data/Shopper.java</name>
 			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/ShopperDetails.java</locationURI>
-		</link>
-		<link>
-			<name>src/smart/data/SmartDataManager.java</name>
-			<type>1</type>
-			<locationURI>ShopperApp/SmartData/src/main/java/smart/data/SmartDataManager.java</locationURI>
+			<locationURI>ShopperApp/Database/src/main/java/smart/data/Shopper.java</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

@@ -1,12 +1,12 @@
 package smart.data;
 
-public class ShopperDetails {
+public class Shopper {
 	private long id;
 	private String email;
 	private String password;
 	private String creditCard;
 	
-	public ShopperDetails(long id, String email, String password, String creditCard) {
+	public Shopper(long id, String email, String password, String creditCard) {
 		this.id = id;
 		this.email = email;
 		this.password = password;

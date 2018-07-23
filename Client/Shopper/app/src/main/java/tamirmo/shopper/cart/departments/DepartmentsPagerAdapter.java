@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import smart.data.Department;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.R;
 
 /**
@@ -31,7 +31,7 @@ public class DepartmentsPagerAdapter extends PagerAdapter implements View.OnClic
     }
 
     @Override public int getCount() {
-        return SmartDataManager.getInstance().getDepartments().size();
+        return Database.getInstance().getDepartments().size();
     }
 
     @Override public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
@@ -45,7 +45,7 @@ public class DepartmentsPagerAdapter extends PagerAdapter implements View.OnClic
     @NonNull
     @Override public Object instantiateItem(@NonNull ViewGroup collection, int position) {
         // Getting the department from the list od departments in the manager
-        Department department = SmartDataManager.getInstance().getDepartments().get(position);
+        Department department = Database.getInstance().getDepartments().get(position);
 
         // Inflating the department view:
         LayoutInflater inflater = LayoutInflater.from(context);

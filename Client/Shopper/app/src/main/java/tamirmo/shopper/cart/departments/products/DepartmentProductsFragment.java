@@ -13,7 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import smart.data.Department;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.R;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.cart.departments.ChooseDepartmentFragment;
@@ -47,7 +47,7 @@ public class DepartmentProductsFragment extends Fragment implements TextWatcher,
         searchTextView = rootView.findViewById(R.id.search_department_edit_text);
 
         // Finding the name of the department chosing and setting the headline
-        for(Department department : SmartDataManager.getInstance().getDepartments()){
+        for(Department department : Database.getInstance().getDepartments()){
             if(department.getId() == departmentId){
                 ((TextView)(rootView.findViewById(R.id.department_title_text_view))).setText(department.getName());
                 break;

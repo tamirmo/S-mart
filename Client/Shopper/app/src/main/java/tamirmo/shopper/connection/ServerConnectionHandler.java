@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import communicationUtilities.Message;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.discounts.DiscountsHandler;
 import udp.IUdpMessageReceived;
@@ -253,7 +253,7 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
             // Getting only the json sent (Skipping the response code)
             String departmentsJson = messageReceived.getMessageContent().substring(1);
             // Saving it to the data manager
-            SmartDataManager.getInstance().readDepartmentsFromJsonString(departmentsJson);
+            Database.getInstance().readDepartmentsFromJsonString(departmentsJson);
         }
         else if(messageReceived.getMessageContent().startsWith(String.valueOf(GET_PRODUCTS_REQUEST))) {
             // Requesting the discounts now
@@ -261,7 +261,7 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
             // Getting only the json sent (Skipping the response code)
             String productsJson = messageReceived.getMessageContent().substring(1);
             // Saving it to the data manager
-            SmartDataManager.getInstance().readProductsFromJsonString(productsJson);
+            Database.getInstance().readProductsFromJsonString(productsJson);
         }
         else if(messageReceived.getMessageContent().startsWith(String.valueOf(GET_DISCOUNTS_REQUEST))){
             // Requesting the cart now

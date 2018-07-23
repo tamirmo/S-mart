@@ -1,11 +1,11 @@
 package smart.data;
 
-public class EmployeeDetails {
+public class Employee {
 	private int id;
 	private String email;
 	private String password;
 	
-	public EmployeeDetails(int id, String email, String password) {
+	public Employee(int id, String email, String password) {
 		this.id = id;
 		this.email = email;
 		this.password = password;

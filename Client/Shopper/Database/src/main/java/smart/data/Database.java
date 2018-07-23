@@ -6,59 +6,95 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
+import javax.lang.model.type.UnknownTypeException;
+
 import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
-public class SmartDataManager {
-
-	// Singleton:
-	private static SmartDataManager instance;
-	public static SmartDataManager getInstance(){
-		if (instance == null){
-			instance = new SmartDataManager();
-		}
-
-		return instance;
-	}
-
-	// The names of the data files as saved on the server machine
-	public static final String DEPARTMENTS_FILE = "departments.json";
-	public static final String PRODUCTS_FILE = "products.json";
-	public static final String SHOPPERS_FILE = "shoppers.json";
-	public static final String EMPLOYEES_FILE = "employees.json";
-	public static final String DISCOUNTS_FILE = "discounts.json";
+public class Database {
+	
+	// Server data types
+		private static final String DEPARTMENT = "department";
+		private static final String PRODUCT = "product";
+		private static final String SHOPPER = "shopper";
+		private static final String EMPLOYEE = "employee";
+		private static final String DISCOUNT = "discount";
 
 	// Types for all data loaded and written to JSON:
 	private static final Type DEPARTMENT_TYPE = new TypeToken<List<Department>>()
 	{}.getType();
-	private static final Type EMPLOYEES_DETAILS_TYPE = new TypeToken<List<EmployeeDetails>>()
+	private static final Type EMPLOYEES_DETAILS_TYPE = new TypeToken<List<Employee>>()
 	{}.getType();
 	private static final Type PRODUCT_TYPE = new TypeToken<List<Product>>()
 	{}.getType();
-	private static final Type SHOPPER_DETAILS_TYPE = new TypeToken<List<ShopperDetails>>()
+	private static final Type SHOPPER_DETAILS_TYPE = new TypeToken<List<Shopper>>()
 	{}.getType();
 	private static final Type CART_TYPE = new TypeToken<List<CartItem>>()
 	{}.getType();
 	private static final Type DISCOUNT_TYPE = new TypeToken<List<Discount>>()
 	{}.getType();
 
+		
+	// Exception messages
+	private static final String UNKNOWN_TYPE_EXCEPTION = "Database couldn't identify this dataType";
+	
 	public static final int MAP_ROWS_COUNT = 14;
 	public static final int MAP_COLS_COUNT = 10;
 
 	// Private members:
 	private List<Department> departments;
 	private List<Product> products;
-	private List<ShopperDetails> shoppers;
-	private List<EmployeeDetails> employees;
-	private List<Discount> discounts;
-
+	private List<Shopper> shoppers;
+	private List<Employee> employees;
+	private List<Discount> discounts;	
+	
+	
+	// Reads a list of JSONs from a String
+	public void readListFromString(String fileContent, String dataType) throws Exception {
+		Gson gson = new Gson();
+		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+		Type type;
+		
+		switch(dataType.toLowerCase()) {
+			case DEPARTMENT: 
+				type = DEPARTMENT_TYPE;
+				departments = gson.fromJson(jsonReader, type);
+				break;
+			case PRODUCT: 
+				type = PRODUCT_TYPE;
+				products = gson.fromJson(jsonReader, type);
+				break;
+			case SHOPPER: 
+				type = SHOPPER_DETAILS_TYPE;
+				shoppers = gson.fromJson(jsonReader, type);
+				break;
+			case EMPLOYEE: 
+				type = EMPLOYEES_DETAILS_TYPE;
+				employees = gson.fromJson(jsonReader, type);
+				break;
+			case DISCOUNT: 
+				type = DISCOUNT_TYPE;
+				discounts =  gson.fromJson(jsonReader, type);
+				break;
+			default:
+				type = null;
+				break;
+		}
+		jsonReader.close();
+		
+		if(type == null)
+			throw new Exception(UNKNOWN_TYPE_EXCEPTION + dataType);
+	}	
+	
 	// Getters:
-
 	public List<Department> getDepartments() {
 		return departments;
 	}
@@ -67,11 +103,11 @@ public class SmartDataManager {
 		return products;
 	}
 
-	public List<ShopperDetails> getShopperDetails() {
+	public List<Shopper> getShopperDetails() {
 		return shoppers;
 	}
 
-	public List<EmployeeDetails> getEmployees() {
+	public List<Employee> getEmployees() {
 		return employees;
 	}
 
@@ -83,7 +119,6 @@ public class SmartDataManager {
 	 * @return String, The discounts for the user with the given id as Json string.
 	 */
 	public String getAllShopperDiscounts(long shopperId){
-
 		List<Discount> userDiscounts = new ArrayList<>();
 
 		if(discounts != null) {
@@ -145,10 +180,10 @@ public class SmartDataManager {
 	 * @param shopperId long, The id of the shopper to look for
 	 * @return ShooperDetails, The details of the shopper
 	 */
-	public ShopperDetails getShopperDetailsById(long shopperId){
-		ShopperDetails foundDetails = null;
+	public Shopper getShopperDetailsById(long shopperId){
+		Shopper foundDetails = null;
 
-		for(ShopperDetails shopperDetails : shoppers){
+		for(Shopper shopperDetails : shoppers){
 			if(shopperDetails.getId() == shopperId){
 				foundDetails = shopperDetails;
 			}
@@ -162,10 +197,10 @@ public class SmartDataManager {
 	 * @param employeeId long, The id of the employee to look for
 	 * @return EmployeeDetails, The details of the employee
 	 */
-	public EmployeeDetails getEmployeeDetailsById(long employeeId){
-		EmployeeDetails foundDetails = null;
+	public Employee getEmployeeDetailsById(long employeeId){
+		Employee foundDetails = null;
 
-		for(EmployeeDetails employeeDetails : employees){
+		for(Employee employeeDetails : employees){
 			if(employeeDetails.getId() == employeeId){
 				foundDetails = employeeDetails;
 			}
@@ -190,15 +225,15 @@ public class SmartDataManager {
 		return data;
 	}
 
-	public List<ShopperDetails> readShoppersDetailsFromFile(String fileName){
-		List<ShopperDetails> data = readListFromFile(fileName, SHOPPER_DETAILS_TYPE);
+	public List<Shopper> readShoppersDetailsFromFile(String fileName){
+		List<Shopper> data = readListFromFile(fileName, SHOPPER_DETAILS_TYPE);
 		shoppers = data;
 
 		return data;
 	}
 
-	public List<EmployeeDetails> readEmployeeDetailsFromFile(String fileName){
-		List<EmployeeDetails> data = readListFromFile(fileName, EMPLOYEES_DETAILS_TYPE);
+	public List<Employee> readEmployeeDetailsFromFile(String fileName){
+		List<Employee> data = readListFromFile(fileName, EMPLOYEES_DETAILS_TYPE);
 		employees = data;
 
 		return data;
@@ -234,17 +269,17 @@ public class SmartDataManager {
 
 	// Methods for reading lists of data from json string (given in udp from the server):
 
-	public List<ShopperDetails> readShoppersDetailsFromJsonString(String jsonContent){
+	public List<Shopper> readShoppersDetailsFromJsonString(String jsonContent){
 		Gson gson = new Gson();
-		List<ShopperDetails> shoppers = gson.fromJson(jsonContent, SHOPPER_DETAILS_TYPE);
+		List<Shopper> shoppers = gson.fromJson(jsonContent, SHOPPER_DETAILS_TYPE);
 		this.shoppers = shoppers;
 
 		return shoppers;
 	}
 
-	public List<EmployeeDetails> readEmployeesDetailsFromJsonString(String jsonContent){
+	public List<Employee> readEmployeesDetailsFromJsonString(String jsonContent){
 		Gson gson = new Gson();
-		List<EmployeeDetails> employees = gson.fromJson(jsonContent, EMPLOYEES_DETAILS_TYPE);
+		List<Employee> employees = gson.fromJson(jsonContent, EMPLOYEES_DETAILS_TYPE);
 		this.employees = employees;
 
 		return employees;
@@ -321,12 +356,12 @@ public class SmartDataManager {
 
 	// Methods for saving lists of data to json file:
 
-	public void saveShoppersDetailsToFile(String fileName, List<ShopperDetails> shoppersDetails){
+	public void saveShoppersDetailsToFile(String fileName, List<Shopper> shoppersDetails){
 		saveListToFile(fileName, shoppersDetails, SHOPPER_DETAILS_TYPE);
 		this.shoppers = shoppersDetails;
 	}
 
-	public void saveEmployeesDetailsToFile(String fileName, List<EmployeeDetails> employeesDetails){
+	public void saveEmployeesDetailsToFile(String fileName, List<Employee> employeesDetails){
 		saveListToFile(fileName, employeesDetails, EMPLOYEES_DETAILS_TYPE);
 		this.employees = employeesDetails;
 	}

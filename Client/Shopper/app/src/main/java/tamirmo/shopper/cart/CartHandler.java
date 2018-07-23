@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import smart.data.CartItem;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.connection.ICartUpdated;
 import tamirmo.shopper.connection.ServerConnectionHandler;
 
@@ -37,7 +37,7 @@ public class CartHandler {
     }
 
     public void setCart(String jsonCart){
-        cart = SmartDataManager.getInstance().readCartFromJsonString(jsonCart);
+        cart = Database.getInstance().readCartFromJsonString(jsonCart);
 
         // Placing the cart items in their place in the map matrix
         for(CartItem cartItem: cart) {
@@ -52,12 +52,12 @@ public class CartHandler {
     private CartHandler(){
         iCartUpdatedListeners = new ArrayList<>();
         onItemPickedListeners = new ArrayList<>();
-        cartItemsAsMatrix = new CartItem[SmartDataManager.MAP_ROWS_COUNT][SmartDataManager.MAP_COLS_COUNT];
+        cartItemsAsMatrix = new CartItem[Database.MAP_ROWS_COUNT][Database.MAP_COLS_COUNT];
     }
 
     public CartItem getItemByMapPosition(int position){
-        int row = position / SmartDataManager.MAP_COLS_COUNT;
-        int column = position % SmartDataManager.MAP_COLS_COUNT;
+        int row = position / Database.MAP_COLS_COUNT;
+        int column = position % Database.MAP_COLS_COUNT;
 
         return cartItemsAsMatrix[row][column];
     }
@@ -212,7 +212,7 @@ public class CartHandler {
      * Updates the cart on the server from the current cart held here (sent as Json string).
      */
     private void updateServerCart(){
-        String cartJson = SmartDataManager.getInstance().getCartAsJson(cart);
+        String cartJson = Database.getInstance().getCartAsJson(cart);
         ServerConnectionHandler.getInstance().sendCartUpdate(cartJson);
     }
 
@@ -222,7 +222,7 @@ public class CartHandler {
      */
     public void clearCart(){
         cart.clear();
-        cartItemsAsMatrix = new CartItem[SmartDataManager.MAP_ROWS_COUNT][SmartDataManager.MAP_COLS_COUNT];
+        cartItemsAsMatrix = new CartItem[Database.MAP_ROWS_COUNT][Database.MAP_COLS_COUNT];
         nextCartItem = null;
         fireCartUpdated();
     }

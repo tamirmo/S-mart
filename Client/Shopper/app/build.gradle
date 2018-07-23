@@ -25,5 +25,5 @@ dependencies {
     compile 'com.android.support:design:27.1.1'
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile project(':communication')
-    compile project(':SmartData')
+    compile project(':Database')
 }

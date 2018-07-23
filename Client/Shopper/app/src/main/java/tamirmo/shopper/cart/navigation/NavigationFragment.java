@@ -11,7 +11,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import smart.data.CartItem;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.R;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.cart.CartItemsFragment;
@@ -58,7 +58,7 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
         // Refreshing for the first time
         refreshNextCartItem();
 
-        mapGrid.setNumColumns(SmartDataManager.MAP_COLS_COUNT);
+        mapGrid.setNumColumns(Database.MAP_COLS_COUNT);
 
         cartItemsFragment = new CartItemsFragment();
         // The fragment is a receipt when moving from this fragment

@@ -12,7 +12,7 @@ import java.util.List;
 
 import smart.data.CartItem;
 import smart.data.Product;
-import smart.data.SmartDataManager;
+import smart.data.Database;
 import tamirmo.shopper.R;
 import tamirmo.shopper.cart.CartHandler;
 import tamirmo.shopper.cart.ProductAdapterUtilities;
@@ -36,7 +36,7 @@ public class DepartmentProductsAdapter extends ArrayAdapter<Product> implements 
         departmentProducts = new ArrayList<>();
 
         // Getting all products
-        List<Product> products = SmartDataManager.getInstance().getProducts();
+        List<Product> products = Database.getInstance().getProducts();
 
         // Going over the products, pulling only the ones in the chosen department:
         for(Product product: products){
