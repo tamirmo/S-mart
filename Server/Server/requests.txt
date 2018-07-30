@@ -1,0 +1,19 @@
+ "help" - Displays all server requests
+ 
+ "login E_MAIL PASSWORD" - Logging into the server
+ 	- E_MAIL : string
+ 	- PASSWORD : string
+ 
+ "get ITEM_TYPE" - Returns all items of a specific type
+ 	- ITEM_TYPE : {"departments":string, "products":string, "discounts":string}
+ 	
+ "set CREDENTIAL_TYPE CREDENTIAL_VALUE" - Sets a user credentials
+	- CREDENTIAL_TYPE :
+ 		- shopper CREDENTIAL_TYPE : {"email":string, "password":string, "card":string}
+ 		- employee CREDENTIAL_TYPE: {"email":string, "password":string}
+ 	- CREDENTIAL_VALUE : string
+ 	
+ "send RECEIPT" - Sends a receipt to its owner E-MAIL, and a copy to the company E-MAIL   
+ 	- RECEIPT : string
+ 
+ "logout" - Logout from all connections with the server

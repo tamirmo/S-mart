@@ -1,18 +1,24 @@
 package Application;
-import BusinessLogic.ServerManager;
 
 // Starts S-Mart Server
 public class Program {
+	// Server's information on which it will be built
 	private static final int SERVER_PORT = 5001;
-	private static final String SERVER_NAME = "S-Mart";
+	private static final String SERVER_NAME = "S-Mart"; 
 	
-	private static ServerManager serverManager;
+	// A server manager to manage a server
+	private static ServerManager manager;
 	
+	// Program starts here
 	public static void main(String[] args) {		
-		// Creates a server manger to manage server
-		serverManager = new ServerManager(SERVER_NAME, SERVER_PORT);
-		
-		// Command the server manager to start S-Mart server
-		serverManager.start();
+		try {
+			// Creates a serverManger to manage a server
+			manager = new ServerManager(SERVER_NAME, SERVER_PORT);
+			
+			// Starts the serverManager for work
+			manager.start();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }

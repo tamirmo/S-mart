@@ -46,14 +46,15 @@ public class Database {
 
 	// Args amount of each Type
 	private static final int DEPARTMENT_ARGS_AMOUNT = 2;
-	private static final int EMPLOYEE_ARGS_AMOUNT = 3;
+	private static final int EMPLOYEE_ARGS_AMOUNT = 4; // +1 because we want to delete all other data that might be after command args
 	private static final int PRODUCT_ARGS_AMOUNT = 8;
-	private static final int SHOPPER_ARGS_AMOUNT = 4;
+	private static final int SHOPPER_ARGS_AMOUNT = 5; // +1 because we want to delete all other data that might be after command args
 	private static final int DISCOUNT_ARGS_AMOUNT = 4;
 
 	// Exception messages
 	private static final String UNKNOWN_TYPE_EXCEPTION = "Database couldn't identify this data type";
 	private static final String PARSING_EXCEPTION = "Database couldn't parse the args";
+	private static final String LOCATION_EXCEPTION = "Database couldn't find an item in the index";
 
 	// Sizes of the digital map as a matrix
 	public static final int MAP_ROWS_COUNT = 14;
@@ -65,10 +66,16 @@ public class Database {
 	private List<Shopper> shoppers;
 	private List<Employee> employees;
 	private List<Discount> discounts;
+	private String className;
+	
+	public Database(){
+		// Gets class name for future exceptions messages
+		className = new Object(){}.getClass().getEnclosingClass().getSimpleName();
+	}
 
-	// Loads a list of departments as JSONs from a String
-	public void loadDepartmentsFromString(String fileContent) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+	// Loads a list of departments from a JSON string
+	public void loadDepartmentsFromString(String content) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(content));
 		Gson gson = new Gson();
 
 		departments = gson.fromJson(jsonReader, DEPARTMENT_TYPE);
@@ -76,9 +83,9 @@ public class Database {
 		jsonReader.close();
 	}
 
-	// Loads a list of products as JSONs from a String
-	public void loadProductsFromString(String fileContent) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+	// Loads a list of products from a JSON string
+	public void loadProductsFromString(String content) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(content));
 		Gson gson = new Gson();
 
 		products = gson.fromJson(jsonReader, PRODUCT_TYPE);
@@ -86,9 +93,9 @@ public class Database {
 		jsonReader.close();
 	}
 
-	// Loads a list of shoppers as JSONs from a String
-	public void loadShoppersFromString(String fileContent) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+	// Loads a list of shoppers from a JSON string
+	public void loadShoppersFromString(String content) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(content));
 		Gson gson = new Gson();
 
 		shoppers = gson.fromJson(jsonReader, SHOPPER_TYPE);
@@ -96,9 +103,9 @@ public class Database {
 		jsonReader.close();
 	}
 
-	// Loads a list of employees as JSONs from a String
-	public void loadEmployeesFromString(String fileContent) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+	// Loads a list of employees from a JSON string
+	public void loadEmployeesFromString(String content) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(content));
 		Gson gson = new Gson();
 
 		employees = gson.fromJson(jsonReader, EMPLOYEE_TYPE);
@@ -106,74 +113,89 @@ public class Database {
 		jsonReader.close();
 	}
 
-	// Loads a list of discounts as JSONs from a String
-	public void loadDiscountsFromString(String fileContent) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(fileContent));
+	// Loads a list of discounts from a JSON string
+	public void loadDiscountsFromString(String content) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(content));
 		Gson gson = new Gson();
 
 		discounts = gson.fromJson(jsonReader, DISCOUNT_TYPE);
 
 		jsonReader.close();
 	}
-
+	
 	// Returns a string of all departments data
 	public String getDepartmentsString() {
 		StringBuilder string = new StringBuilder();
 		int size = departments.size();
+		int counter = 0;
 
-		for (int i = 0; i < size; i++)
-			string.append(departments.get(i) + "\n");
+		for (int i = 0; i < size; i++) {
+			string.append(counter + " : " + departments.get(i) + "\n");
+			counter++;
+		}
 
 		return string.toString();
 	}
-
+	
 	// Returns a string of all products data
 	public String getProductsString() {
 		StringBuilder string = new StringBuilder();
 		int size = products.size();
+		int counter = 0;
 
-		for (int i = 0; i < size; i++)
-			string.append(products.get(i) + "\n");
+		for (int i = 0; i < size; i++) {
+			string.append(counter + " : " + products.get(i) + "\n");
+			counter++;
+		}
 
 		return string.toString();
 	}
-
+	
 	// Returns a string of all shoppers data
 	public String getShoppersString() {
 		StringBuilder string = new StringBuilder();
 		int size = shoppers.size();
-
-		for (int i = 0; i < size; i++)
-			string.append(shoppers.get(i) + "\n");
+		int counter = 0;
+		
+		for (int i = 0; i < size; i++) {
+			string.append(counter + " : " + shoppers.get(i) + "\n");
+			counter++;
+		}
 
 		return string.toString();
 	}
-
+	
 	// Returns a string of all employees data
 	public String getEmployeesString() {
 		StringBuilder string = new StringBuilder();
 		int size = employees.size();
-
-		for (int i = 0; i < size; i++)
-			string.append(employees.get(i) + "\n");
+		int counter = 0;
+		
+		for (int i = 0; i < size; i++) {
+			string.append(counter + " : " + employees.get(i) + "\n");
+			counter++;
+		}
 
 		return string.toString();
 	}
-
+	
 	// Returns a string of all discounts data
 	public String getDiscountsString() {
 		StringBuilder string = new StringBuilder();
 		int size = discounts.size();
+		int counter = 0;
 
-		for (int i = 0; i < size; i++)
-			string.append(discounts.get(i) + "\n");
+		for (int i = 0; i < size; i++) {
+			string.append(counter + " : "+discounts.get(i) + "\n");
+			counter++;
+		}
 
 		return string.toString();
 	}
-
-	// Adds a department to the database
-	public void addDepartment(String args) throws Exception {
-		String argsParts[] = args.split(" ", DEPARTMENT_ARGS_AMOUNT);
+	
+	// Creates a department from a string
+	private Department processDepartmentString(String itemArgs) throws Exception{
+		String argsParts[] = itemArgs.split(" ", DEPARTMENT_ARGS_AMOUNT);
 		String name;
 		int id;
 		
@@ -181,15 +203,15 @@ public class Database {
 			id = Integer.parseInt(argsParts[0]);
 			name = argsParts[1];
 		}catch (Exception e) {
-			throw new Exception(PARSING_EXCEPTION + " : " + args);
+			throw new Exception(PARSING_EXCEPTION + " : " + itemArgs);
 		}
 		
-		departments.add(new Department(id, name));
+		return new Department(id, name);
 	}
-
-	// Adds a product to the database
-	public void addProduct(String args) throws Exception {
-		String argsParts[] = args.split(" ", PRODUCT_ARGS_AMOUNT);
+	
+	// Creates a product from a string
+	private Product processProductString(String itemArgs) throws Exception{
+		String argsParts[] = itemArgs.split(" ", PRODUCT_ARGS_AMOUNT);
 		String name;
 		long productId;
 		int departmentId, locationX, locationY;
@@ -205,7 +227,7 @@ public class Database {
 			locationY = Integer.parseInt(argsParts[4]);
 			amountPerUnit = Double.parseDouble(argsParts[5]);
 		} catch (Exception e) {
-			throw new Exception(PARSING_EXCEPTION + " : " + args);
+			throw new Exception(PARSING_EXCEPTION + " : " + itemArgs);
 		}
 
 		switch (argsParts[6].toLowerCase()) {
@@ -224,14 +246,13 @@ public class Database {
 		default:
 			throw new Exception(UNKNOWN_TYPE_EXCEPTION + " : " + argsParts[6]);
 		}
-
-		products.add(new Product(productId, name, departmentId, pricePerUnit, locationX, locationY, amountPerUnit,
-				unitType));
+		
+		return new Product(productId, name, departmentId, pricePerUnit, locationX, locationY, amountPerUnit, unitType);
 	}
-
-	// Adds a shopper to the database
-	public void addShopper(String args) throws Exception {
-		String argsParts[] = args.split(" ", SHOPPER_ARGS_AMOUNT+1); // +1 because we want to delete all other data that might after command args
+	
+	// Creates a shopper from a string
+	private Shopper processShopperString(String itemArgs) throws Exception{
+		String argsParts[] = itemArgs.split(" ", SHOPPER_ARGS_AMOUNT);
 		long id; 
 		String email, password, creditCard;
 		
@@ -241,15 +262,15 @@ public class Database {
 			password = argsParts[2];
 			creditCard = argsParts[3];
 		}catch (Exception e) {
-			throw new Exception(PARSING_EXCEPTION + " : " + args);
+			throw new Exception(PARSING_EXCEPTION + " : " + itemArgs);
 		}
 		
-		shoppers.add(new Shopper(id, email, password, creditCard));	
+		return new Shopper(id, email, password, creditCard);
 	}
-
-	// Adds an employee to the database
-	public void addEmployee(String args) throws Exception {
-		String argsParts[] = args.split(" ", EMPLOYEE_ARGS_AMOUNT+1); // +1 because we want to delete all other data that might after command args
+	
+	// Creates an employee from a string
+	private Employee processEmployeeString(String itemArgs) throws Exception{
+		String argsParts[] = itemArgs.split(" ", EMPLOYEE_ARGS_AMOUNT);
 		int id; 
 		String email, password;
 		
@@ -258,15 +279,15 @@ public class Database {
 			email = argsParts[1];
 			password = argsParts[2];
 		}catch (Exception e) {
-			throw new Exception(PARSING_EXCEPTION + " : " + args);
+			throw new Exception(PARSING_EXCEPTION + " : " + itemArgs);
 		}
-
-		employees.add(new Employee(id, email, password));
+		
+		return new Employee(id, email, password);
 	}
-
-	// Adds a discount to the database
-	public void addDiscount(String args) throws Exception {
-		String argsParts[] = args.split(" ", DISCOUNT_ARGS_AMOUNT);
+	
+	// Creates a discount from a string
+	private Discount processDiscountString(String itemArgs) throws Exception{
+		String argsParts[] = itemArgs.split(" ", DISCOUNT_ARGS_AMOUNT);
 		long productId;
 		double normalPrice, discountedPrice;
 		int shopperId;
@@ -280,11 +301,176 @@ public class Database {
 			else
 				shopperId = Integer.parseInt(argsParts[3]);
 		}catch (Exception e) {
-			throw new Exception(PARSING_EXCEPTION + " : " + args);
+			throw new Exception(PARSING_EXCEPTION + " : " + itemArgs);
 		}
 		
-		discounts.add(new Discount(productId, normalPrice, discountedPrice, shopperId));
+		return new Discount(productId, normalPrice, discountedPrice, shopperId);
 	}
+	
+	// Adds a department to the database
+	public void addDepartment(String itemArgs) throws Exception {
+		Department item = processDepartmentString(itemArgs);
+		
+		departments.add(item);
+	}
+	
+	// Adds a product to the database
+	public void addProduct(String itemArgs) throws Exception {
+		Product item = processProductString(itemArgs);
+		
+		products.add(item);
+	}
+	
+	// Adds a shopper to the database
+	public void addShopper(String itemArgs) throws Exception {
+		Shopper item = processShopperString(itemArgs);
+		
+		shoppers.add(item);	
+	}
+	
+	// Adds an employee to the database
+	public void addEmployee(String itemArgs) throws Exception {
+		Employee item = processEmployeeString(itemArgs);
+
+		employees.add(item);
+	}
+
+	// Adds a discount to the database
+	public void addDiscount(String itemArgs) throws Exception {
+		Discount item = processDiscountString(itemArgs);
+		
+		discounts.add(item);
+	}
+
+	// Parse item number from a string
+	private int parseItemNumber(String itemNumber) throws Exception {
+		try {
+			return Integer.parseInt(itemNumber);
+		} catch (Exception e) {
+			throw new Exception(PARSING_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
+	// Edits a department from the database
+	public void editDepartment(String itemNumber, String itemArgs) throws Exception {
+		Department item = processDepartmentString(itemArgs);
+		int index = parseItemNumber(itemNumber);
+	
+		try {
+			// Replaces an item
+			departments.set(index, item);
+		}catch(IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + index);
+		}
+	}
+	
+	// Edits a product from the database
+	public void editProduct(String itemNumber, String itemArgs) throws Exception {
+		Product item = processProductString(itemArgs);
+		int index = parseItemNumber(itemNumber);
+
+		try {
+			// Replaces an item
+			products.set(index, item);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + index);
+		}
+	}
+
+	// Edits a shopper from the database
+	public void editShopper(String itemNumber, String itemArgs) throws Exception {
+		Shopper item = processShopperString(itemArgs);
+		int index = parseItemNumber(itemNumber);
+
+		try {
+			// Replaces an item
+			shoppers.set(index, item);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + index);
+		}
+	}
+
+	// Edits an employee from the database
+	public void editEmployee(String itemNumber, String itemArgs) throws Exception {
+		Employee item = processEmployeeString(itemArgs);
+		int index = parseItemNumber(itemNumber);
+
+		try {
+			// Replaces an item
+			employees.set(index, item);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + index);
+		}
+	}
+
+	// Edits discount from the database
+	public void editDiscount(String itemNumber, String itemArgs) throws Exception {
+		Discount item = processDiscountString(itemArgs);
+		int index = parseItemNumber(itemNumber);
+
+		try {
+			// Replaces an item
+			discounts.set(index, item);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + index);
+		}
+	}
+	
+	// Removes a department from the database
+	public void removeDepartment(String itemNumber) throws Exception {
+		int index = parseItemNumber(itemNumber);
+		
+		try {
+			departments.remove(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
+	// Removes a product from the database
+	public void removeProduct(String itemNumber) throws Exception {
+		int index = parseItemNumber(itemNumber);
+		
+		try {
+			products.remove(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
+	// Removes a shopper from the database
+	public void removeShopper(String itemNumber) throws Exception {
+		int index = parseItemNumber(itemNumber);
+		
+		try {
+			shoppers.remove(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
+	// Removes an employee
+	public void removeEmployee(String itemNumber) throws Exception {
+		int index = parseItemNumber(itemNumber);
+		
+		try {
+			employees.remove(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
+	// Removes a discount
+	public void removeDiscount(String itemNumber) throws Exception {
+		int index = parseItemNumber(itemNumber);
+		
+		try {
+			discounts.remove(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new Exception(LOCATION_EXCEPTION + " : " + itemNumber);
+		}
+	}
+	
 
 	
 	
@@ -298,7 +484,62 @@ public class Database {
 	
 	
 	
-	public List<Department> getDepartments() {
+	
+	
+	
+	
+	
+	
+	
+	// Returns a JSON string of all departments data
+	public String getDepartmentsJsonString() {
+		Gson gson = new Gson();
+
+		return gson.toJson(departments, DEPARTMENT_TYPE);
+	}
+
+	// Returns a JSON string of all products data
+	public String getProductsJsonString() {
+			Gson gson = new Gson();
+			
+		return gson.toJson(products, PRODUCT_TYPE);
+	}
+	
+	// Returns a JSON string of all discounts data
+	public String getDiscountsJsonString() {
+		Gson gson = new Gson();
+		
+		return gson.toJson(discounts, DISCOUNT_TYPE);
+	}
+	
+	// Returns a JSON string of all shoppers data
+	public String getShoppersJsonString() {
+		Gson gson = new Gson();
+		
+		return gson.toJson(shoppers, SHOPPER_TYPE);
+	}
+	
+	// Returns a JSON string of all employees data
+	public String getEmployeesJsonString() {
+		Gson gson = new Gson();
+		
+		return gson.toJson(employees, EMPLOYEE_TYPE);
+	}
+	
+	// Exits Database
+	public void exit() {
+		// Just in case we will want something special like print className
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*public List<Department> getDepartments() {
 		return departments;
 	}
 
@@ -325,7 +566,7 @@ public class Database {
 	 * @param shopperId long, The id of the shopper to apply only the discounts with
 	 *                  this id or general id.
 	 * @return String, The discounts for the user with the given id as Json string.
-	 */
+	 
 	public String getAllShopperDiscounts(long shopperId) {
 		List<Discount> userDiscounts = new ArrayList<>();
 
@@ -352,7 +593,7 @@ public class Database {
 	 * 
 	 * @param fileName String, The name of the file to read
 	 * @return String, The content of the json file
-	 */
+	 
 	public String readCartFromFile(String fileName) {
 		String line = null;
 		try {
@@ -371,7 +612,7 @@ public class Database {
 	 * 
 	 * @param fileName String, The path to save
 	 * @param cartJson String, The cart as Json
-	 */
+	 
 	public void saveCartToFile(String fileName, String cartJson) {
 		BufferedWriter writer;
 		try {
@@ -384,168 +625,7 @@ public class Database {
 		}
 
 	}
-
-	/**
-	 * Pulling the details of the shopper with the given id.
-	 * 
-	 * @param shopperId long, The id of the shopper to look for
-	 * @return ShooperDetails, The details of the shopper
-	 */
-	public Shopper getShopperDetailsById(long shopperId) {
-		Shopper foundDetails = null;
-
-		for (Shopper shopperDetails : shoppers) {
-			if (shopperDetails.getId() == shopperId) {
-				foundDetails = shopperDetails;
-			}
-		}
-
-		return foundDetails;
-	}
-
-	/**
-	 * Pulling the details of the employee with the given id.
-	 * 
-	 * @param employeeId long, The id of the employee to look for
-	 * @return EmployeeDetails, The details of the employee
-	 */
-	public Employee getEmployeeDetailsById(long employeeId) {
-		Employee foundDetails = null;
-
-		for (Employee employeeDetails : employees) {
-			if (employeeDetails.getId() == employeeId) {
-				foundDetails = employeeDetails;
-			}
-		}
-
-		return foundDetails;
-	}
-
-	// Methods for reading lists of data from json file:
-
-	public List<Department> readDepartmentsFromFile(String fileName) {
-		List<Department> data = readListFromFile(fileName, DEPARTMENT_TYPE);
-		departments = data;
-
-		return data;
-	}
-
-	public List<Product> readProductsFromFile(String fileName) {
-		List<Product> data = readListFromFile(fileName, PRODUCT_TYPE);
-		products = data;
-
-		return data;
-	}
-
-	public List<Shopper> readShoppersDetailsFromFile(String fileName) {
-		List<Shopper> data = readListFromFile(fileName, SHOPPER_TYPE);
-		shoppers = data;
-
-		return data;
-	}
-
-	public List<Employee> readEmployeeDetailsFromFile(String fileName) {
-		List<Employee> data = readListFromFile(fileName, EMPLOYEE_TYPE);
-		employees = data;
-
-		return data;
-	}
-
-	public List<Discount> readDiscountsFromFile(String fileName) {
-		List<Discount> data = readListFromFile(fileName, DISCOUNT_TYPE);
-		discounts = data;
-
-		return data;
-	}
-
-	/**
-	 * This method creates a Json String from the given discounts
-	 * 
-	 * @param discounts List<Discount>, The discounts to convert
-	 * @return String, A Json string with the discounts
-	 */
-	public String getDiscountsAsJson(List<Discount> discounts) {
-		Gson gson = new Gson();
-		return gson.toJson(discounts, DISCOUNT_TYPE);
-	}
-
-	/**
-	 * This method creates a Json String from the given cart
-	 * 
-	 * @param cart List<CartItem>, The items in the cart
-	 * @return String, A Json string with the cart items
-	 */
-	public String getCartAsJson(List<CartItem> cart) {
-		Gson gson = new Gson();
-		return gson.toJson(cart, CART_TYPE);
-	}
-
-	// Methods for reading lists of data from json string (given in udp from the
-	// server):
-
-	public List<Shopper> readShoppersDetailsFromJsonString(String jsonContent) {
-		Gson gson = new Gson();
-		List<Shopper> shoppers = gson.fromJson(jsonContent, SHOPPER_TYPE);
-		this.shoppers = shoppers;
-
-		return shoppers;
-	}
-
-	public List<Employee> readEmployeesDetailsFromJsonString(String jsonContent) {
-		Gson gson = new Gson();
-		List<Employee> employees = gson.fromJson(jsonContent, EMPLOYEE_TYPE);
-		this.employees = employees;
-
-		return employees;
-	}
-
-	public List<Product> readProductsFromJsonString(String jsonContent) {
-
-		Gson gson = new Gson();
-		List<Product> products = gson.fromJson(jsonContent, PRODUCT_TYPE);
-		this.products = products;
-		return products;
-	}
-
-	public List<Department> readDepartmentsFromJsonString(String jsonContent) {
-
-		Gson gson = new Gson();
-		List<Department> departments = gson.fromJson(jsonContent, DEPARTMENT_TYPE);
-		this.departments = departments;
-		return departments;
-	}
-
-	/**
-	 * Reading discounts from a json string and updating the products with the
-	 * discounted price.
-	 * 
-	 * @param jsonContent String, The json string containing the discounts.
-	 * @return List<Discount>, The discounts from the json.
-	 */
-	public List<Discount> readDiscountsFromJsonString(String jsonContent) {
-
-		Gson gson = new Gson();
-		List<Discount> discounts = gson.fromJson(jsonContent, DISCOUNT_TYPE);
-
-		if (discounts != null) {
-			// Setting Product objects for each discount
-			for (Discount discount : discounts) {
-				for (Product product : products) {
-					if (discount.getProductId() == product.getProductId()) {
-						discount.setProduct(product);
-						// Updating the price of the product for this discount
-						product.setPricePerUnit(discount.getDiscountedPrice());
-					}
-				}
-			}
-		} else {
-			discounts = null;
-		}
-
-		this.discounts = discounts;
-		return discounts;
-	}
-
+	
 	public List<CartItem> readCartFromJsonString(String jsonContent) {
 
 		Gson gson = new Gson();
@@ -566,106 +646,5 @@ public class Database {
 
 		return cart;
 	}
-
-	// Methods for saving lists of data to json file:
-
-	public void saveShoppersDetailsToFile(String fileName, List<Shopper> shoppersDetails) {
-		saveListToFile(fileName, shoppersDetails, SHOPPER_TYPE);
-		this.shoppers = shoppersDetails;
-	}
-
-	public void saveEmployeesDetailsToFile(String fileName, List<Employee> employeesDetails) {
-		saveListToFile(fileName, employeesDetails, EMPLOYEE_TYPE);
-		this.employees = employeesDetails;
-	}
-
-	public void saveProductsToFile(String fileName, List<Product> products) {
-		saveListToFile(fileName, products, PRODUCT_TYPE);
-		this.products = products;
-	}
-
-	public void saveDepartmentsToFile(String fileName, List<Department> departments) {
-		saveListToFile(fileName, departments, DEPARTMENT_TYPE);
-		this.departments = departments;
-	}
-
-	public void saveDiscountsToFile(String fileName, List<Discount> discounts) {
-		saveListToFile(fileName, discounts, DISCOUNT_TYPE);
-		this.discounts = discounts;
-	}
-
-	public String getDepartmentsJsonString() {
-		String departmentsJson = null;
-		if (departments != null) {
-			Gson gson = new Gson();
-			departmentsJson = gson.toJson(departments, DEPARTMENT_TYPE);
-		}
-
-		return departmentsJson;
-	}
-
-	public String getProductsJsonString() {
-		String productsJson = null;
-		if (products != null) {
-			Gson gson = new Gson();
-			productsJson = gson.toJson(products, PRODUCT_TYPE);
-		}
-
-		return productsJson;
-	}
-
-	public String getDiscountsJsonString() {
-		String discountsJson = null;
-		if (discounts != null) {
-			Gson gson = new Gson();
-			discountsJson = gson.toJson(discounts, DISCOUNT_TYPE);
-		}
-
-		return discountsJson;
-	}
-
-	/**
-	 * Generic method for reading a list from json file.
-	 * 
-	 * @param fileName  String, The file to read the list from
-	 * @param itemsType Type, The type of object to read (List<T>)
-	 * @return A list of type T read from the file in the given path
-	 */
-	private <T> List<T> readListFromFile(String fileName, Type itemsType) {
-
-		Gson gson = new Gson();
-		JsonReader reader;
-		List<T> data = null;
-		try {
-			reader = new JsonReader(new FileReader(fileName));
-			data = gson.fromJson(reader, itemsType);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return data;
-	}
-
-	/**
-	 * Generic method for writing a list of objects to a json file
-	 * 
-	 * @param fileName  String, The file to write the list to
-	 * @param list      List<T>, The list to read
-	 * @param itemsType Type, The type of object to write (List<T>)
-	 */
-	private <T> void saveListToFile(String fileName, List<T> list, Type itemsType) {
-		Gson gson = new Gson();
-		String departmentsJson = gson.toJson(list, itemsType);
-
-		BufferedWriter writer;
-		try {
-			writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(departmentsJson);
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	*/
 }

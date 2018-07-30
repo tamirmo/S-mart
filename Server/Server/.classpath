@@ -6,7 +6,8 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/SmartData"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Communication"/>
+	<classpathentry kind="lib" path="C:/Users/Rotem/Desktop/Java Workspace/S-Mart/Server/Server/activation.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rotem/Desktop/Java Workspace/S-Mart/Server/Server/mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rotem/Desktop/Java Workspace/S-Mart/Server/Server/gson-2.8.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

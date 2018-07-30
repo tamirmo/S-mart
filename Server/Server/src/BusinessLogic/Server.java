@@ -2,822 +2,477 @@ package BusinessLogic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Scanner;
 
-import Database.DataKeeper;
+import Database.DatabaseManager;
 
+// Responsible to all requests/commands processing, and sends back responses
 public class Server {
-	// Excludes error messages from serverManager
-	private static final String ERROR_MESSAGE_TYPE = "error";
-	private static final String SYSTEM_MESSAGE_TYPE = "system";
+	// Class Files 
+	private static final String COMMAND_FILE = "commands.txt";
+	private static final String REQUEST_FILE = "requests.txt";
 	
-	// Messages
+	// Class Messages 
 	private static final String SUCCESSFUL_BUILD = "A server has been successfully created";
 	private static final String SERVER_NAME = "Server Name : ";
 	private static final String SERVER_IP = "IP Address : ";
 	private static final String SERVER_PORT = "Port Address : ";
 	private static final String HELP_RECOMMENDATION = "type \"help\" to see available commands";
-	private static final String PRINT_COMMANDS = "Available commands : ";
-	private static final String START_SERVER = "Starts the server";
-	private static final String VIEW_ITEMS = "Available items : ";
-	private static final String SUCCESSFUL_ADD_ITEM = "Item has been successfully added";
-	private static final String SUCCESSFUL_EDIT_ITEM = "Item has been successfully edited";
-	private static final String SUCCESSFUL_REMOVE_ITEM = "Item has been successfully removed";
-	private static final String PICK_ITEM = "Item has been picked up from a shelf";
-	private static final String RETURN_ITEM = "Item has been returned to a shelf";
-	private static final String PLACE_ITEM = "Item has been placed on a shelf";
-	private static final String SUCCESSFUL_EXIT = "A server has been successfully shut down";
+	private static final String SERVER_READY = "Waiting for requests...";
+	private static final String SERVER_EXIT = "A server has been successfully closed";
+	private static final String SUCCESSFUL_COMMAND = "Command executed successfully : ";
+	private static final String SHOPPERS_TYPE = "Shoppers : ";
+	private static final String EMPLOYEES_TYPE = "Employees : ";
+	private static final String ERROR_RESPONSE = "error";
+	private static final String SUCCESS_RESPONSE = "success";
+	private static final String END_OF_MESSAGE = "\nover"; // End of a stream
+	private static final String MESSAGE_DELIMITER = " ";
+	private static final String END_OF_FILE = "\\Z";
+	
+	// Class Exceptions
+	private static final String UNKNOWN_COMMAND_TYPE = "Unknown command type";
 	private static final String UNKNOWN_COMMAND = "Unknown command";
 	private static final String INVALID_COMMAND = "Invalid command";
+	private static final String UNKNOWN_REQUEST = "Unknown request";
+	private static final String INVALID_REQUEST = "Invalid request";
+	private static final String FILE_NOT_FOUND_EXCEPTION = "File not found";
+	private static final String UNKNONW_USER_TYPE = "Unknown user type";
+	private static final String UNKNONW_USER = "Unknown user";
+	private static final String EXCEPTION_DELIMITER = " : ";
 	
-	// String Part :
-	private static final int HEAD_PART = 0;
-	private static final int TAIL_PART = 1;
+	// Command Parts 
+	private static final int COMMAND_PARTS_AMOUNT = 2;
+	private static final int REQUEST_PARTS_AMOUNT = 2;
+	private static final int COMMAND_TYPE_PART = 0;
+	private static final int COMMAND_NAME_PART = 0;
+	private static final int REQUEST_NAME_PART = 0;
+	private static final int COMMAND_ARGS_PART = 1;
+	private static final int REQUEST_ARGS_PART = 1;
 	
-	// Command type :
+	// Command Types 
+	private static final String COMMAND_TYPE = "COMMAND";
+	private static final String REQUEST_TYPE = "REQUEST";
+	
+	// Command Names 
 	private static final String HELP_COMMAND = "help";
-	private static final String START_COMMAND = "start";
 	private static final String VIEW_COMMAND = "view";
 	private static final String ADD_COMMAND = "add";
 	private static final String EDIT_COMMAND = "edit";
 	private static final String REMOVE_COMMAND = "remove";
+	private static final String CHECK_COMMAND = "check";
 	private static final String PICK_COMMAND = "pick";
 	private static final String RETURN_COMMAND = "return";
 	private static final String PLACE_COMMAND = "place";
 	
-	// Server Files :
-	private static final String COMMAND_FILE = "commands.txt";
+	// Request Names 
+	private static final String HELP_REQUEST = "help";
+	private static final String LOGIN_REQUEST = "login";
+	private static final String GET_REQUEST = "get";
+	private static final String SET_REQUEST = "set";
+	private static final String SEND_REQUEST = "send";
+	private static final String LOGOUT_REQUEST = "logout";
 	
-	// Delimiter :
-	private static final String END_OF_FILE = "\\Z";
+	// Online user types
+	private static final String SHOPPER_USER = "SHOPPER";
+	private static final String EMPLOYEE_USER = "EMPLOYEE";
 	
-	/* Identities of users
-	*  It is used for distinguishing their requests in the console log*/ 
-	private static final String ADMIN = "admin";
-	private static final String SHOPPER= "shopper";
-	private static final String EMPLOYEE = "employee";
+	// An identity for the server
+	private static final String SERVER_USER = "SERVER";
+	private static final String SERVER_ID = "111";
 	
+	// Class Attributes
 	private String serverName;
-	private String serverIPAddress;
+	private String serverIP;
 	private int serverPort;
-	private boolean isAvailable;
+	private String className;
+	private DatabaseManager manager;
+
+	// Traces online users
+	// Map<K,V> : Key = userID, Value = userIP
+	private HashMap<String, String> onlineShoppers;
+	private HashMap<String, String> onlineEmployees;
 	
-	private ServerAdapter connection;
-	private DataKeeper dataKeeper;
-	
-	public Server(String serverName, String serverIPAddress ,int serverPort) {
-		isAvailable = false;
+	// Builds a server to process all requests/commands
+	public Server(String serverName, String serverIP ,int serverPort) throws Exception {
+		this.serverName = serverName;
+		this.serverIP = serverIP;
+		this.serverPort = serverPort;
+		
+		// Gets class name for future exceptions messages
+		className = new Object(){}.getClass().getEnclosingClass().getSimpleName();
+		
+		// Builds a database Manager to manage a database
+		manager = new DatabaseManager();
+		
+		onlineShoppers = new HashMap<>();
+		onlineEmployees = new HashMap<>();
+		
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.RESPONSE, SUCCESSFUL_BUILD);
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, SERVER_NAME + this.serverName);
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, SERVER_IP + this.serverIP);
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, SERVER_PORT + this.serverPort);
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, HELP_RECOMMENDATION);
+		Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, SERVER_READY);
+	}
+		
+	// Checks to see if it is an offline command, or online request
+	public String processCommandType(String userType, String userIP, String userID, String userMessage) {
+		String[] userMessageParts = userMessage.split(MESSAGE_DELIMITER, COMMAND_PARTS_AMOUNT);
+		String commandType, commandArgs = "", error = "", response = "";
 		
 		try {
-			this.serverName = serverName;
-			this.serverIPAddress = serverIPAddress;
-			this.serverPort = serverPort;
+			commandType = userMessageParts[COMMAND_TYPE_PART];
+			commandArgs = userMessageParts[COMMAND_ARGS_PART];
 			
-			dataKeeper = new DataKeeper();
-			
-			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_BUILD);
-			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SERVER_NAME + this.serverName);
-			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SERVER_IP + this.serverIPAddress);
-			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SERVER_PORT + this.serverPort);
-			LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, HELP_RECOMMENDATION);
-			isAvailable = true;
-		} catch (Exception error) {
-			LogPrinter.printMessage(LogPrinter.MessageType.ERROR, error.getMessage());
+			// Checks the type of command is an online request
+			switch(commandType) {
+			case COMMAND_TYPE:
+				Logger.printMessage(userType, userIP, userID, Logger.MessageType.COMMAND, commandArgs);
+				response = processCommand(commandArgs);
+				break;
+			case REQUEST_TYPE:
+				Logger.printMessage(userType, userIP, userID, Logger.MessageType.REQUEST, commandArgs);
+				response = processRequest(userType, userIP, userID, commandArgs);
+				break;
+			default: throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_COMMAND_TYPE + EXCEPTION_DELIMITER + commandType);
+			}
+			Logger.printMessage(userType, userIP, userID, Logger.MessageType.RESPONSE, SUCCESSFUL_COMMAND + commandArgs);
+		}catch(ArrayIndexOutOfBoundsException e) {
+			error = className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + commandArgs;
+		}catch(Exception e) {
+			error = e.getMessage();
 		}
+		
+		if(!error.isEmpty()){
+			Logger.printMessage(userType, userIP, userID, Logger.MessageType.ERROR, error + EXCEPTION_DELIMITER + commandArgs);
+			response = ERROR_RESPONSE; 
+		}
+		
+		return response;
 	}
 	
-	// Checks if the server is available
-	public boolean getIsAvailable() {
-		return isAvailable;
-	}
-	
-	// Process a command from the serverManager
-	public void processCommand(String accountType, String command) {
-		// Splits the command into head, and tail, to get the command type
-		String commandParts[] = command.split(" ", 2);
-		String error = "";
+	// Processes a command from an offline user
+	private String processCommand(String command) throws Exception {
+		String[] commandParts = command.split(MESSAGE_DELIMITER, COMMAND_PARTS_AMOUNT);
+		String response;
 
 		try {
-			switch (commandParts[HEAD_PART].toLowerCase()) {
+			// Checks the type of command
+			switch (commandParts[COMMAND_NAME_PART].toLowerCase()) {
 			case HELP_COMMAND:
-				printHelp();
-				break;
-			case START_COMMAND:
-				startServer();
+				response = printHelp();
 				break;
 			case VIEW_COMMAND:
-				viewItems(accountType, commandParts[TAIL_PART]);
+				response = viewItems(commandParts[COMMAND_ARGS_PART]);
 				break;
 			case ADD_COMMAND:
-				addItem(accountType, commandParts[TAIL_PART]);
+				response = addItem(commandParts[COMMAND_ARGS_PART]);
 				break;
 			case EDIT_COMMAND:
-				editItem(accountType, commandParts[TAIL_PART]);
+				response = editItem(commandParts[COMMAND_ARGS_PART]);
 				break;
 			case REMOVE_COMMAND:
-				removeItem(accountType, commandParts[TAIL_PART]);
+				response = removeItem(commandParts[COMMAND_ARGS_PART]);
+				break;
+			case CHECK_COMMAND:
+				response = checkOnlineUsers();
 				break;
 			case PICK_COMMAND:
-				pickItem();
+				response = pickItem();
 				break;
 			case RETURN_COMMAND:
-				returnItem();
+				response = returnItem();
 				break;
 			case PLACE_COMMAND:
-				placeItem();
+				response = placeItem();
 				break;
 			default:
-				throw new Exception(UNKNOWN_COMMAND);
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_COMMAND + EXCEPTION_DELIMITER + commandParts[COMMAND_NAME_PART]);
 			}
 		} catch (ArrayIndexOutOfBoundsException ex) {
-			error = INVALID_COMMAND;
-		} catch (Exception ex) {
-			error = ex.getMessage();
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + command);
+		} 
+		
+		return response;
+	}
+
+	// Presents all server offline commands
+	private String printHelp() throws Exception  {
+		String response;
+		
+		try(Scanner input = new Scanner(new File(COMMAND_FILE))){
+			// Reads all commands file
+			response = input.useDelimiter(END_OF_FILE).next();
+		} catch (FileNotFoundException e) {
+			throw new Exception(className+EXCEPTION_DELIMITER+FILE_NOT_FOUND_EXCEPTION+EXCEPTION_DELIMITER+COMMAND_FILE);
 		}
-
-		if (!error.isEmpty())
-			LogPrinter.printMessage(LogPrinter.MessageType.ERROR, error + " : " + command);
-	}
-	
-	// Presents all server commands
-	public void printHelp() throws Exception {
-		Scanner input = new Scanner(new File(COMMAND_FILE));
-		
-		// Reads all commands file
-		String content = input.useDelimiter(END_OF_FILE).next();
-		
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, PRINT_COMMANDS+"\n"+content);
 			
-		input.close();
+		return response;
 	}
-	
-	// Starts the server
-	public void startServer() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, START_SERVER);
-	}
-		
-	// Presents all items of a certain type from the database
-	public void viewItems(String accountType, String dataType) throws Exception {
-		String items = dataKeeper.viewItems(accountType, dataType);
 
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, VIEW_ITEMS + "\n" + items);
+	// Presents all items of a certain type from the database
+	private String viewItems(String itemType) throws Exception {
+		String type = itemType.substring(0, itemType.length()-1); // Removes the "s" at the end
+		String response = manager.viewItems(type);
+
+		return response;
 	}
 	
 	// Adds an item to the database
-	public void addItem(String accountType, String command) throws Exception {
-		String commandParts[] = command.split(" ", 2);
-		String dataType = commandParts[HEAD_PART];
+	private String addItem(String itemArgs) throws Exception {		
+		String[] argsParts = itemArgs.split(MESSAGE_DELIMITER, 2);
+		String itemType, args;
 		
-		dataKeeper.addItem(accountType, dataType, commandParts[TAIL_PART]);
+		try {
+			itemType = argsParts[0];
+			args = argsParts[1];
+			manager.addItem(itemType, args);
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + itemArgs);
+		}
 		
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_ADD_ITEM);
+		return SUCCESS_RESPONSE;
 	}
 
 	// Edits an item from the database
-	public void editItem(String accountType, String command) {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_EDIT_ITEM);
+	private String editItem(String itemArgs) throws Exception {
+		String[] argsParts = itemArgs.split(MESSAGE_DELIMITER, 3);
+		String itemType, itemNumber, args;
+		
+		try {
+			itemType = argsParts[0];
+			itemNumber = argsParts[1];
+			args = argsParts[2];
+			manager.editItem(itemType, itemNumber, args);
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + itemArgs);
+		}
+		
+		return SUCCESS_RESPONSE;
 	}
 
 	// Removes an item from the database
-	public void removeItem(String accountType, String command) {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_REMOVE_ITEM);
+	private String removeItem(String itemArgs) throws Exception {
+		String[] argsParts = itemArgs.split(MESSAGE_DELIMITER, 2);
+		String itemType, itemNumber;
+		
+		try {
+			itemType = argsParts[0];
+			itemNumber = argsParts[1];
+			manager.removeItem(itemType, itemNumber);
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + itemArgs);
+		}
+		
+		return SUCCESS_RESPONSE;
+	}
+	
+	// Checks current online users
+	private String checkOnlineUsers() {
+		StringBuilder response = new StringBuilder();
+		
+		response.append(SHOPPERS_TYPE+"\n");
+		for(HashMap.Entry<String, String> entry : onlineShoppers.entrySet())
+			response.append(entry.getKey() + MESSAGE_DELIMITER + entry.getValue()+"\n");
+		response.append(EMPLOYEES_TYPE+"\n");
+		for(HashMap.Entry<String, String> entry : onlineEmployees.entrySet())
+			response.append(entry.getKey() + MESSAGE_DELIMITER + entry.getValue()+"\n");
+		
+		return response.toString();
 	}
 
 	// Creates an event - a shopper picked up a product from a shelf
-	public void pickItem() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, PICK_ITEM);
+	private String pickItem() {
+		return "true";
 	}	
 
 	// Creates an event - a shopper placed a product on a shelf
-	public void returnItem() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, RETURN_ITEM);
+	private String returnItem() {
+		return "true";
 	}
 
 	// Creates an event - an employee placed a product on a shelf
-	public void placeItem() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, PLACE_ITEM);
-	}
-
-	// Stops the server
-	public void stopServer() {
-		LogPrinter.printMessage(LogPrinter.MessageType.SYSTEM, SUCCESSFUL_EXIT);
+	private String placeItem() {
+		return "true";
 	}
 	
-	// Prints a message
-	public void printExternalMessage(String messageType, String message) {
-		LogPrinter.MessageType type = LogPrinter.MessageType.UNKNOWN;
+	private String alertLocation() {
+		return "true";
+	}
+	
+	public String exit() {
 		
-		switch(messageType.toLowerCase()) {
-		case ERROR_MESSAGE_TYPE : type = LogPrinter.MessageType.ERROR;
-			break;
-		case SYSTEM_MESSAGE_TYPE : type = LogPrinter.MessageType.SYSTEM;
-			break;
+		try{
+			manager.exit();
+			Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.INFOMATION, SERVER_EXIT);
+		}catch(Exception e) {
+			Logger.printMessage(SERVER_USER, serverIP, SERVER_ID, Logger.MessageType.ERROR, e.getMessage());
 		}
 		
-		// Prints the message on console by using LogPrinter
-		LogPrinter.printMessage(type, message);
-	}
-}
-
-
-/*
-// Indicating a failed login request
-private static final int INVALID_LOGIN_ID = -1;
-
-// The requests codes that are sent between the server and the client app
-private static final int SHOPPER_LOGIN_REQUEST = 0;
-private static final int EMPLOYEE_LOGIN_REQUEST = 1;
-private static final int GET_DEPARTMENTS_REQUEST = 2;
-private static final int GET_PRODUCTS_REQUEST = 3;
-private static final int GET_DISCOUNTS_REQUEST = 4;
-private static final int UPDATE_CART = 5;
-private static final int GET_CART_REQUEST = 6;
-private static final int CHANGE_SETTINGS = 7;
-
-// After a change settings request one of these are sent:
-private static final int CHANGE_EMAIL = 0;
-private static final int CHANGE_PASSWORD = 1;
-private static final int CHANGE_CREDIT = 2;
-
-// Response codes sent back to the user
-private static final int CHANGE_SETTINGS_WRONG_RESPONSE = 0;
-private static final int CHANGE_SETTINGS_OK_RESPONSE = 1;
-private static final int LOGIN_WRONG_RESPONSE = 0;
-private static final int LOGIN_OK_RESPONSE = 1;
-
-
-// UDP Socket for all communications
-UdpSocketHandler socketHandler;
-
-// Builds S-Mart main server
-public ServerManager() {
-	// Get Server IP
-	
-	
-	System.out.println("\n1. Builds S-Mart main server");
-	System.out.println(" 1. Loads all server data : ");
-	SmartDataLoader.loadDepartments();
-	SmartDataLoader.loadEmployees();
-	SmartDataLoader.loadProducts();
-	SmartDataLoader.loadShoppers();
-	SmartDataLoader.loadDiscounts();
-	
-	System.out.println(" 2. Creates online user lists");
-	
-	
-	System.out.println(" 3. Creates a UDP socket for communication");
-	socketHandler = new UdpSocketHandler(SERVER_PORT);
-	socketHandler.addNewMessageRecievedListener(this);
-}
-
-// Starts S-Mart main server
-public void start(){
-	System.out.println("\n2. Starts S-Mart main server");
-	socketHandler.startListening();
-	
-	System.out.println("\n3. Waits for connections : ");
-	pickup();
-	
-	System.out.println("\n4. Closes S-Mart main server\n");
-	exit();
-}
-
-// Creates a shopper picked up a product event
-public void pickup() {
-	Scanner input = new Scanner(System.in);
-	String line = "";
-
-	// Receives input from the console until "End" is received
-	while (!line.equals("End")) {
-		line = input.nextLine();
-
-		// Action alerting a shopper has picked an item
-		if (line.startsWith("pick")) {
-			System.out.println("Shopper Id: ");
-			long shopperId = input.nextLong();
-
-			System.out.println("Item Id: ");
-			long itemId = input.nextInt();
-
-			System.out.println("Employee Id: ");
-			long employeeId = input.nextInt();
-
-			onItemPicked(shopperId, employeeId, itemId);
-		}
-	}
-
-	input.close();
-}
-
-private void onItemPicked(long shopperPickerId, long employeeToAlertId, long itemPickedId){
-	// Alerting the employee:
-	if(onlineEmployees.containsKey(employeeToAlertId)){
-		InetAddress employeeAddress = onlineEmployees.get(employeeToAlertId);
-		udp.UdpSender.getInstance().sendMessage("OUT_OF_STOCK:" + itemPickedId, employeeAddress, SERVER_PORT);
-	}else{
-		System.out.println("Not sending item picked to employee, Not logged in");
+		return SUCCESS_RESPONSE;
 	}
 	
-	// Alerting the shopper:
-	if(onlineShoppers.containsKey(shopperPickerId)){
-		InetAddress employeeAddress = onlineShoppers.get(employeeToAlertId);
-		udp.UdpSender.getInstance().sendMessage("ITEM_PICKED:" + itemPickedId, employeeAddress, SERVER_PORT);
-	}else{
-		System.out.println("Not sending item picked to shopper, Not logged in");
-	}
-}
+	// Processes a request from an online user
+	private String processRequest(String userType, String userIP, String userID, String request) throws Exception {
+		String[] requestParts = request.split(MESSAGE_DELIMITER, REQUEST_PARTS_AMOUNT);
+		String response;
 
-// Closes S-Mart main server
-public void exit() {
-	socketHandler.stopListening();
-}
-
-@Override
-public void messageReceived(Message messageReceived) {
-	String reply = null;
-	String reqCodeString = messageReceived.getMessageContent().substring(0,1);
-	
-	try{
-		// The first character should be a request code 
-		int reqCode = Integer.parseInt(reqCodeString);
-		
-		switch(reqCode)
-		{
-			case SHOPPER_LOGIN_REQUEST:
-				reply = String.valueOf(SHOPPER_LOGIN_REQUEST);
-				if(logInShooper(messageReceived)){
-					reply += String.valueOf(LOGIN_OK_RESPONSE);
-				}else{
-					reply += String.valueOf(LOGIN_WRONG_RESPONSE);
-				}
+		try {
+			// Checks the type of command
+			switch (requestParts[REQUEST_NAME_PART].toLowerCase()) {
+			case HELP_REQUEST:
+				response = getHelp();
 				break;
-			case EMPLOYEE_LOGIN_REQUEST:
-				reply = String.valueOf(SHOPPER_LOGIN_REQUEST);
-				if(logInEmployee(messageReceived)){
-					reply += String.valueOf(LOGIN_OK_RESPONSE);
-				}else{
-					reply += String.valueOf(LOGIN_WRONG_RESPONSE);
-				}
+			case LOGIN_REQUEST:
+				response = login(userType, userIP, requestParts[REQUEST_ARGS_PART]);
 				break;
-			case GET_DEPARTMENTS_REQUEST:
-				reply = GET_DEPARTMENTS_REQUEST + SmartDataManager.getInstance().getDepartmentsJsonString();
+			case GET_REQUEST:
+				response = getItems(userType, userID, requestParts[REQUEST_ARGS_PART]);
 				break;
-			case GET_PRODUCTS_REQUEST:
-				reply = GET_PRODUCTS_REQUEST + SmartDataManager.getInstance().getProductsJsonString();
+			case SET_REQUEST:
+				response = setCredentials(userType, userID, requestParts[REQUEST_ARGS_PART]);
 				break;
-			case UPDATE_CART:
-				saveCart(messageReceived);
+			case SEND_REQUEST:
+				response = sendReceipt(userType, userIP, userID,requestParts[REQUEST_ARGS_PART]);
 				break;
-			case GET_CART_REQUEST:
-				reply = GET_CART_REQUEST + getCart(messageReceived);
-				break;
-			case GET_DISCOUNTS_REQUEST:
-				reply = GET_DISCOUNTS_REQUEST + getShopperDiscounts(messageReceived.getAddress()); 
-				break;
-			case CHANGE_SETTINGS:
-				reply = changeSettings(messageReceived);
+			case LOGOUT_REQUEST:
+				response = logout(userType, requestParts[REQUEST_ARGS_PART]);
 				break;
 			default:
-				System.out.println("Message error: got wrong req code: " + reqCode);
-		}
-	}catch(NumberFormatException nfe){
-		System.out.println("got wrong req code, not a number");
-	}
-	
-	if(reply != null){
-		udp.UdpSender.getInstance().sendMessage(reply, 
-				messageReceived.getAddress(), 
-				SERVER_PORT);
-		System.out.println("reply of " + reqCodeString + 
-				" sent to " + messageReceived.getAddress());
-	}
-}
-
-/**
- * Finds the shopper id with the given address
- * @param shopperAddress InetAddress The address of the shopper to look for
- * @return long The id of the shopper with the given address, INVALID_LOGIN_ID if not found
- 
-private long getShopperId(InetAddress shopperAddress){
-	long shopperId = INVALID_LOGIN_ID;
-	
-	// Pulling the id of the shopper by the ip:
-	for(Entry<Long, InetAddress> entry : onlineShoppers.entrySet()){
-		if (entry.getValue().equals(shopperAddress)){
-			// Saving the id found
-			shopperId = entry.getKey();
-			break;
-		}
-	}
-	
-	return shopperId;
-}
-
-/**
- * Finds the employee id with the given address
- * @param employeeAddress InetAddress The address of the employee to look for
- * @return long The id of the shopper with the given address, INVALID_LOGIN_ID if not found
- 
-private long getEmployeeId(InetAddress employeeAddress){
-	long employeeId = INVALID_LOGIN_ID;
-	
-	// Pulling the id of the employee by the ip:
-	for(Entry<Long, InetAddress> entry : onlineEmployees.entrySet()){
-		if (entry.getValue().equals(employeeAddress)){
-			// Saving the id found
-			employeeId = entry.getKey();
-			break;
-		}
-	}
-	
-	return employeeId;
-}
-
-private void saveCart(Message cartMessage){
-	long shopperId = getShopperId(cartMessage.getAddress());
-	
-	if(shopperId != INVALID_LOGIN_ID){
-		// Saving the cart
-		SmartDataManager.getInstance().saveCartToFile(shopperId + ".json", cartMessage.getMessageContent().substring(1));
-	}else{
-		System.out.println("Have not found shopper with ip (update cart req): "+ cartMessage.getAddress());
-	}
-}
-
-private String getCart(Message getCartReq){
-	long shopperId = getShopperId(getCartReq.getAddress());
-	
-	String shopperCart = null;
-	
-	if(shopperId != INVALID_LOGIN_ID){
-		// Getting the cart of the shopper with the found id
-		shopperCart = SmartDataManager.getInstance().readCartFromFile(shopperId + ".json");
-	}else{
-		System.out.println("Have not found shopper with ip (get cart req): "+ getCartReq.getAddress());
-	}
-	// No cart yet for this shopper or no shoper found
-	if(shopperCart == null){
-		shopperCart = "";
-	}
-	
-	return shopperCart;
-}
-
-
-private String changeSettings(Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS);
-	
-	// Checking if the request came from a shopper
-	long shopperId = getShopperId(messageReceived.getAddress());
-	if(shopperId != INVALID_LOGIN_ID){
-		response += changeShopperSettings(shopperId, messageReceived);
-	}else{
-		// Checking if the request came from an employee
-		long employeeId = getEmployeeId(messageReceived.getAddress());
-		if(employeeId != INVALID_LOGIN_ID){
-			response += changeEmployeeSettings(employeeId, messageReceived);
-		}else{
-			// Unknown user request (should not happen)
-			response += String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-		}
-	}
-	
-	return response;
-}
-
-private String changeShopperSettings(long shopperId, Message messageReceived){
-	String response = "";
-	
-	try{
-		// The second character has the type of settings change
-		int reqCode = Character.getNumericValue(messageReceived.getMessageContent().charAt(1));
-		
-		switch(reqCode){
-		case CHANGE_EMAIL:
-			response = changeShopperEmail(shopperId, messageReceived);
-			break;
-		case CHANGE_CREDIT:
-			response = changeShopperCredit(shopperId, messageReceived);
-			break;
-		case CHANGE_PASSWORD:
-			response = changeShopperPassword(shopperId, messageReceived);
-			break;
-		}
-	}catch(Exception ex){
-		System.out.println("Error during changeShopperSettings");
-		ex.printStackTrace();
-		response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-	}
-	return response;
-}
-
-/**
- * Updates the email of the shopper with the given id
- * to the email in the given message
- * @param shopperId long, The id of the shopper to update
- * @param messageReceived Message the message sent, containing the new email
- * @return String, result string to send back to the shopper
- *
-private String changeShopperEmail(long shopperId, Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-
-	// Pulling the email from the message
-	String newEmail = getParameterFromMessage(messageReceived.getMessageContent(), "email");
-	
-	ShopperDetails shoperDetails = SmartDataManager.getInstance().getShopperDetailsById(shopperId);
-	
-	if(shoperDetails != null){
-		// Setting the email and saving to file
-		shoperDetails.setEmail(newEmail);
-		SmartDataManager.getInstance().saveShoppersDetailsToFile(SmartDataManager.SHOPPERS_FILE, 
-				SmartDataManager.getInstance().getShopperDetails());
-		// All went well
-		response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
-	}
-	
-	return response;
-}
-
-/**
- * Updates the password of the shopper with the given id
- * to the password in the given message
- * @param shopperId long, The id of the shopper to update
- * @param messageReceived Message the message sent, containing the new password
- * @return String, result string to send back to the shopper
- *
-private String changeShopperPassword(long shopperId, Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-	
-	// Pulling the passwords from the message
-	String oldPass = getParameterFromMessage(messageReceived.getMessageContent(), "old_pass");
-	String newPass = getParameterFromMessage(messageReceived.getMessageContent(), "new_pass");
-	
-	ShopperDetails shoperDetails = SmartDataManager.getInstance().getShopperDetailsById(shopperId);
-
-	if(shoperDetails != null){
-		// First checking if the password sent is the current one
-		if(shoperDetails.getPassword().equals(oldPass)){
-			// Setting the password and saving to file
-			shoperDetails.setPassword(newPass);
-			SmartDataManager.getInstance().saveShoppersDetailsToFile(SmartDataManager.SHOPPERS_FILE, 
-					SmartDataManager.getInstance().getShopperDetails());
-			
-			// All went well
-			response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
-		}
-	}
-	
-	return response;
-}
-
-/**
- * Updates the credit of the shopper with the given id
- * to the credit in the given message
- * @param shopperId long, The id of the shopper to update
- * @param messageReceived Message the message sent, containing the new credit
- * @return String, result string to send back to the shopper
- *
-private String changeShopperCredit(long shopperId, Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-	
-	// Getting the credit number from the message
-	String newCredit = getParameterFromMessage(messageReceived.getMessageContent(), "credit");
-	
-	ShopperDetails shoperDetails = SmartDataManager.getInstance().getShopperDetailsById(shopperId);
-
-	if(shoperDetails != null){
-		// Setting the credit and saving to file
-		shoperDetails.setCreditCard(newCredit);;
-		SmartDataManager.getInstance().saveShoppersDetailsToFile(SmartDataManager.SHOPPERS_FILE, 
-				SmartDataManager.getInstance().getShopperDetails());
-		
-		// All went well
-		response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
-	}
-	
-	return response;
-}
-
-private String changeEmployeeSettings(long employeeId, Message messageReceived){
-	String response = "";
-	
-	try{
-		// The second character has the type of settings change
-		int reqCode = Character.getNumericValue(messageReceived.getMessageContent().charAt(1));
-		
-		switch(reqCode){
-		case CHANGE_EMAIL:
-			response = changeEmployeeEmail(employeeId, messageReceived);
-			break;
-		case CHANGE_PASSWORD:
-			response = changeEmployeePassword(employeeId, messageReceived);
-			break;
-		}
-	}catch(Exception ex){
-		System.out.println("Error during changeShopperSettings");
-		ex.printStackTrace();
-		response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-	}
-	return response;
-}
-
-/**
- * Updates the email of the employee with the given id
- * to the email in the given message
- * @param employeeId long, The id of the employee to update
- * @param messageReceived Message the message sent, containing the new email
- * @return String, result string to send back to the employee
- *
-private String changeEmployeeEmail(long employeeId, Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-
-	// Pulling the email from the message
-	String newEmail = getParameterFromMessage(messageReceived.getMessageContent(), "email");
-	
-	EmployeeDetails employeeDetails = SmartDataManager.getInstance().getEmployeeDetailsById(employeeId);
-	
-	if(employeeDetails != null){
-		// Setting the email and saving to file
-		employeeDetails.setEmail(newEmail);
-		SmartDataManager.getInstance().saveEmployeesDetailsToFile(SmartDataManager.EMPLOYEES_FILE, 
-				SmartDataManager.getInstance().getEmployees());
-		// All went well
-		response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
-	}
-	
-	return response;
-}
-
-/**
- * Updates the password of the employee with the given id
- * to the password in the given message
- * @param employeeId long, The id of the employee to update
- * @param messageReceived Message the message sent, containing the new password
- * @return String, result string to send back to the employee
- *
-private String changeEmployeePassword(long employeeId, Message messageReceived){
-	String response = String.valueOf(CHANGE_SETTINGS_WRONG_RESPONSE);
-	
-	// Pulling the passwords from the message
-	String oldPass = getParameterFromMessage(messageReceived.getMessageContent(), "old_pass");
-	String newPass = getParameterFromMessage(messageReceived.getMessageContent(), "new_pass");
-	
-	EmployeeDetails employeeDetails = SmartDataManager.getInstance().getEmployeeDetailsById(employeeId);
-
-	if(employeeDetails != null){
-		// First checking if the password sent is the current one
-		if(employeeDetails.getPassword().equals(oldPass)){
-			// Setting the password and saving to file
-			employeeDetails.setPassword(newPass);
-			SmartDataManager.getInstance().saveEmployeesDetailsToFile(SmartDataManager.EMPLOYEES_FILE, 
-					SmartDataManager.getInstance().getEmployees());
-			// All went well
-			response = String.valueOf(CHANGE_SETTINGS_OK_RESPONSE);
-		}
-	}
-	
-	return response;
-}
-
-private boolean logInShooper(Message messageReceived){
-	long loggenInShopperId = checkShopperLogin(messageReceived.getMessageContent());
-	if(loggenInShopperId != INVALID_LOGIN_ID){
-		onlineShoppers.put(loggenInShopperId, messageReceived.getAddress());
-		return true;
-	}
-	return false;
-}
-
-private boolean logInEmployee(Message messageReceived){
-	long loggenInEmployeeId = checkEmployeeLogin(messageReceived.getMessageContent());
-	if(loggenInEmployeeId != INVALID_LOGIN_ID){
-		onlineEmployees.put(loggenInEmployeeId, messageReceived.getAddress());
-		return true;
-	}
-	return false;
-}
-
-/**
- * This method checks if the given message contains the details of a shopper
- * (email and password).
- * @param messageContent
- * @return integer, The id of the shopper logged in
- *
-private long checkShopperLogin(String messageContent) {
-	long loggenInShopperId = INVALID_LOGIN_ID;
-	List<ShopperDetails> shoppers = SmartDataManager.getInstance().getShopperDetails();
-	String email = null, password = null;
-	if(shoppers != null){
-		
-		try{
-			// The login message should look like that:
-			// 0,email=15,tamir@gmail.com,pass=4,1234
-			// First is the request, Login request = 0,
-			// after is the "email=" and than the length of the email,
-			// after that the password the same way
-			
-			// Parsing the emails and password
-			email = getParameterFromMessage(messageContent, "email");
-			password = getParameterFromMessage(messageContent, "pass");
-		}
-		catch(NumberFormatException nfe)
-		{
-			nfe.printStackTrace();
-		}
-		
-		// Checking if parsing went well
-		if(email != null && password != null){
-			for(ShopperDetails shopperDetail: shoppers){
-				// If the current user has the details gotten
-				if(shopperDetail.isEmailPasswordEquals(email, password)){
-					// Indicating the login is successful with the id logged in
-					loggenInShopperId = shopperDetail.getId();
-					break;
-				}
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_REQUEST + EXCEPTION_DELIMITER + requestParts[REQUEST_NAME_PART]);
 			}
-		}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_REQUEST + EXCEPTION_DELIMITER + request);
+		} 
+		
+		return response + END_OF_MESSAGE;
 	}
 	
-	return loggenInShopperId;
-}
-
-private long checkEmployeeLogin(String messageContent) {
-	long loggenInEmployeeId = INVALID_LOGIN_ID;
-	List<EmployeeDetails> employees = SmartDataManager.getInstance().getEmployees();
-	String email = null, password = null;
-	if(employees != null){
+	// Returns all server online requests
+	private String getHelp() throws Exception {
+		String response;
 		
-		try{
-			// The login message should look like that:
-			// 1,email=15,tamir@gmail.com,pass=4,1234
-			// First is the request, Login request = 1,
-			// after is the "email=" and than the length of the email,
-			// after that the password the same way
+		try(Scanner input = new Scanner(new File(REQUEST_FILE))){
+			// Reads all commands file
+			response = input.useDelimiter(END_OF_FILE).next();
+		} catch (FileNotFoundException e) {
+			throw new Exception(className+EXCEPTION_DELIMITER+FILE_NOT_FOUND_EXCEPTION+EXCEPTION_DELIMITER+REQUEST_FILE);
+		}
 			
-			// Parsing the emails and password
-			email = getParameterFromMessage(messageContent, "email");
-			password = getParameterFromMessage(messageContent, "pass");
-		}
-		catch(NumberFormatException nfe)
-		{
-			nfe.printStackTrace();
-		}
-		
-		// Checking if parsing went well
-		if(email != null && password != null){
-			for(EmployeeDetails employeeDetail: employees){
-				// If the current user has the details gotten
-				if(employeeDetail.isEmailPasswordEquals(email, password)){
-					// Indicating the login is successful with the id logged in
-					loggenInEmployeeId = employeeDetail.getId();
-					break;
-				}
+		return response;
+	}
+	
+	// Logs into the server
+	private String login(String userType, String userIP, String itemArgs) throws Exception {
+		String[] argsParts = itemArgs.split(MESSAGE_DELIMITER, 2);
+		String response, email, password, userId;
+		String[] responseParts;
+
+		try {
+			email = argsParts[0];
+			password = argsParts[1];
+			response = manager.login(userType, email, password);
+			responseParts = response.split(MESSAGE_DELIMITER, 2);
+			userId = responseParts[0];
+			switch (userType) {
+			case SHOPPER_USER:
+				onlineShoppers.put(userId, userIP);
+				break;
+			case EMPLOYEE_USER:
+				onlineEmployees.put(userId, userIP);
+				break;
 			}
-		}
+			response = responseParts[1]; // The returned JSON from the database
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_REQUEST + EXCEPTION_DELIMITER + itemArgs);
+		} 
+
+		return response;
 	}
 	
-	return loggenInEmployeeId;
-}
-
-private String getParameterFromMessage(String messageContent, String parameterName){
-	String value = null;
-	try{
-		// A message should look like that:
-		// parameterName=5,value
-		// first comes the parameter name than the length of the parameter
-		// and after that the value
+	// Gets all requested items of a certain type 
+	private String getItems(String userType, String userID, String itemType) throws Exception {
+		String type = itemType.substring(0, itemType.length()-1); // Removes the "s" at the end
+		String response;
 		
-		// Getting the index of the length of the parameter
-		// and the end of the length (the comma)
-		int paramLengthStartIndex = messageContent.indexOf(parameterName+"=")+ (parameterName+"=").length();
-		int paramLengthEndIndex = messageContent.indexOf(",", paramLengthStartIndex);
-	
-		// Parsing the lengths:
-		int paramLen = Integer.parseInt(messageContent.substring(paramLengthStartIndex, paramLengthEndIndex));
-
-		// Getting the value
-		value = messageContent.substring(paramLengthEndIndex + 1, paramLengthEndIndex + 1 + paramLen);
-	}
-	catch(NumberFormatException nfe)
-	{
-		nfe.printStackTrace();
-	}
-	
-	return value;
-}
-
-private String getShopperDiscounts(InetAddress shopperAddress){
-	String discountsJson = null;
-	
-	// Getting the id of the shopper with this address
-	long shopperId = getShopperId(shopperAddress);
-	
-	// Checking if this address is logged in
-	if(shopperId != INVALID_LOGIN_ID){
-		discountsJson = SmartDataManager.getInstance().getAllShopperDiscounts(shopperId);
+		switch(userType) {
+		case SHOPPER_USER:
+			if(!onlineShoppers.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			break;
+		case EMPLOYEE_USER:
+			if(!onlineEmployees.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			break;
+		default:
+			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);
+		}
+		
+		response = manager.getItems(userID, type);
+		
+		return response;
 	}
 	
-	return discountsJson;
+	// Edits a specific attribute in a user data
+	private String setCredentials(String userType, String userID, String itemArgs) throws Exception {
+		String[] argsParts = itemArgs.split(MESSAGE_DELIMITER, REQUEST_PARTS_AMOUNT); 
+		
+		switch(userType) {
+		case SHOPPER_USER:
+			if(!onlineShoppers.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			break;
+		case EMPLOYEE_USER:
+			if(!onlineEmployees.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			break;
+		default:
+			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);
+		}
+		
+		try {
+			manager.setCredentials(userType, userID, argsParts[0], argsParts[1]);
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_REQUEST + EXCEPTION_DELIMITER + itemArgs);
+		} 
+		
+		return SUCCESS_RESPONSE;
+	}
+	
+	// Sends a receipt to its owner E-MAIL
+	private String sendReceipt(String userType, String userIP, String userID, String recipt) throws Exception {
+		String email;
+		
+		switch(userType) {
+		case SHOPPER_USER:
+			if(!onlineShoppers.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			email = manager.getShopperMail(userID);
+			Messenger.sendReciept(userID, email, recipt);
+			break;
+		default:
+			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);
+		}
+		
+		return SUCCESS_RESPONSE;
+	}
+	
+	// Logging out a user 
+	private String logout(String userType, String userID) throws Exception {
+		switch (userType) {
+		case SHOPPER_USER:
+			if(!onlineShoppers.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			onlineShoppers.remove(userID);
+			break;
+		case EMPLOYEE_USER:
+			if(!onlineEmployees.containsKey(userID))
+				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
+			onlineEmployees.remove(userID);
+			break;
+		}
+		
+		return SUCCESS_RESPONSE;
+	}
 }
-}
-*/
