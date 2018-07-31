@@ -30,6 +30,7 @@ public class Database {
 	private static final String LOCATION_EXCEPTION = "Couldn't find an item in the index";
 	private static final String INVALID_ARGS_EXCEPTION = "Invalid args";
 	private static final String UNKNOWN_USER_EXCEPTION = "Couldn't find the user";
+	private static final String UNKNOWN_PRODUCT_EXCEPTION = "Couldn't find the product";
 	private static final String EXCEPTION_DELIMITER = " : ";
 
 	// Item types for all data loaded, or written to JSON
@@ -613,6 +614,21 @@ public class Database {
 		}
 
 		return response;
+	}
+	
+	// Checks if a product exists
+	public void checkProductID(String productID) throws Exception {
+		String conclustion = "";
+		
+		for(Product product : products) {
+			if(product.getProductId().equals(productID)) {
+				conclustion = DONE_LOOP;
+				break;
+			}		
+		}
+		
+		if(conclustion.isEmpty())
+			throw new Exception (className + EXCEPTION_DELIMITER + UNKNOWN_PRODUCT_EXCEPTION + EXCEPTION_DELIMITER + productID);
 	}
 
 }

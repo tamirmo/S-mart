@@ -42,26 +42,33 @@
  	- PRODUCT_ID : int
  	- SHOPPER_ID : int
  
- "return PRODUCT_ID LOCATION_X LOCATION_Y SHOPPER_ID" - Returns a product to a shelf
+ "return PRODUCT_ID SHOPPER_ID" - Returns a product to a shelf
  	- PRODUCT_ID : int
- 	- LOCATION_X : int
- 	- LOCATION_Y : int
  	- SHOPPER_ID : int
  
- "place PRODUCT_ID LOCATION_X LOCATION_Y EMPLOYEE_ID" - Places a product on a shelf
+ "sale PRODUCT_ID SHOPPER_ID UNIT_AMOUNT BONUS_AMOUNT" - Notify a shopper that there is a limited time sale
  	- PRODUCT_ID : int
- 	- LOCATION_X : int
- 	- LOCATION_Y : int
+ 	- SHOPPER_ID : int
+ 	- UNIT_AMOUNT : int
+ 	- BONUS_AMOUNT : int
+ 
+ "place PRODUCT_ID EMPLOYEE_ID" - Places a product on a shelf
+ 	- PRODUCT_ID : int
+ 	- EMPLOYEE_ID : int
+ 
+ "expire PRODUCT_ID EMPLOYTEE_ID" - Notify an employee that a product is expired
+	- PRODUCT_ID : int
  	- EMPLOYEE_ID : int
  	
- "alert USER_TYPE USER_ID LOCATION_X LOCATION_Y REASON" - alerts an employee
- 	- USER_TYPE : {"shopper":string, "employee":string}
- 	- USER_ID : int 
+ "misplace PRODUCT_ID EMPLOYTEE_ID LOCATION_X LOCATION_Y" - Notify an employee that a product is misplaced
+ 	- PRODUCT_ID : int
+ 	- EMPLOYEE_ID : int
  	- LOCATION_X : int
- 	- LOCATION_Y : int
- 	- REASON :
- 		- employee REASON : {"expired":string, "misplaced":string}
-		- shopper REASON : {"sale":string}
+ 	- LOCATION_Y : int 
+ 	
+ "empty PRODUCT_ID EMPLOYEE_ID" - Notify an employee that a product's shelf is empty
+ 	- PRODUCT_ID : int
+ 	- EMPLOYEE_ID : int
 		 
  "exit" - Stops the server 	
  

@@ -39,6 +39,7 @@ public class Server {
 	private static final String FILE_NOT_FOUND_EXCEPTION = "File not found";
 	private static final String UNKNONW_USER_TYPE = "Unknown user type";
 	private static final String UNKNONW_USER = "Unknown user";
+	private static final String OFFLINE_USER = "User isn't online";
 	private static final String EXCEPTION_DELIMITER = " : ";
 	
 	// Command Parts 
@@ -63,7 +64,11 @@ public class Server {
 	private static final String CHECK_COMMAND = "check";
 	private static final String PICK_COMMAND = "pick";
 	private static final String RETURN_COMMAND = "return";
+	private static final String SALE_COMMAND = "sale";
 	private static final String PLACE_COMMAND = "place";
+	private static final String EXPIRE_COMMAND = "expire";
+	private static final String MISPLACE_COMMAND = "misplace";
+	private static final String EMPTY_COMMAND = "empty";
 	
 	// Request Names 
 	private static final String HELP_REQUEST = "help";
@@ -179,13 +184,15 @@ public class Server {
 				response = checkOnlineUsers();
 				break;
 			case PICK_COMMAND:
-				response = pickItem();
-				break;
 			case RETURN_COMMAND:
-				response = returnItem();
+			case SALE_COMMAND :
+				response = sendShopperEvent(command, commandParts[COMMAND_ARGS_PART]);
 				break;
 			case PLACE_COMMAND:
-				response = placeItem();
+			case EXPIRE_COMMAND:
+			case MISPLACE_COMMAND:
+			case EMPTY_COMMAND:
+				response = sendEmployeeEvent(command, commandParts[COMMAND_ARGS_PART]);
 				break;
 			default:
 				throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_COMMAND + EXCEPTION_DELIMITER + commandParts[COMMAND_NAME_PART]);
@@ -281,25 +288,49 @@ public class Server {
 		
 		return response.toString();
 	}
-
-	// Creates an event - a shopper picked up a product from a shelf
-	private String pickItem() {
-		return "true";
-	}	
-
-	// Creates an event - a shopper placed a product on a shelf
-	private String returnItem() {
-		return "true";
-	}
-
-	// Creates an event - an employee placed a product on a shelf
-	private String placeItem() {
-		return "true";
+	
+	// Sends an event to a shopper
+	private String sendShopperEvent(String command, String commandArgs) throws Exception {
+		String[] commandParts = commandArgs.split(MESSAGE_DELIMITER, 3);
+		String productID, shopperID;
+		
+		try {
+			productID = commandParts[0];
+			shopperID = commandParts[1];
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + commandArgs);
+		}
+		
+		manager.checkProductID(productID);
+		if(!onlineShoppers.containsKey(shopperID))
+			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+		
+		Messenger.sendEvent(onlineShoppers.get(shopperID), command + END_OF_MESSAGE);
+		
+		return SUCCESS_RESPONSE;
 	}
 	
-	private String alertLocation() {
-		return "true";
+	// Sends an event to an employee
+	private String sendEmployeeEvent(String command, String commandArgs) throws Exception {
+		String[] commandParts = commandArgs.split(MESSAGE_DELIMITER, 3);
+		String productID, employeeID;
+		
+		try {
+			productID = commandParts[0];
+			employeeID = commandParts[1];
+		}catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + commandArgs);
+		}
+		
+		manager.checkProductID(productID);
+		if(!onlineEmployees.containsKey(employeeID))
+			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+		
+		Messenger.sendEvent(onlineEmployees.get(employeeID), command + END_OF_MESSAGE);
+		
+		return SUCCESS_RESPONSE;
 	}
+	
 	
 	public String exit() {
 		

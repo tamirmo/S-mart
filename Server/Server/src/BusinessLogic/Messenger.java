@@ -1,5 +1,9 @@
 package BusinessLogic;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.*;  
 import javax.mail.*;  
 import javax.mail.internet.*;   
@@ -15,12 +19,14 @@ public class Messenger {
 	
 	// Class Exceptions
 	private static final String MESSAGING_EXCEPTION = "Couldn't send the mail";
+	private static final String CONNECTION_EXCEPTION = "Couldn't connect to the client";
 	private static final String EXCEPTION_DELIMITER = " : ";
 	
 	// Class attributes
-	public static final String COMPANY_EMAIL = "afekasmart2018@gmail.com";
-	public static final String COMPANY_PASSWORD = "afeka2018";
+	private static final String COMPANY_EMAIL = "afekasmart2018@gmail.com";
+	private static final String COMPANY_PASSWORD = "afeka2018";
 	private static final String className = new Object(){}.getClass().getEnclosingClass().getSimpleName();
+	private static final int CLIENT_PORT = 5002;
 	
 	// Sends a receipt to the user's email, and a copy to the company email by using TLS sockets
 	public static void sendReciept(String userId, String userMail, String receipt)
@@ -55,13 +61,18 @@ public class Messenger {
 	}
 	
 	// Sends an event to a user
-	public static void sendEvent(int serverPort, String userIP, String message) {
+	// Events : A shopper pick up an item, A shopper return an item somewhere, A shopper get a sale alert
+	// Events : An employee place an item somewhere, an item is expired, an item is misplaced
+	public static void sendEvent(String userIP, String message) throws Exception {
+		OutputStream output;
+		PrintWriter writer;
 		
-		// pick up event
-		// remove event
-		// place event
-		
-		//alerts shoppers for sales
-		//alerts employees for expired/misplaced items
+		try(Socket connection = new Socket(userIP, CLIENT_PORT)){
+			output = connection.getOutputStream();
+			writer = new PrintWriter(output, true);
+			writer.println(message);
+		} catch (IOException e) {
+			throw new Exception(className + EXCEPTION_DELIMITER + CONNECTION_EXCEPTION + EXCEPTION_DELIMITER + userIP);
+		}
 	}
 }

@@ -10,7 +10,6 @@ import Network.ServerAdaptor;
 public class ServerManager {
 
 	// Class Messages
-	private static final String EXIT_MESSAGE = "DONE";
 	private static final String MESSAGE_DELIMITER = " ";
 	
 	// Class Exceptions

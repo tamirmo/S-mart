@@ -310,4 +310,14 @@ public class DatabaseManager {
 		
 		return response;
 	}
+	
+	// Checks if a product exists
+	public void checkProductID(String productID) throws Exception {
+		database.checkProductID(productID);
+	}
+
+	public boolean checkProductLocation(String productID, String locationX, String locationY) {
+		
+		return false;
+	}
 }

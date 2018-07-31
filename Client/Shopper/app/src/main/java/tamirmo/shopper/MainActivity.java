@@ -30,12 +30,6 @@ import tamirmo.shopper.discounts.IOnDiscountAlert;
 import tamirmo.shopper.settings.NotificationSettingsHandler;
 import tamirmo.shopper.settings.SettingsFragment;
 
-/**
- * Created by Tamir on 09/06/2018.
- * The main activity, after the user logs in.
- * This activity holds the navigation view.
- */
-
 public class MainActivity extends AppCompatActivity implements IOnItemPickedListener, IOnDiscountAlert {
     private static final int NOTIFICATION_ID = 1500;
 
