@@ -315,9 +315,4 @@ public class DatabaseManager {
 	public void checkProductID(String productID) throws Exception {
 		database.checkProductID(productID);
 	}
-
-	public boolean checkProductLocation(String productID, String locationX, String locationY) {
-		
-		return false;
-	}
 }
