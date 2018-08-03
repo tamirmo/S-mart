@@ -42,6 +42,7 @@ public class ServerAdaptor  {
 		String response;
 		
 		connectionManager.exit();
+		connectionManager.interrupt();
 		response = securityManager.exit();
 		
 		return response;
@@ -81,13 +82,12 @@ public class ServerAdaptor  {
 			}
 		
 		public void exit() {
-			int size = connections.size();
 
 			// Closes connections
-			for (int i = 0; i < size; i++) {
+			for (Socket connection : connections) {
 				try {
-					connections.remove(i).close();
-				} catch (IOException e) {
+					connection.close();
+				}catch (IOException e) {
 					// An exception because one side is disconnected
 				}
 			}
@@ -120,7 +120,7 @@ public class ServerAdaptor  {
 					// Loops until one side is disconnected
 					while (true) {
 						// Gets sender IP-Address each time to do a security check on a man-in-the-middle attack
-						senderIP = connection.getRemoteSocketAddress().toString();
+						senderIP = connection.getRemoteSocketAddress().toString().split("/|:")[1];
 						
 						// Gets sender Request
 						request = getIncomingMessage();

@@ -44,6 +44,7 @@ public class ServerSecurity {
 			userIP = messageParts[USER_IP_PART];
 			userID = messageParts[USER_ID_PART];
 			userCommand = messageParts[USER_COMMAND_PART];
+			System.out.println(senderIP);
 			
 			// Checks for a man-in-the-middle attack
 			if(userIP.equals(senderIP))

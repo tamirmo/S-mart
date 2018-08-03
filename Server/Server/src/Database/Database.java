@@ -459,7 +459,7 @@ public class Database {
 		// Checks through all shoppers who is our shopper
 		for(Shopper shopper : shoppers) {
 			if(shopper.getEmail().equals(email) && shopper.getPassword().equals(password)){
-				response = shopper.getId() + MESSAGE_DELIMITER + gson.toJson(shopper, SHOPPER_TYPE);
+				response = shopper.getId() + MESSAGE_DELIMITER + gson.toJson(shopper);
 				break;
 			}
 		}
@@ -480,7 +480,7 @@ public class Database {
 		// Checks through all employees who is our employee
 		for(Employee employee : employees) {
 			if(employee.getEmail().equals(email) && employee.getPassword().equals(password)){
-				response = employee.getId() + MESSAGE_DELIMITER + gson.toJson(employee,EMPLOYEE_TYPE);
+				response = employee.getId() + MESSAGE_DELIMITER + gson.toJson(employee);
 				break;
 			}
 		}
@@ -586,7 +586,7 @@ public class Database {
 					break;
 				default:
 					throw new Exception(
-							className + EXCEPTION_DELIMITER + UNKNOWN_TYPE_EXCEPTION + EXCEPTION_DELIMITER + credentialVaule);
+							className + EXCEPTION_DELIMITER + UNKNOWN_TYPE_EXCEPTION + EXCEPTION_DELIMITER + credentialType);
 				}
 				conclusion = DONE_LOOP;
 			}
@@ -630,5 +630,4 @@ public class Database {
 		if(conclustion.isEmpty())
 			throw new Exception (className + EXCEPTION_DELIMITER + UNKNOWN_PRODUCT_EXCEPTION + EXCEPTION_DELIMITER + productID);
 	}
-
 }

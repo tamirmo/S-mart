@@ -1,7 +1,5 @@
  "help" - Displays all server requests
  
- "welcome" - Returns all advertised discounts
- 
  "login E_MAIL PASSWORD" - Logging into the server
  	- E_MAIL : string
  	- PASSWORD : string

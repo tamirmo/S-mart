@@ -72,7 +72,6 @@ public class Server {
 	
 	// Request Names 
 	private static final String HELP_REQUEST = "help";
-	private static final String WELCOME_REQUEST = "welcome";
 	private static final String LOGIN_REQUEST = "login";
 	private static final String GET_REQUEST = "get";
 	private static final String SET_REQUEST = "set";
@@ -356,9 +355,6 @@ public class Server {
 			case HELP_REQUEST:
 				response = getHelp();
 				break;
-			case WELCOME_REQUEST:
-				response = getWelcomed();
-				break;
 			case LOGIN_REQUEST:
 				response = login(userType, userIP, requestParts[REQUEST_ARGS_PART]);
 				break;
@@ -372,7 +368,7 @@ public class Server {
 				response = sendReceipt(userType, userIP, userID,requestParts[REQUEST_ARGS_PART]);
 				break;
 			case LOGOUT_REQUEST:
-				response = logout(userType, requestParts[REQUEST_ARGS_PART]);
+				response = logout(userType, userID);
 				break;
 			default:
 				throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_REQUEST + EXCEPTION_DELIMITER + requestParts[REQUEST_NAME_PART]);
@@ -395,15 +391,6 @@ public class Server {
 			throw new Exception(className+EXCEPTION_DELIMITER+FILE_NOT_FOUND_EXCEPTION+EXCEPTION_DELIMITER+REQUEST_FILE);
 		}
 			
-		return response;
-	}
-	
-	// Returns discounts as advertisements 
-	private String getWelcomed() throws Exception {
-		String itemType = "discount";
-		String userID = "all";
-		String response = manager.getItems(userID, itemType);
-		
 		return response;
 	}
 	
