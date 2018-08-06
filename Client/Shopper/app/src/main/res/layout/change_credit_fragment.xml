@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/s_mart_background"
-    android:id="@+id/main_layout">
+    android:id="@+id/main_layout"
+    android:clickable="true">
 
     <LinearLayout
         android:id="@+id/change_setting_layout"

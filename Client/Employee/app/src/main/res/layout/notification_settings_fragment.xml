@@ -2,14 +2,16 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color">
+    android:background="@drawable/s_mart_background"
+    android:clickable="true">
 
     <TextView
         android:id="@+id/notification_settings_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/notifications_settings_header"
-        style="@style/header"/>
+        style="@style/header"
+        android:textColor="@color/s_mart_text_color"/>
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/vibrations_switch"
@@ -17,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="@string/vibration_switch_header"
         android:layout_margin="20dp"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
         android:layout_below="@id/notification_settings_header"/>
 
@@ -27,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sound_switch_header"
         android:layout_margin="20dp"
-        android:textColor="@color/app_text_color"
+        android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
         android:layout_below="@id/vibrations_switch"/>
 

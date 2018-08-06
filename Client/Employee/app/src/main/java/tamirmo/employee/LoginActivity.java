@@ -1,7 +1,9 @@
 package tamirmo.employee;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +19,8 @@ import tamirmo.employee.connection.ServerConnectionHandler;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, IServerLoginEventsListener {
 
+    private final static String SERVER_IP_KEY = "SERVER_IP";
+
     // Views
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -25,7 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayout loadingLayout;
 
     // For testing purpose
-    private String serverIp = "10.0.0.27";
+    private String serverIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Registering to server events to get the login result
         ServerConnectionHandler.getInstance().setServerMessagesListener(this);
+
+        // Pulling the saved server ip from shared preferences
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        serverIp = sharedPref.getString(SERVER_IP_KEY, "10.0.0.13");
 
         // At first showing log in screen:
         showLogInLayout();
@@ -95,6 +103,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     public void onClick(DialogInterface dialog, int which) {
                         serverIp = input.getText().toString();
                         dialog.cancel();
+
+                        // Saving the ip entered for next time
+                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(SERVER_IP_KEY, serverIp);
+                        editor.apply();
                     }
                 });
 
@@ -145,7 +159,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(mainIntent);
 
-                // TODO: Decide if we are sticking with finish (different from wireframe)
                 // Loading is over
                 //showLogInLayout();
                 finish();

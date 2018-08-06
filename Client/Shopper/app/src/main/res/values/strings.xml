@@ -14,6 +14,11 @@
     <string name="password_edit_text_title">Enter Password</string>
     <string name="log_in_btn_text">Login</string>
 
+    <string name="exit_dialog_title">Exit s-mart</string>
+    <string name="exit_dialog_msg">Are you sure you want to exit?</string>
+    <string name="exit_dialog_positive_text">Yes</string>
+    <string name="exit_dialog_negative_text">No</string>
+
     <string name="edit_current_cart_btn_text">Edit Shopping list</string>
     <string name="history_cart_btn_text">Old lists</string>
     <string name="start_shopping_cart_btn_text">Start Shopping!</string>
@@ -25,7 +30,7 @@
     <string name="choose_department_text">Choose Department</string>
     <string name="search_department_hint">Find your product</string>
 
-    <string name="item_removed_snack_bar_title">Find your product</string>
+    <string name="item_removed_snack_bar_title">Item removed</string>
     <string name="item_removed_snack_bar_action">Undo</string>
 
     <string name="cart_sum_text">Total</string>

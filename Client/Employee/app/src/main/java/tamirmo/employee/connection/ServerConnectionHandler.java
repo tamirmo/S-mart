@@ -2,11 +2,14 @@ package tamirmo.employee.connection;
 
 import android.util.Log;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import communicationUtilities.Message;
+import smart.data.Product;
 import smart.data.SmartDataManager;
+import tamirmo.employee.tasks.TasksHandler;
 import udp.IUdpMessageReceived;
 import udp.UdpSocketHandler;
 
@@ -25,14 +28,11 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
     private static final int SERVER_REQUEST_TIMEOUT = 3000;
 
     // The requests codes that are sent between the server and the client app
-    private static final int SHOPPER_LOGIN_REQUEST = 0;
     private static final int EMPLOYEE_LOGIN_REQUEST = 1;
     private static final int GET_DEPARTMENTS_REQUEST = 2;
     private static final int GET_PRODUCTS_REQUEST = 3;
-    private static final int GET_DISCOUNTS_REQUEST = 4;
-    private static final int UPDATE_CART = 5;
-    private static final int GET_CART_REQUEST = 6;
     private static final int CHANGE_SETTINGS = 7;
+    private static final int ITEM_STOCK_UPDATED = 8;
 
     // After a change settings request one of these are sent:
     private static final int CHANGE_EMAIL = 0;
@@ -44,6 +44,10 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
     private static final int CHANGE_SETTINGS_OK_RESPONSE = 1;
     private static final int LOGIN_WRONG_RESPONSE = 0;
     private static final int LOGIN_OK_RESPONSE = 1;
+
+    // A character separating parameters in a message sent to clients
+    // (used in the ITEM_STOCK_UPDATED message sent to employees, login parameters)
+    private static final String MESSAGE_PARAMS_DELIMITER = ",";
 
     // Singleton:
     private static ServerConnectionHandler instance;
@@ -89,7 +93,7 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
     public void sendLogInRequest(String email, String password){
         // Assembling the request
         String request = String.format("%d,email=%d,%s,pass=%d,%s",
-                SHOPPER_LOGIN_REQUEST, email.length(), email, password.length(), password);
+                EMPLOYEE_LOGIN_REQUEST, email.length(), email, password.length(), password);
 
         // Indicating log in message was sent
         // (to figure which timeout event to raise)
@@ -103,15 +107,8 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
         startResponseTimer();
     }
 
-    public void sendCartUpdate(String cartJson){
-        // Sending the request to the server
-        udp.UdpSender.getInstance().sendMessage(UPDATE_CART + cartJson,
-                serverIp,
-                SERVER_PORT);
-    }
-
     /**
-     * Sending a request to the server to get products, departments, cart.
+     * Sending a request to the server to get products, departments.
      * Called after a successful login.
      */
     private void dataRequest(){
@@ -123,16 +120,6 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
     private void productsRequest(){
         String departmentsRequest = String.valueOf(GET_PRODUCTS_REQUEST);
         sendServerRequest(departmentsRequest);
-    }
-
-    private void discountsRequest(){
-        String departmentsRequest = String.valueOf(GET_DISCOUNTS_REQUEST);
-        sendServerRequest(departmentsRequest);
-    }
-
-    private void cartRequest(){
-        String cartRequest = String.valueOf(GET_CART_REQUEST);
-        sendServerRequest(cartRequest);
     }
 
     public void sendChangeEmail(String newEmail){
@@ -254,28 +241,38 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
             SmartDataManager.getInstance().readDepartmentsFromJsonString(departmentsJson);
         }
         else if(messageReceived.getMessageContent().startsWith(String.valueOf(GET_PRODUCTS_REQUEST))) {
-            // Requesting the discounts now
-            discountsRequest();
+            // We got the response, no pint in keep on waiting
+            stopResponseTimer();
+
             // Getting only the json sent (Skipping the response code)
             String productsJson = messageReceived.getMessageContent().substring(1);
             // Saving it to the data manager
-            SmartDataManager.getInstance().readProductsFromJsonString(productsJson);
+            List<Product> products = SmartDataManager.getInstance().readProductsFromJsonString(productsJson);
+
+            TasksHandler.getInstance().onProductsListReceived(products);
+
+            // Finished getting all data from the server, alerting the listener (LoginActivity):
+            if(iServerLoginEventsListener != null){
+                iServerLoginEventsListener.onAllDataReceived();
+            }
         }
-        // TODO: Needs discounts?
-        else if(messageReceived.getMessageContent().startsWith(String.valueOf(GET_DISCOUNTS_REQUEST))){
-            // Requesting the cart now
-            cartRequest();
-            // Getting only the json sent (Skipping the response code)
-            String discountsJson = messageReceived.getMessageContent().substring(1);
-            // Saving it to the discounts manager
-            //DiscountsHandler.getInstance().setDiscounts(discountsJson);
-        }
-        // TODO: Handle item picked
-        else if(messageReceived.getMessageContent().startsWith("ITEM_PICKED:")) {
+        else if(messageReceived.getMessageContent().startsWith(String.valueOf(ITEM_STOCK_UPDATED))) {
             try {
-                String itemIdString = messageReceived.getMessageContent().substring("ITEM_PICKED:".length());
-                long itemId = Long.parseLong(itemIdString);
-                //CartHandler.getInstance().onItemPicked(itemId);
+                // Getting the details of the item (the id and updated stock count):
+                // An item update stock message looks like(8 = message code, 1 = itemId, 2 = updated stock): "8,1,2"
+                String productDetails = messageReceived.getMessageContent().substring(2);
+
+                // The product's id should be the number in the details until the delimiter
+                String productIdString = productDetails.substring(0, productDetails.indexOf(MESSAGE_PARAMS_DELIMITER));
+
+                // The stock should be after the delimiter up until the end
+                String updatedStockString = productDetails.substring(productDetails.indexOf(MESSAGE_PARAMS_DELIMITER) + 1);
+
+                long productId = Long.parseLong(productIdString);
+                int updatedStock = Integer.parseInt(updatedStockString);
+
+                // Updating the task manager
+                TasksHandler.getInstance().onProductUpdated(productId, updatedStock);
             }catch (Exception ex){
                 Log.e("", "ServerConnectionHandler ITEM_PICKED processing error", ex);
             }

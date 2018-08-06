@@ -1,5 +1,7 @@
 package BusinessLogic;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -7,6 +9,7 @@ import java.util.Scanner;
 
 import Database.SmartDataLoader;
 import communicationUtilities.Message;
+import smart.data.CartItem;
 import smart.data.EmployeeDetails;
 import smart.data.ShopperDetails;
 import smart.data.SmartDataManager;
@@ -28,6 +31,7 @@ public class Server implements IUdpMessageReceived {
 	private static final int UPDATE_CART = 5;
 	private static final int GET_CART_REQUEST = 6;
 	private static final int CHANGE_SETTINGS = 7;
+	private static final int ITEM_STOCK_UPDATED = 8;
 	
 	// After a change settings request one of these are sent:
 	private static final int CHANGE_EMAIL = 0;
@@ -39,6 +43,10 @@ public class Server implements IUdpMessageReceived {
 	private static final int CHANGE_SETTINGS_OK_RESPONSE = 1;
 	private static final int LOGIN_WRONG_RESPONSE = 0;
 	private static final int LOGIN_OK_RESPONSE = 1;
+	
+	// A character separating parameters in a message sent to clients
+	// (used in the ITEM_STOCK_UPDATED message sent to employees, login parameters)
+	private static final String MESSAGE_PARAMS_DELIMITER = ",";
 	
 	// Maps to track online shoppers, and employees, using their IP-Address 
 	private HashMap<Long, InetAddress> onlineShoppers;
@@ -72,19 +80,24 @@ public class Server implements IUdpMessageReceived {
 		socketHandler.startListening();
 		
 		System.out.println("\n3. Waits for connections : ");
-		pickup();
+		handleUserInput();
 		
 		System.out.println("\n4. Closes S-Mart main server\n");
 		exit();
 	}
 	
-	// Creates a shopper picked up a product event
-	public void pickup() {
+	// Getting commands from the user until End is entered
+	public void handleUserInput() {
 		Scanner input = new Scanner(System.in);
 		String line = "";
 
 		// Receives input from the console until "End" is received
 		while (!line.equals("End")) {
+			System.out.println("Options:");
+			System.out.println("Enter End to exit");
+			System.out.println("Enter pick to demonstrate a shopper picking an item");
+			System.out.println("Enter stock to demonstrate an employee filling stock of an item");
+			
 			line = input.nextLine();
 
 			// Action alerting a shopper has picked an item
@@ -97,29 +110,122 @@ public class Server implements IUdpMessageReceived {
 
 				System.out.println("Employee Id: ");
 				long employeeId = input.nextInt();
-
+				
 				onItemPicked(shopperId, employeeId, itemId);
+			}
+			// Action alerting an employee has filled the stock of an item
+			else if(line.startsWith("stock")) {
+				System.out.println("Item Id: ");
+				long itemId = input.nextInt();
+
+				System.out.println("Employee Id: ");
+				long employeeId = input.nextInt();
+				
+				onItemStockFilled(employeeId, itemId);
 			}
 		}
 
 		input.close();
 	}
 	
+	/**
+	 * This method is called when the server detects that an employee with the given id 
+	 * has filled the stock of the product with the given id
+	 * @param employeeFilled long, The id of the employee that filled the stock
+	 * @param itemPickedId long, The id of the item that was filled
+	 */
+	private void onItemStockFilled(long employeeFilled, long itemPickedId){
+		// (Assuming the employee always updates 10 items)
+		int updatedStockCount = SmartDataManager.getInstance().fillProductCount(itemPickedId, 10);
+		
+		// Checking if a product with this id was found
+		if(updatedStockCount != -1)
+		{
+			// Updating the employee
+			sendEmployeeItemStockUpdated(employeeFilled, itemPickedId, updatedStockCount);
+		}else {
+			System.out.println("onItemStockFilled - item entered not found! not sending employee update");
+		}
+	}
+	
 	private void onItemPicked(long shopperPickerId, long employeeToAlertId, long itemPickedId){
-		// Alerting the employee:
-		if(onlineEmployees.containsKey(employeeToAlertId)){
-			InetAddress employeeAddress = onlineEmployees.get(employeeToAlertId);
-			udp.UdpSender.getInstance().sendMessage("OUT_OF_STOCK:" + itemPickedId, employeeAddress, SERVER_PORT);
-		}else{
-			System.out.println("Not sending item picked to employee, Not logged in");
+		
+		// Updating the shopper's cart and getting the number of items picked
+		int itemsPicked = setShopperCartItemPicked(shopperPickerId, itemPickedId);
+		
+		// Updating the products list and file
+		int updatedStockCount = SmartDataManager.getInstance().decreaseProductCount(itemPickedId, itemsPicked);
+		
+		// Checking if a product with this id was found
+		if(updatedStockCount != -1)
+		{
+			// Updating the employee
+			sendEmployeeItemStockUpdated(employeeToAlertId, itemPickedId, updatedStockCount);
+		}else {
+			System.out.println("onItemPicked - item entered not found! not sending employee update");
 		}
 		
 		// Alerting the shopper:
 		if(onlineShoppers.containsKey(shopperPickerId)){
-			InetAddress employeeAddress = onlineShoppers.get(employeeToAlertId);
-			udp.UdpSender.getInstance().sendMessage("ITEM_PICKED:" + itemPickedId, employeeAddress, SERVER_PORT);
+			InetAddress shopperAddress = onlineShoppers.get(employeeToAlertId);
+			udp.UdpSender.getInstance().sendMessage("ITEM_PICKED:" + itemPickedId, shopperAddress, SERVER_PORT);
+			// Printing the response (with time):
+			System.out.println(getTimeString() + ":" + " Sending to " + shopperAddress.getHostAddress() + 
+					": \n" + "ITEM_PICKED:" + itemPickedId + "\n");
 		}else{
 			System.out.println("Not sending item picked to shopper, Not logged in");
+		}
+	}
+	
+	/**
+	 * Setting the given item as picked in the given shopper's cart and returning the number of items picked
+	 * @param shopperPickerId long, The id of the shopper who picked the item
+	 * @param itemPickedId long, The item that was picked
+	 * @return integer, The number of items picked (as listed in the cart)
+	 */
+	private int setShopperCartItemPicked(long shopperPickerId, long itemPickedId){
+		// Reading the cart from file
+		String cartJson = SmartDataManager.getInstance().readCartFromFile(shopperPickerId + ".json");
+		List<CartItem> cart = SmartDataManager.getInstance().readCartFromJsonString(cartJson);
+
+		int itemsPicked = 0;
+		
+		// Searching for the product picked
+		for(CartItem item: cart) {
+			if(item.getProductId() == itemPickedId) {
+				// Saving the amount picked and updating the cart item status as picked
+				itemsPicked = item.getAmount();
+				item.setPicked(true);
+			}
+		}
+		
+		// Saving the changes to file
+		cartJson = SmartDataManager.getInstance().getCartAsJson(cart);
+		SmartDataManager.getInstance().saveCartToFile(shopperPickerId + ".json", cartJson);
+		
+		return itemsPicked;
+	}
+	
+	/**
+	 * Sending an update to the given employee of a stock updated.
+	 * @param employeeToAlertId long, The employee to alert
+	 * @param itemId long, The id of the item to send an update for
+	 * @param updatedStockCount integer, The updated stock
+	 */
+	private void sendEmployeeItemStockUpdated(long employeeToAlertId, long itemId, int updatedStockCount) {
+		// Alerting the employee:
+		if(onlineEmployees.containsKey(employeeToAlertId)){
+			InetAddress employeeAddress = onlineEmployees.get(employeeToAlertId);
+			// An item update stock message looks like(8 = message code, 1 = itemId, 2 = updated stock): "8,1,2"
+			String stockUpdatedMessage = String.valueOf(ITEM_STOCK_UPDATED) + MESSAGE_PARAMS_DELIMITER + 
+					String.valueOf(itemId) + MESSAGE_PARAMS_DELIMITER +  
+					updatedStockCount;
+			udp.UdpSender.getInstance().sendMessage(stockUpdatedMessage, employeeAddress, SERVER_PORT);
+			// Printing the response (with time):
+			System.out.println(getTimeString() + ":" + " Sending to " + employeeAddress.getHostAddress() + 
+					": \n" + stockUpdatedMessage + "\n");
+		}else{
+			System.out.println("Not sending item picked to employee, Not logged in");
 		}
 	}
 	
@@ -134,6 +240,10 @@ public class Server implements IUdpMessageReceived {
 		String reqCodeString = messageReceived.getMessageContent().substring(0,1);
 		
 		try{
+			// Printing the request (with time):
+			System.out.println(getTimeString() + ": " + messageReceived.getAddress() + 
+					" sent: \n" + messageReceived.getMessageContent() + "\n");
+			
 			// The first character should be a request code 
 			int reqCode = Integer.parseInt(reqCodeString);
 			
@@ -148,7 +258,7 @@ public class Server implements IUdpMessageReceived {
 					}
 					break;
 				case EMPLOYEE_LOGIN_REQUEST:
-					reply = String.valueOf(SHOPPER_LOGIN_REQUEST);
+					reply = String.valueOf(EMPLOYEE_LOGIN_REQUEST);
 					if(logInEmployee(messageReceived)){
 						reply += String.valueOf(LOGIN_OK_RESPONSE);
 					}else{
@@ -184,8 +294,9 @@ public class Server implements IUdpMessageReceived {
 			udp.UdpSender.getInstance().sendMessage(reply, 
 					messageReceived.getAddress(), 
 					SERVER_PORT);
-			System.out.println("reply of " + reqCodeString + 
-					" sent to " + messageReceived.getAddress());
+			// Printing the response (with time):
+			System.out.println(getTimeString() + ":" + " Sending to " + messageReceived.getAddress() + 
+					": \n" + reply + "\n");
 		}
 	}
 
@@ -586,7 +697,7 @@ public class Server implements IUdpMessageReceived {
 			// Getting the index of the length of the parameter
 			// and the end of the length (the comma)
 			int paramLengthStartIndex = messageContent.indexOf(parameterName+"=")+ (parameterName+"=").length();
-			int paramLengthEndIndex = messageContent.indexOf(",", paramLengthStartIndex);
+			int paramLengthEndIndex = messageContent.indexOf(MESSAGE_PARAMS_DELIMITER, paramLengthStartIndex);
 		
 			// Parsing the lengths:
 			int paramLen = Integer.parseInt(messageContent.substring(paramLengthStartIndex, paramLengthEndIndex));
@@ -614,5 +725,16 @@ public class Server implements IUdpMessageReceived {
 		}
 		
 		return discountsJson;
+	}
+	
+	/**
+	 * Getting the current time as String
+	 * @return String, The time as "HH:mm:ss"
+	 */
+	private String getTimeString(){
+		// Printing the request (with time):
+		Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        return sdf.format(cal.getTime());
 	}
 }

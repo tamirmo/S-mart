@@ -98,9 +98,6 @@ public class NavigationMapAdapter extends BaseAdapter implements View.OnClickLis
             listViewHolder.item.setVisibility(View.INVISIBLE);
         }
 
-        // TODO: This is for debug, needs to be deleted:
-        //listViewHolder.item.setVisibility(View.VISIBLE);
-
         // Registering the on click of the items and setting the items positions as tag
         // (for later use when clicking on an item)
         listViewHolder.item.setOnClickListener(this);
@@ -113,12 +110,6 @@ public class NavigationMapAdapter extends BaseAdapter implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        // TODO: This is for debug, needs to be deleted:
-        int row = (int)v.getTag() / SmartDataManager.MAP_COLS_COUNT;
-        int column = (int)v.getTag() % SmartDataManager.MAP_COLS_COUNT;
-        Toast.makeText(context, row + " , " + column, Toast.LENGTH_LONG).show();
-
-
         // The position of the images have their positions as tag
         int itemClickedPosition = (int)v.getTag();
 

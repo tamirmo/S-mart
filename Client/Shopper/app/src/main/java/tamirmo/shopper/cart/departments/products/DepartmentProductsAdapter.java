@@ -38,9 +38,9 @@ public class DepartmentProductsAdapter extends ArrayAdapter<Product> implements 
         // Getting all products
         List<Product> products = SmartDataManager.getInstance().getProducts();
 
-        // Going over the products, pulling only the ones in the chosen department:
+        // Going over the products, pulling only the ones in the chosen department that are available:
         for(Product product: products){
-            if(product.getDepartmentId() == departmentId){
+            if(product.getDepartmentId() == departmentId && product.isAvailable()){
                 departmentProducts.add(product);
             }
         }

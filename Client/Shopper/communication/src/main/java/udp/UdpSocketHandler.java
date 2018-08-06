@@ -2,6 +2,7 @@ package udp;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class UdpSocketHandler implements Runnable{
 		try {
 			dsocket = new DatagramSocket(port);
 			byte[] buffer = new byte[2048];
+			
+			System.out.println("Server address " + InetAddress.getLocalHost().getHostAddress() + " listening to port " + port);
+			
 			// Setting the time to wait in a blocking read
 			dsocket.setSoTimeout(READ_TIMEOUT);
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);

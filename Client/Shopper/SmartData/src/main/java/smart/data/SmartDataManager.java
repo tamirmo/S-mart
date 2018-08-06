@@ -115,6 +115,9 @@ public class SmartDataManager {
 			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			line = br.readLine();
 			br.close();
+		}
+		catch (FileNotFoundException e){
+			System.out.println("No cart with file name: " + fileName);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
@@ -172,6 +175,83 @@ public class SmartDataManager {
 		}
 
 		return foundDetails;
+	}
+
+	/**
+	 * Pulling the details of the employee with the given id.
+	 * @param productId long, The id of the product to look for
+	 * @return Product, The product with the given id
+	 */
+	public Product getProductById(long productId){
+		Product foundProduct = null;
+
+		for(Product product : products){
+			if(product.getProductId() == productId){
+				foundProduct = product;
+			}
+		}
+
+		return foundProduct;
+	}
+
+	/**
+	 * Decreasing a product count (after a shopper has picked an item)
+	 * @param productId long, The id of the product to decrease
+	 * @param itemsToDecrease integer, The number of items to decrease
+	 * @return integer The new stock count (-1 if a product with this id was not found)
+	 */
+	public int decreaseProductCount(long productId, int itemsToDecrease) {
+		// -1 indicating the product was not found
+		int productUpdatedStock = -1;
+		
+		// Searching for the product
+		for (Product product : products) {
+			// Checking if this discount belongs to the current use or it is a general one
+			// (general belongs to all users)
+			if(product.getProductId() == productId){
+
+				// Decreasing the count cause an product of this type was picked
+				product.setStockCount(product.getStockCount() - itemsToDecrease);
+				
+				productUpdatedStock = product.getStockCount();
+			}
+		}
+		
+		// Saving the new products list
+		saveProductsToFile(PRODUCTS_FILE, products);
+		
+		return productUpdatedStock;
+	}
+	
+	/**
+	 * Filling the count of items of the product with the given id
+	 * (called after the employee has filled the stock of this item)
+	 * @param productId integer, The id of the product to update the count
+	 * @param itemsFilled integer, The number of items to add to the current stock
+	 * @return integer The new stock count (-1 if a product with this id was not found)
+	 */
+	public int fillProductCount(long productId, int itemsFilled) {
+		int productUpdatedStock = -1;
+		
+		// Searching for the product
+		for (Product product : products) {
+			// Checking if this discount belongs to the current use or it is a general one
+			// (general belongs to all users)
+			if(product.getProductId() == productId){
+
+				// Increasing the count cause the item's stock was filled up
+				product.setStockCount(product.getStockCount() + itemsFilled);
+				// Assuming that when a stock is filled, the expired items are thrown also
+				product.setExpired(false);
+				
+				productUpdatedStock = product.getStockCount();
+			}
+		}
+		
+		// Saving the new products list
+		saveProductsToFile(PRODUCTS_FILE, products);
+		
+		return productUpdatedStock;
 	}
 	
 	// Methods for reading lists of data from json file:

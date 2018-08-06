@@ -3,6 +3,7 @@ package tamirmo.employee;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,13 +16,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import smart.data.CartItem;
-import smart.data.Discount;
 import tamirmo.employee.connection.ServerConnectionHandler;
+import tamirmo.employee.settings.NotificationSettingsHandler;
 import tamirmo.employee.settings.SettingsFragment;
+import tamirmo.employee.tasks.IOnTaskAdded;
+import tamirmo.employee.tasks.Task;
+import tamirmo.employee.tasks.TasksHandler;
+import tamirmo.employee.tasks.TasksOptionsFragment;
 
 /**
  * Created by Tamir on 09/06/2018.
@@ -29,22 +34,25 @@ import tamirmo.employee.settings.SettingsFragment;
  * This activity holds the navigation view.
  */
 
-// TODO: Handle item missing or needs replacement
-public class MainActivity extends AppCompatActivity /*implements IOnItemPickedListener */{
+public class MainActivity extends AppCompatActivity implements IOnTaskAdded /*implements IOnItemPickedListener */{
     private static final int NOTIFICATION_ID = 1500;
 
     // Views
     private SettingsFragment settingsFragment;
+    private TasksOptionsFragment tasksOptionsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        settingsFragment = new SettingsFragment();
+        TasksHandler.getInstance().setOnTaskAddedListener(this);
 
-        // TODO: Call replace with the list of tasks fragment
-        //replaceFragment(cartOptionsFragment);
+        settingsFragment = new SettingsFragment();
+        tasksOptionsFragment = new TasksOptionsFragment();
+
+        // First fragment is the options
+        replaceFragment(tasksOptionsFragment);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigationView);
 
@@ -57,7 +65,7 @@ public class MainActivity extends AppCompatActivity /*implements IOnItemPickedLi
 
                         switch (item.getItemId()) {
                             case R.id.navigation_tasks:
-                                // TODO: Tasks fragment
+                                selectedFragment = tasksOptionsFragment;
                                 break;
                             case R.id.navigation_settings:
                                 selectedFragment = settingsFragment;
@@ -68,9 +76,8 @@ public class MainActivity extends AppCompatActivity /*implements IOnItemPickedLi
                     }
                 });
 
-        // TODO: Load
         // Loading the notification's settings at first to use later
-        //NotificationSettingsHandler.getInstance().loadSettings(this);
+        NotificationSettingsHandler.getInstance().loadSettings(this);
     }
 
     @Override
@@ -90,14 +97,39 @@ public class MainActivity extends AppCompatActivity /*implements IOnItemPickedLi
         transaction.commit();
     }
 
-    // TODO: Handle item missing or needs replacement alert
-    /*@Override
-    public void onItemPicked(CartItem cartItem) {
-        // When an item is picked, checking if the shopper has it's
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        // Only if there are no more fragments to pop from the back stack
+        if (count == 0) {
+            // Checking if the user really wants to exit
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(getResources().getString(R.string.exit_dialog_title))
+                    .setMessage(getResources().getString(R.string.exit_dialog_msg))
+                    .setPositiveButton(getResources().getString(R.string.exit_dialog_positive_text),
+                            new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.exit_dialog_negative_text), null)
+                    .show();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    @Override
+    public void onTaskAdded(Task addedTask) {
+        // When a task is added, checking if the employee has it's
         // settings as vibrate or sound on and acting accordingly:
 
         if(NotificationSettingsHandler.getInstance().isSoundOn()){
-            MediaPlayer mp = MediaPlayer.create(this, R.raw.pick);
+            MediaPlayer mp = MediaPlayer.create(this, R.raw.task_added);
             mp.start();
         }
 
@@ -113,48 +145,38 @@ public class MainActivity extends AppCompatActivity /*implements IOnItemPickedLi
                 }
             }
         }
-    }
 
-    @Override
-    public void onDiscountAlert(final Discount discountToAlertOf) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Checking if the shopper allows active notification
-                // (modifiable on the notification settings fragment)
-                if(NotificationSettingsHandler.getInstance().isActiveNotificationOn()) {
-                    // Displaying a notification of the discount:
+        // Displaying a notification of the task:
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "SMART_CHANNEL")
-                            .setContentText(String.format("$%.2f instead of $%.2f", discountToAlertOf.getDiscountedPrice(), discountToAlertOf.getOriginalPrice()))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "SMART_CHANNEL")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                    // Displaying an icon according to the discount type:
-                    if (discountToAlertOf.isPersonal()) {
-                        mBuilder.setSmallIcon(R.drawable.discount_menu_icon)
-                                .setContentTitle(discountToAlertOf.getProduct().getName() + " Discount!");
-                    } else {
-                        mBuilder.setSmallIcon(R.drawable.personal_discount)
-                                .setContentTitle(discountToAlertOf.getProduct().getName() + " Personal discount!");
-                    }
+        // Displaying a suitable title (with the product's name and task type):
+        String notificationTitle = null;
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        if(addedTask.getTaskType() == Task.TaskType.EXPIRED){
+            notificationTitle = addedTask.getProductOfTask().getName() + " Expired!";
+        }else if(addedTask.getTaskType() == Task.TaskType.OUT_OF_STOCK) {
+            notificationTitle = addedTask.getProductOfTask().getName() + " Out of stock!";
+        }
 
-                        NotificationChannel channel = new NotificationChannel("SMART_CHANNEL",
-                                "S-mart channel",
-                                NotificationManager.IMPORTANCE_DEFAULT);
+        mBuilder.setSmallIcon(R.drawable.tasks_menu_icon)
+                .setContentTitle(notificationTitle);
 
-                        if(notificationManager != null) {
-                            notificationManager.createNotificationChannel(channel);
-                            notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-                        }
-                    }else{
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-                        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-                    }
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+            NotificationChannel channel = new NotificationChannel("SMART_CHANNEL",
+                    "S-mart channel",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+
+            if(notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
             }
-        });
-    }*/
+        }else{
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+            notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        }
+    }
 }

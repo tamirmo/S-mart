@@ -45,40 +45,66 @@ public final class SmartDataLoader {
 			products.add(new Product(1, "Coca Cola", 0, 0.25, 
 					//5, 13,
 					5,9,
-					1.5, Product.UnitType.L));
+					1.5, Product.UnitType.L,
+					// Number of items in stock
+					10));
 			products.add(new Product(2, "Banana", 3, 2.99, 
 					1, 0, 
-					1, Product.UnitType.KG));
+					1, Product.UnitType.KG,
+					// Number of items in stock
+					1));
 			products.add(new Product(3, "Sprite", 0, 0.15, 
 					//11, 13, 
 					10, 9,
-					1.5, Product.UnitType.L));
+					1.5, Product.UnitType.L,
+					// Number of items in stock (out of stock example)
+					0));
 			products.add(new Product(4, "Avokado", 2, 4.99, 
 					3, 3, 
-					1, Product.UnitType.KG));
+					1, Product.UnitType.KG,
+					// Number of items in stock
+					10));
 			products.add(new Product(5, "Apple", 3, 3.99, 
 					0, 1, 
-					1, Product.UnitType.KG));
+					1, Product.UnitType.KG,
+					// Number of items in stock
+					10));
 			products.add(new Product(6, "Cucumber", 2, 1.99, 
 					4, 3, 
-					1, Product.UnitType.KG));
-			products.add(new Product(7, "Milk", 1, 0.15, 
+					1, Product.UnitType.KG,
+					// Number of items in stock
+					10));
+			Product milk = new Product(7, "Milk", 1, 0.15, 
 					//3, 13,
 					9, 9,
-					7, Product.UnitType.L));
+					7, Product.UnitType.L,
+					// Number of items in stock
+					10);
+			// Setting the milk as expired for demonstration
+			milk.setExpired(true);
+			products.add(milk);
+			
 			products.add(new Product(8, "Soy chocolate", 1, 0.15, 
 					12, 9, 
-					125, Product.UnitType.G));
+					125, Product.UnitType.G,
+					// Number of items in stock
+					10));
 			products.add(new Product(9, "Lindt chocolate", 4, 0.15, 
 					3, 6, 
-					100, Product.UnitType.G));
+					100, Product.UnitType.G,
+					// Number of items in stock
+					10));
 			products.add(new Product(10, "Loacker chocolate bites", 4, 0.15, 
 					//12, 8,
 					6, 6,
-					250, Product.UnitType.G));
+					250, Product.UnitType.G,
+					// Number of items in stock
+					10));
 			products.add(new Product(11, "Twix minis", 4, 0.15, 
 					9, 6, 
-					187, Product.UnitType.G));
+					187, Product.UnitType.G,
+					// Number of items in stock
+					10));
 			
 			SmartDataManager.getInstance().saveProductsToFile(SmartDataManager.PRODUCTS_FILE, products);
 		}

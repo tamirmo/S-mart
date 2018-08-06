@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/s_mart_ui_color"
+    android:clickable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="5dp">
+        <TextView
+            android:id="@+id/next_task_title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next_item_title"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="25sp"/>
+        <TextView
+            android:id="@+id/next_task_text_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginLeft="10sp"
+            android:layout_toRightOf="@id/next_task_title_text_view"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="25sp"/>
+        <TextView
+            android:id="@+id/next_task_type_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_toRightOf="@id/next_task_text_text_view"
+            android:layout_marginLeft="5sp"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="25sp"/>
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/map_grid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:background="@drawable/map"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:baselineAligned="false">
+        <ImageView
+            android:id="@+id/show_list_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/tasks_list"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/list_navigation_btn_text"
+            android:layout_below="@id/show_list_btn"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</LinearLayout>

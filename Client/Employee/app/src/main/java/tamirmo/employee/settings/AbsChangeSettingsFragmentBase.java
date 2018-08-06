@@ -50,6 +50,12 @@ public abstract class AbsChangeSettingsFragmentBase extends Fragment implements 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        clearFields();
+    }
+
     protected void showLoading(){
         mainFrame.bringChildToFront(loadingLayout);
         changeSettingLayout.setVisibility(View.GONE);
@@ -129,4 +135,8 @@ public abstract class AbsChangeSettingsFragmentBase extends Fragment implements 
     public abstract void onConfirmClicked();
     public abstract int getSettingChangedDialogMessageResId();
     public abstract int getSettingWrongDialogMessageResId();
+    /**
+     * Clearing the text fields from last time the user was in the fragment
+     */
+    public abstract void clearFields();
 }

@@ -142,3 +142,9 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
+# Including the installation folder
+
+!/S-mart-installations/Server/S-mart-Server.jar
+!/S-mart-installations/Employee_app/S-mart-Employee.apk
+!/S-mart-installations/Shopper_app/S-mart-Shopper.apk

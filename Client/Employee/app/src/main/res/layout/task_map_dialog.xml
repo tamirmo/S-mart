@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/round_frame_shape_task">
+
+    <ImageView
+        android:id="@+id/task_product_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/task_product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/task_product_image"
+        android:textColor="@color/s_mart_text_color"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/task_type_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/task_product_name"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"/>
+</RelativeLayout>

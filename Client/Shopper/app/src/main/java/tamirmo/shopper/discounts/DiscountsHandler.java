@@ -1,5 +1,6 @@
 package tamirmo.shopper.discounts;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -65,10 +66,21 @@ public class DiscountsHandler implements IOnItemPickedListener {
     public void onItemPicked(CartItem cartItem) {
         // Checking there are discounts
         if(discounts.size() > 0) {
-            // Creating a random discount to alert and notifying listener:
-            int randomDiscount = rand.nextInt(discounts.size() - 1);
-            if(onDiscountAlertListener != null){
-                onDiscountAlertListener.onDiscountAlert(discounts.get(randomDiscount));
+            // Pulling only personal discounts:
+            List<Discount> personalDiscounts = new ArrayList<>();
+            for(Discount discount : discounts){
+                if(discount.isPersonal()){
+                    personalDiscounts.add(discount);
+                }
+            }
+
+            // Checking there are personal discounts
+            if(personalDiscounts.size() > 0) {
+                // Creating a random discount to alert and notifying listener:
+                int randomDiscount = rand.nextInt(personalDiscounts.size() - 1);
+                if (onDiscountAlertListener != null) {
+                    onDiscountAlertListener.onDiscountAlert(personalDiscounts.get(randomDiscount));
+                }
             }
         }
     }

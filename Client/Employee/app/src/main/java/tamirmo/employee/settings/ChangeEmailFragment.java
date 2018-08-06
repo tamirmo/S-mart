@@ -44,4 +44,12 @@ public class ChangeEmailFragment extends AbsChangeSettingsFragmentBase {
     public int getSettingWrongDialogMessageResId() {
         return R.string.email_change_dialog_err;
     }
+
+    @Override
+    public void clearFields() {
+        if(emailEditText != null) {
+            // Clearing the text from the last time
+            emailEditText.setText("");
+        }
+    }
 }

@@ -19,7 +19,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     private ChangeEmailFragment changeEmailFragment;
     private ChangePasswordFragment changePasswordFragment;
-    // TODO: Notification fragment
     private NotificationSettingsFragment notificationSettingsFragment;
 
     @Override

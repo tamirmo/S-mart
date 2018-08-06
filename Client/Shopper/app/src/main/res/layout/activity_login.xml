@@ -13,8 +13,6 @@
         android:orientation="vertical"
         android:weightSum="2">
 
-        <!--TODO: Add logo in this image view !-->
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="225dp"
@@ -38,7 +36,8 @@
                 android:hint="@string/email_edit_text_title"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/s_mart_text_color"
-                android:textSize="25sp" />
+                android:textSize="25sp"
+                android:text="admin@gmail.com"/>
 
             <EditText
                 android:id="@+id/password_edit_text"
@@ -50,7 +49,8 @@
                 android:hint="@string/password_edit_text_title"
                 android:inputType="textPassword"
                 android:textColor="@color/s_mart_text_color"
-                android:textSize="25sp" />
+                android:textSize="25sp"
+                android:text="1"/>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/log_in_btn"

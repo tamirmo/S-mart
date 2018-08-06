@@ -10,5 +10,4 @@
         android:id="@+id/navigation_settings"
         android:icon="@drawable/settings_menu_icon"
         android:title="@string/settings_menu_title"/>
-
 </menu>

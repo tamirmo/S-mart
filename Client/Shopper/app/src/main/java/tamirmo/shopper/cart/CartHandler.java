@@ -112,7 +112,7 @@ public class CartHandler {
                 cartItem.setPicked(true);
 
                 // When an item picked, we need to recalculate the next item
-                calculateNextCartItem(cartItem);
+                calculateNextCartItem();
 
                 fireItemPicked(cartItem);
 
@@ -125,17 +125,22 @@ public class CartHandler {
 
     /**
      * Calculating the next item for the shopper to grab.
-     * @param pickedItem CartItem The last picked item, null if none
      */
-    private void calculateNextCartItem(CartItem pickedItem){
+    private void calculateNextCartItem(){
         CartItem nextItem = null;
 
-        int currItemPickedIndex = cart.indexOf(pickedItem);
+        // Creating a list of left items (not picked):
+        List<CartItem> unpickedItems = new ArrayList<>();
+        for(CartItem item : cart){
+            if(!item.isPicked()){
+                unpickedItems.add(item);
+            }
+        }
 
         // Checking if there is a next item on the cart
-        if (cart.size() > currItemPickedIndex + 1) {
-            // Setting it as the next item
-            nextItem = cart.get(currItemPickedIndex + 1);
+        if (unpickedItems.size() > 0) {
+            // Pulling the first unpicked item
+            nextItem = unpickedItems.get(0);
         }
 
         nextCartItem = nextItem;

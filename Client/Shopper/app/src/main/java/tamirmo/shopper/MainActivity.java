@@ -3,6 +3,7 @@ package tamirmo.shopper;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -105,6 +107,32 @@ public class MainActivity extends AppCompatActivity implements IOnItemPickedList
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragmentToReplaceIn);
         transaction.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        // Only if there are no more fragments to pop from the back stack
+        if (count == 0) {
+            // Checking if the user really wants to exit
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(getResources().getString(R.string.exit_dialog_title))
+                    .setMessage(getResources().getString(R.string.exit_dialog_msg))
+                    .setPositiveButton(getResources().getString(R.string.exit_dialog_positive_text),
+                            new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.exit_dialog_negative_text), null)
+                    .show();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 
     @Override

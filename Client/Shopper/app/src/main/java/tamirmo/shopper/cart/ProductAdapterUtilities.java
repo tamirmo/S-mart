@@ -119,7 +119,10 @@ public final class ProductAdapterUtilities {
         switch (clickedButton.getId())
         {
             case R.id.curr_cart_item_plus:
-                CartHandler.getInstance().increaseAmount(cartItem);
+                // Checking we have enough items in stock
+                if(cartItem.getProduct().getStockCount() > cartItem.getAmount()) {
+                    CartHandler.getInstance().increaseAmount(cartItem);
+                }
                 break;
             case R.id.curr_cart_item_minus:
                 boolean wasItemRemoved = CartHandler.getInstance().decreaseAmount(cartItem);

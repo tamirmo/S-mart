@@ -28,7 +28,6 @@ public class ServerConnectionHandler implements IUdpMessageReceived {
 
     // The requests codes that are sent between the server and the client app
     private static final int SHOPPER_LOGIN_REQUEST = 0;
-    private static final int EMPLOYEE_LOGIN_REQUEST = 1;
     private static final int GET_DEPARTMENTS_REQUEST = 2;
     private static final int GET_PRODUCTS_REQUEST = 3;
     private static final int GET_DISCOUNTS_REQUEST = 4;
