@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/s_mart_background"
+    android:id="@+id/main_layout">
+
+    <LinearLayout
+        android:id="@+id/receipt_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/cart_header_text_view"
+            style="@style/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/receipt_header_text" />
+
+        <ListView
+            android:id="@+id/receipt_list_view"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="8" />
+
+        <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal">
+            <TextView
+            android:id="@+id/receipt_total_sum_title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="30sp"
+            android:text="@string/cart_sum_text"
+            android:layout_marginRight="10sp"/>
+            <TextView
+            android:id="@+id/receipt_total_sum_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/s_mart_text_color"
+            android:layout_toRightOf="@id/receipt_total_sum_title_text_view"
+            android:textSize="30sp"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="194dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/indeterminateBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="7dp" />
+
+        <TextView
+            android:id="@+id/loading_game_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sent_receipt_message"
+            android:textColor="@color/s_mart_text_color"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</FrameLayout>

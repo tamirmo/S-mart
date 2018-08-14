@@ -17,6 +17,8 @@
         android:id="@+id/search_department_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1"
         android:layout_weight="1"
         android:layout_below="@id/department_title_text_view"
         android:textColor="@color/s_mart_text_color"

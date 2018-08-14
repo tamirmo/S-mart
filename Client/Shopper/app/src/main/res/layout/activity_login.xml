@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/s_mart_background"
@@ -12,8 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="2">
-
-        <!--TODO: Add logo in this image view !-->
 
         <ImageView
             android:layout_width="match_parent"
@@ -53,7 +52,7 @@
                 android:textSize="25sp" />
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/log_in_btn"
+                android:id="@+id/login_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"

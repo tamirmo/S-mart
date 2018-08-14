@@ -3,6 +3,7 @@ package BusinessLogic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;  
 import javax.mail.*;  
@@ -67,7 +68,8 @@ public class Messenger {
 		OutputStream output;
 		PrintWriter writer;
 		
-		try(Socket connection = new Socket(userIP, CLIENT_PORT)){
+		try(Socket connection = new Socket()){
+			connection.connect(new InetSocketAddress(userIP,CLIENT_PORT),3000);
 			output = connection.getOutputStream();
 			writer = new PrintWriter(output, true);
 			writer.println(message);

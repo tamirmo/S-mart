@@ -102,7 +102,7 @@ public class ServerAdaptor  {
 		// A thread to deal with all requests of a specific client
 		class ClientThread extends Thread {
 			// A word to point when it is the end of a stream/response
-			private static final String END_OF_MESSAGE = "\nover";
+			private static final String END_OF_MESSAGE = "over";
 			
 			// Class attributes
 			private Socket connection;
@@ -155,10 +155,10 @@ public class ServerAdaptor  {
 				reader = new BufferedReader(new InputStreamReader(input));
 				incomingRequest = new StringBuilder();
 				
-				// Reads incoming request, which is made from a single line
-				line = reader.readLine();	
+				// Reads incoming requests
+				line = reader.readLine();
 				incomingRequest.append(line);
-
+			
 				return incomingRequest.toString();
 			}
 

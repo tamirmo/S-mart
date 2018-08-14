@@ -2,40 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/s_mart_ui_color">
+    android:background="@drawable/s_mart_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="0dp"
         android:layout_weight="1"
-        android:layout_margin="5dp">
+        android:background="@color/s_mart_ui_color">
+
         <TextView
             android:id="@+id/next_item_title_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="@string/next_item_title"
-            android:textColor="@color/s_mart_text_color"
-            android:textSize="25sp"/>
+            android:textAllCaps="false"
+            android:textColor="@color/s_mart_titles_color"
+            android:textSize="25sp"
+            android:textStyle="bold|italic" />
+
         <TextView
-            android:id="@+id/next_item_amount_text_view"
+            android:id="@+id/next_item_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_toRightOf="@id/next_item_title_text_view"
+            android:layout_margin="5dp"
             android:layout_marginLeft="10sp"
-            android:textColor="@color/s_mart_text_color"
-            android:textSize="25sp"/>
-        <TextView
-            android:id="@+id/next_item_text_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/next_item_title_text_view"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_toRightOf="@id/next_item_amount_text_view"
-            android:layout_marginLeft="5sp"
-            android:textColor="@color/s_mart_text_color"
-            android:textSize="25sp"/>
+            android:textColor="@color/s_mart_titles_color"
+            android:textSize="25sp"
+            android:textStyle="bold|italic" />
     </RelativeLayout>
 
     <GridView
@@ -49,48 +47,38 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:baselineAligned="false"
         android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:background="@color/s_mart_ui_color">
+
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
             <ImageView
                 android:id="@+id/show_list_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/shopping_list"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/list_navigation_btn_text"
-                android:layout_below="@id/show_list_btn"
-                android:textColor="@color/s_mart_text_color"
-                android:textSize="20sp"
-                android:layout_centerHorizontal="true"/>
+                android:src="@drawable/shopping_list" />
+
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
             <ImageView
                 android:id="@+id/finish_navigation_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/finish_nav"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/finish_navigation_btn_text"
-                android:textColor="@color/s_mart_text_color"
-                android:textSize="12sp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@id/finish_navigation_btn" />
+                android:src="@drawable/finish_nav" />
+
         </RelativeLayout>
     </LinearLayout>
 

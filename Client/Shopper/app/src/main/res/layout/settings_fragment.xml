@@ -6,13 +6,13 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
+        style="@style/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_fragment_header"
-        android:textColor="@color/s_mart_text_color"
         android:textAlignment="center"
-        android:textSize="30sp"
-        style="@style/header"/>
+        android:textColor="@color/s_mart_text_color"
+        android:textSize="30sp" />
 
     <Button
         android:id="@+id/change_email_btn"

@@ -69,6 +69,12 @@
  "empty PRODUCT_ID EMPLOYEE_ID" - Notify an employee that a product's shelf is empty
  	- PRODUCT_ID : int
  	- EMPLOYEE_ID : int
+ 	
+ "move USER_TYPE USER_ID LOCATION_X LOCATION_Y" - moves the digital user's location
+ 	- USER_TYPE : {"shopper":string, "employee":string}
+ 	- USER_ID : {SHOPPER_ID:int, EMPLOYEE_ID:int}
+ 	- LOCATION_X : int
+ 	- LOCATION_Y : int
 		 
  "exit" - Stops the server 	
  

@@ -1,4 +1,4 @@
-package tamirmo.shopper.discounts;
+package tamirmo.shopper.Discounts;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -11,41 +11,71 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import smart.data.Discount;
+import java.util.HashMap;
+import java.util.List;
+
+import tamirmo.shopper.Database.Class.Discount;
+import tamirmo.shopper.Database.Class.Product;
 import tamirmo.shopper.R;
 
-/**
- * Created by Tamir on 17/06/2018.
- * An adapter for the list of discounts in the discounts fragment.
- */
+
 
 public class DiscountsListAdapter extends ArrayAdapter<Discount> {
 
     private Context context;
     private LayoutInflater layoutinflater;
 
-    DiscountsListAdapter(@NonNull Context context) {
+    // Class attribute
+    private List<Discount> discounts;
+    private List<Product> products;
+    private HashMap<String, Product> productMap; // Key = productID, value = product
+
+    DiscountsListAdapter(@NonNull Context context, List<Discount> discounts, List<Product> products) {
         super(context, R.layout.discount_list_item_layout);
         layoutinflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
+
+        this.discounts = discounts;
+        this.products = products;
+        productMap = getProductMap(products);
+    }
+
+    // Returns a HashMap from a List of products
+    public HashMap<String, Product> getProductMap(List<Product> productList){
+        HashMap<String, Product> productMap = new HashMap<String, Product>();
+
+        for(Product product: products){
+            productMap.put(product.getProductId(), product);
+        }
+
+        return productMap;
+    }
+
+    // The items each slot in the listView holds/presents
+    private static class DiscountViewHolder{
+        ImageView image;
+        TextView name;
+        TextView originalPrice;
+        TextView discountedPrice;
+        ImageView personalImage;
     }
 
     @Override
     public int getCount() {
-        return DiscountsHandler.getInstance().getDiscounts().size();
+        return discounts.size();
     }
 
     @Nullable
     @Override
     public Discount getItem(int position) {
-        return DiscountsHandler.getInstance().getDiscounts().get(position);
+        return discounts.get(position);
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        // Get the discount for this position
         Discount discount = getItem(position);
+        Product product = productMap.get(discount.getProductId());
 
         DiscountViewHolder listViewHolder;
         if(convertView == null){
@@ -62,21 +92,24 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
             listViewHolder = (DiscountViewHolder)convertView.getTag();
         }
 
-        listViewHolder.name.setText(discount.getProduct().getName());
-        listViewHolder.originalPrice.setText(String.format("$%.2f", discount.getOriginalPrice()));
+
+        listViewHolder.originalPrice.setText( String.format("$%s",discount.getNormalPrice()));
         // Creating a line on top of the original price
         listViewHolder.originalPrice.setPaintFlags(listViewHolder.originalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        listViewHolder.discountedPrice.setText(String.format("$%.2f", discount.getDiscountedPrice()));
+        listViewHolder.discountedPrice.setText( String.format("$%s",discount.getDiscountedPrice()));
 
-        int resourceID = context.getResources().getIdentifier(
-                "item_" + discount.getProduct().getProductId(),
-                "drawable",
-                "tamirmo.shopper"
-        );
+        if(product != null) {
+            listViewHolder.name.setText(product.getName());
+            int resourceID = context.getResources().getIdentifier(
+                    "item_" + product.getProductId(),
+                    "drawable",
+                    "tamirmo.shopper"
+            );
+            listViewHolder.image.setImageResource(resourceID);
+        }
 
-        listViewHolder.image.setImageResource(resourceID);
-
-        if(discount.isPersonal()){
+        // Shows Personal Discount icon
+        if(!discount.getShopperId().equals(Discount.GENERAL_DISCOUNT_SHOPPER_ID)){
             listViewHolder.personalImage.setVisibility(View.VISIBLE);
         }else{
             listViewHolder.personalImage.setVisibility(View.INVISIBLE);
@@ -86,11 +119,11 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
         return convertView;
     }
 
-    private static class DiscountViewHolder{
-        ImageView image;
-        TextView name;
-        TextView originalPrice;
-        TextView discountedPrice;
-        ImageView personalImage;
+    // Updates the class data
+    public void updateData(){
+        productMap = getProductMap(products);
+
+        // Changes the view based on the new data
+        this.notifyDataSetChanged();
     }
 }

@@ -44,13 +44,18 @@ public class ServerSecurity {
 			userIP = messageParts[USER_IP_PART];
 			userID = messageParts[USER_ID_PART];
 			userCommand = messageParts[USER_COMMAND_PART];
-			System.out.println(senderIP);
 			
 			// Checks for a man-in-the-middle attack
+			response = server.processCommandType(userType, userIP, userID, userCommand);
+			
+			// Checks user recorded IP-Address versus received IP-Address
+			// Close it if you work from android studio or have several IP-Addresses
+			/*
 			if(userIP.equals(senderIP))
 				response = server.processCommandType(userType, userIP, userID, userCommand);
 			else
 				throw new Exception(UNAUTHORIZED_USER_EXCEPTION + EXCEPTION_DELIMITER + senderIP);
+			*/
 		}catch(ArrayIndexOutOfBoundsException e) {
 			error = INVALID_USER_EXCEPTION + EXCEPTION_DELIMITER + message;
 		}catch(Exception e) {

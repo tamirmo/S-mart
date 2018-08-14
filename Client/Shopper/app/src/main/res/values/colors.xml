@@ -9,6 +9,7 @@
     <color name="app_background_color_old">@android:color/holo_green_dark</color>
     <color name="app_text_color">@android:color/white</color>
 
+    <!-- S-Mart application colors-->
     <color name="s_mart_titles_color">#ffdb4d</color>
     <color name="s_mart_ui_color">#FF0000</color>
     <color name="s_mart_text_color">#000000</color>

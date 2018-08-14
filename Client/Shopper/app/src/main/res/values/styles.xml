@@ -9,6 +9,7 @@
         <item name="android:layoutDirection">ltr</item>
     </style>
 
+
     <style name="header" parent="android:Widget.TextView">
         <item name="android:textSize">30sp</item>
         <item name="android:textColor">@android:color/black</item>
@@ -21,7 +22,6 @@
     <style name="AnimatedButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/s_mart_titles_color</item>
         <item name="colorButtonNormal">@color/s_mart_ui_color</item>
-
     </style>
 
 </resources>

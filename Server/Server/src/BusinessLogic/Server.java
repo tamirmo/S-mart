@@ -28,6 +28,7 @@ public class Server {
 	private static final String SUCCESS_RESPONSE = "success";
 	private static final String END_OF_MESSAGE = "\nover"; // End of a stream
 	private static final String MESSAGE_DELIMITER = " ";
+	private static final String RECEIPT_DELIMITER = " DELIMITER ";
 	private static final String END_OF_FILE = "\\Z";
 	
 	// Class Exceptions
@@ -69,6 +70,7 @@ public class Server {
 	private static final String EXPIRE_COMMAND = "expire";
 	private static final String MISPLACE_COMMAND = "misplace";
 	private static final String EMPTY_COMMAND = "empty";
+	private static final String MOVE_COMMAND = "move";
 	
 	// Request Names 
 	private static final String HELP_REQUEST = "help";
@@ -193,6 +195,9 @@ public class Server {
 			case MISPLACE_COMMAND:
 			case EMPTY_COMMAND:
 				response = sendEmployeeEvent(command, commandParts[COMMAND_ARGS_PART]);
+				break;
+			case MOVE_COMMAND:
+				response = moveUserEvent(command, commandParts[COMMAND_ARGS_PART]);
 				break;
 			default:
 				throw new Exception(className + EXCEPTION_DELIMITER + UNKNOWN_COMMAND + EXCEPTION_DELIMITER + commandParts[COMMAND_NAME_PART]);
@@ -328,6 +333,39 @@ public class Server {
 		
 		Messenger.sendEvent(onlineEmployees.get(employeeID), command + END_OF_MESSAGE);
 		
+		return SUCCESS_RESPONSE;
+	}
+	
+	// Moves a user digital location
+	private String moveUserEvent(String command, String commandArgs) throws Exception {
+		String[] commandParts = commandArgs.split(MESSAGE_DELIMITER, 3);
+		String userType, userId;
+
+		try {
+			userType = commandParts[0];
+			userId = commandParts[1];
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new Exception(className + EXCEPTION_DELIMITER + INVALID_COMMAND + EXCEPTION_DELIMITER + commandArgs);
+		}
+
+		switch (userType.toUpperCase()) {
+
+		case SHOPPER_USER:
+			if (!onlineShoppers.containsKey(userId))
+				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+			Messenger.sendEvent(onlineShoppers.get(userId), command + END_OF_MESSAGE);
+			break;
+
+		case EMPLOYEE_USER:
+			if (!onlineEmployees.containsKey(userId))
+				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+			Messenger.sendEvent(onlineEmployees.get(userId), command + END_OF_MESSAGE);
+			break;
+
+		default:
+			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);
+		}
+
 		return SUCCESS_RESPONSE;
 	}
 	
@@ -472,15 +510,16 @@ public class Server {
 	}
 	
 	// Sends a receipt to its owner E-MAIL
-	private String sendReceipt(String userType, String userIP, String userID, String recipt) throws Exception {
+	private String sendReceipt(String userType, String userIP, String userID, String receipt) throws Exception {
 		String email;
+		String messageReceipt = receipt.replaceAll(RECEIPT_DELIMITER, "\n");
 		
 		switch(userType) {
 		case SHOPPER_USER:
 			if(!onlineShoppers.containsKey(userID))
 				throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER + EXCEPTION_DELIMITER + userID);
 			email = manager.getShopperMail(userID);
-			Messenger.sendReciept(userID, email, recipt);
+			Messenger.sendReciept(userID, email, messageReceipt);
 			break;
 		default:
 			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);

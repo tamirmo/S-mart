@@ -1,35 +1,48 @@
-package tamirmo.shopper.discounts;
+package tamirmo.shopper.Discounts;
+
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.util.List;
+
+import tamirmo.shopper.Database.Class.Discount;
+import tamirmo.shopper.Database.Class.Product;
+import tamirmo.shopper.FragmentWithUpdates;
+import tamirmo.shopper.MainActivity;
 import tamirmo.shopper.R;
 
-/**
- * Created by Tamir on 17/06/2018.
- * A fragment displaying all discounts (personal and general).
- */
 
-public class DiscountsFragment extends Fragment {
+public class DiscountsFragment extends FragmentWithUpdates {
 
+    // Class attribute
     private DiscountsListAdapter discountsListAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.discounts_fragment, container, false);
 
-        // Initializing and setting the list adapter:
-        discountsListAdapter = new DiscountsListAdapter(getContext());
+        // Gets needed data
+        List<Discount> discounts = ((MainActivity)getActivity()).getDiscounts();
+        List<Product> products = ((MainActivity)getActivity()).getProducts();
+
+        // Builds the list adapter, which controls how each slot look like
+        discountsListAdapter = new DiscountsListAdapter(getContext(),discounts, products);
+
+        // Building the list
         ListView discountsListView = rootView.findViewById(R.id.discounts_list);
         discountsListView.setAdapter(discountsListAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void updateFragment() {
+        discountsListAdapter.updateData();
     }
 }

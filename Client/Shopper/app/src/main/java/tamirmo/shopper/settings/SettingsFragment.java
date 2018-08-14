@@ -1,22 +1,23 @@
-package tamirmo.shopper.settings;
+package tamirmo.shopper.Settings;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import tamirmo.shopper.FragmentWithUpdates;
+import tamirmo.shopper.MainActivity;
 import tamirmo.shopper.R;
+import tamirmo.shopper.Settings.NotificationSettings.NotificationSettingsFragment;
+import tamirmo.shopper.Settings.UserSettings.ChangeCreditFragment;
+import tamirmo.shopper.Settings.UserSettings.ChangeEmailFragment;
+import tamirmo.shopper.Settings.UserSettings.ChangePasswordFragment;
 
-/**
- * Created by Tamir on 17/06/2018.
- * The main settings fragment (holds the options button for the settings)
- */
+public class SettingsFragment extends FragmentWithUpdates implements View.OnClickListener{
 
-public class SettingsFragment extends Fragment implements View.OnClickListener{
-
+    // Class Fragments
     private ChangeEmailFragment changeEmailFragment;
     private ChangeCreditFragment changeCreditFragment;
     private ChangePasswordFragment changePasswordFragment;
@@ -43,28 +44,29 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        Fragment selectedFragment = null;
+
         switch (v.getId()){
             case R.id.change_credit_btn:
-                moveToFragment(changeCreditFragment);
+                selectedFragment = changeCreditFragment;
                 break;
             case R.id.change_email_btn:
-                moveToFragment(changeEmailFragment);
+                selectedFragment = changeEmailFragment;
                 break;
             case R.id.change_password_btn:
-                moveToFragment(changePasswordFragment);
+                selectedFragment = changePasswordFragment;
                 break;
             case R.id.system_settings_btn:
-                moveToFragment(notificationSettingsFragment);
+                selectedFragment = notificationSettingsFragment;
                 break;
+        }
+        if(selectedFragment != null) {
+            ((MainActivity) getActivity()).replaceFragment(selectedFragment, getString(R.string.second_menu),getString(R.string.second_menu),true);
         }
     }
 
-    private void moveToFragment(Fragment fragmentToMoveTo){
-        if(fragmentToMoveTo != null && !fragmentToMoveTo.isAdded() && getActivity() != null) {
-            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.container, fragmentToMoveTo);
-            transaction.addToBackStack(fragmentToMoveTo.getClass().getSimpleName());
-            transaction.commit();
-        }
+    @Override
+    public void updateFragment() {
+        // It doesn't need to do anything
     }
 }

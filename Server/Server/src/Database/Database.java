@@ -534,7 +534,8 @@ public class Database {
 		List<Discount> shopperDiscounts = new ArrayList<Discount>();
 
 		for (Discount discount : discounts) {
-			if (discount.getShopperId().toLowerCase().equals(shopperID.toLowerCase())) {
+			String discountShopperID = discount.getShopperId();
+			if (discountShopperID.equals(shopperID) || discountShopperID.equals(Discount.GENERAL_DISCOUNT_SHOPPER_ID)) {
 				shopperDiscounts.add(discount);
 			}
 		}
