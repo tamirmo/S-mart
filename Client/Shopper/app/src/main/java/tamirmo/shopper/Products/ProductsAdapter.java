@@ -137,15 +137,15 @@ public class ProductsAdapter extends ArrayAdapter<Product> implements View.OnCli
         viewHolder.minus.setOnClickListener(this);
         viewHolder.plus.setTag(position);
         viewHolder.minus.setTag(position);
-        viewHolder.amount.setVisibility(View.VISIBLE);
-        viewHolder.plus.setVisibility(View.VISIBLE);
 
+        if(cartItem != null){
         if(!cartItem.getIsPicked()) {
             viewHolder.minus.setVisibility(View.VISIBLE);
             viewHolder.pickedImage.setVisibility(View.INVISIBLE);
         }else{
             viewHolder.minus.setVisibility(View.INVISIBLE);
             viewHolder.pickedImage.setVisibility(View.VISIBLE);
+            }
         }
 
         // This method is called more than once, avoiding setting the on click every time.

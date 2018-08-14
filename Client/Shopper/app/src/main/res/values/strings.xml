@@ -83,13 +83,18 @@
     <string name="vibration_switch_header">Vibration</string>
     <string name="sound_switch_header">Sound</string>
 
-
     <!-- Notifications Strings -->
     <string name="sale_notification_ticker">S-Mart sent you a new sale</string>
     <string name="sale_notification_title">Your new sale</string>
     <string name="receipt_notification_ticker">S-Mart sent you a receipt</string>
     <string name="receipt_notification_title">S-Mart sent you a receipt</string>
     <string name="receipt_notification_message">Your receipt copy waits at your E-Mail address</string>
+
+    <!-- Shared Repository Keys -->
+    <string name="shared_cart_file">tamirmo.shopper.cart</string>
+    <string name="shared_cart_key">cart</string>
+    <string name="shared_settings_file">tamirmo.shopper.settings</string>
+    <string name="shared_settings_key">settings</string>
 
 
 </resources>

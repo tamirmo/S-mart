@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -29,6 +30,7 @@ import tamirmo.shopper.Database.Class.Product;
 import tamirmo.shopper.Database.Class.Sale;
 import tamirmo.shopper.Database.Class.Shopper;
 import tamirmo.shopper.Database.Class.UserLocation;
+import tamirmo.shopper.Database.Class.UserSettings;
 import tamirmo.shopper.Database.Database;
 import tamirmo.shopper.Login.LoginFragment;
 import tamirmo.shopper.Network.NetworkFragment;
@@ -107,6 +109,27 @@ public class MainActivity extends AppCompatActivity {
 
         // Starts a new database to hold all information from the server locally
         database = new Database();
+
+        // Loads local data from a shared repository
+        SharedPreferences sharedCart = getSharedPreferences(getString(R.string.shared_cart_file), MODE_PRIVATE);
+        SharedPreferences sharedSettings =  getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
+        String defaultValue = null;
+        String cartJson = sharedCart.getString(getString(R.string.shared_cart_key), defaultValue);
+        String settingsJson = sharedSettings.getString(getString(R.string.shared_settings_key), defaultValue);
+        if(cartJson != null){
+            try {
+                database.loadCartFromString(cartJson);
+            }catch(Exception e){
+                // No need to do anything
+            }
+        }
+        if(settingsJson != null){
+            try {
+                database.loadUserSettingsFromString(settingsJson);
+            }catch(Exception e){
+                // No need to do anything
+            }
+        }
 
         // Gets client IP-Address to send messages from the server
         clientIP = getClientIP();
@@ -220,23 +243,6 @@ public class MainActivity extends AppCompatActivity {
         database.loadDepartmentsFromString(getRequest(DEPARTMENT_ITEM_TYPE));
         database.loadProductsFromString(getRequest(PRODUCT_ITEM_TYPE));
         database.loadDiscountsFromString(getRequest(DISCOUNTS_ITEM_TYPE));
-
-        // temp data
-        database.getSales().add(new Sale("1" ,2, 1));
-        database.getSales().add(new Sale("10" ,5, 3));
-        database.getSales().add(new Sale("3" ,4, 2));
-        CartItem item = new CartItem("1");
-        item.setAmount(30);
-        item.setIsPicked(true);
-        database.getCart().add(item);
-        item = new CartItem("5");
-        item.setAmount(5);
-        item.setIsPicked(true);
-        database.getCart().add(item);
-        item = new CartItem("10");
-        item.setAmount(10);
-        item.setIsPicked(true);
-        database.getCart().add(item);
     }
 
     // Starts S-Mart for work
@@ -311,6 +317,9 @@ public class MainActivity extends AppCompatActivity {
     // Returns user location
     public UserLocation getUserLocation(){ return database.getUserLocation();}
 
+    // Returns user Settings
+    public UserSettings getUserSettings(){ return database.getUserSettings();}
+
     // Replaces fragments on fragments container
     public void replaceFragment(Fragment fragmentToReplaceIn, String tagIn, String tagOut, boolean toReturn) {
         activeFragment = (FragmentWithUpdates)fragmentToReplaceIn;
@@ -368,7 +377,8 @@ public class MainActivity extends AppCompatActivity {
     // Logout of the server
     public void logoutRequest() throws Exception {
         String request = LOGOUT_REQUEST;
-        String response = sendRequest(request);
+
+        sendRequest(request);
     }
 
     // Process events from the server
@@ -401,17 +411,21 @@ public class MainActivity extends AppCompatActivity {
 
     // Starts a sound effect
     public void playMusic(int musicId){
-        final MediaPlayer mp = MediaPlayer.create(this, musicId);
-        mp.start();
+        if(database.getUserSettings().getToSound()) {
+            final MediaPlayer mp = MediaPlayer.create(this, musicId);
+            mp.start();
+        }
     }
 
     // Starts a vibration
     public void vibrate(long amount){
-        // Get instance of Vibrator from current Context
-        Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        if(database.getUserSettings().getToVibrate()) {
+            // Get instance of Vibrator from current Context
+            Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-        // Vibrate for 400 milliseconds
-        v.vibrate(amount);
+            // Vibrate for 400 milliseconds
+            v.vibrate(amount);
+        }
     }
 
     // Updates current active fragment
@@ -538,30 +552,53 @@ public class MainActivity extends AppCompatActivity {
 
         // Presents a notification
     public void sendNotification(String ticker, String title, String message) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel notificationChannel = new NotificationChannel("ID", "Name", importance);
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder = new NotificationCompat.Builder(getApplicationContext(), notificationChannel.getId());
-        } else {
-            builder = new NotificationCompat.Builder(getApplicationContext());
-        }
+        if(database.getUserSettings().getToNotify()) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            NotificationCompat.Builder builder = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel notificationChannel = new NotificationChannel("ID", "Name", importance);
+                notificationManager.createNotificationChannel(notificationChannel);
+                builder = new NotificationCompat.Builder(getApplicationContext(), notificationChannel.getId());
+            } else {
+                builder = new NotificationCompat.Builder(getApplicationContext());
+            }
 
-        builder = builder
-                .setSmallIcon(R.mipmap.s_mart_ic_launcher_round)
-                .setContentTitle(title)
-                .setTicker(ticker)
-                .setContentText(message)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true);
-        notificationManager.notify(0, builder.build());
-    }
-
-        // Called when finish() is called
-        @Override
-        protected void onDestroy (){
-            super.onDestroy();
+            builder = builder
+                    .setSmallIcon(R.mipmap.s_mart_ic_launcher_round)
+                    .setContentTitle(title)
+                    .setTicker(ticker)
+                    .setContentText(message)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true);
+            notificationManager.notify(0, builder.build());
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        try {
+            SharedPreferences sharedCart = getSharedPreferences(getString(R.string.shared_cart_file), MODE_PRIVATE);
+            sharedCart.edit().putString(getString(R.string.shared_cart_key), database.getCartJsonString()).apply();
+            SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
+            sharedSettings.edit().putString(getString(R.string.shared_settings_key), database.getUserSettingsJsonString()).apply();
+        }catch(Exception  e){
+            // Nothing to do with it
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            logoutRequest();
+            networkFragment.exit();
+        }catch(Exception  e){
+            // Nothing to do with it
+        }
+
+    }
+}

@@ -308,9 +308,13 @@ public class Server {
 		
 		manager.checkProductID(productID);
 		if(!onlineShoppers.containsKey(shopperID))
-			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + shopperID);
 		
+		try {
 		Messenger.sendEvent(onlineShoppers.get(shopperID), command + END_OF_MESSAGE);
+		}catch(Exception e) {
+			onlineShoppers.remove(shopperID);
+		}
 		
 		return SUCCESS_RESPONSE;
 	}
@@ -329,9 +333,14 @@ public class Server {
 		
 		manager.checkProductID(productID);
 		if(!onlineEmployees.containsKey(employeeID))
-			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
+			throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + employeeID);
 		
+		try {
 		Messenger.sendEvent(onlineEmployees.get(employeeID), command + END_OF_MESSAGE);
+		}catch(Exception e) {
+			onlineEmployees.remove(employeeID);
+			throw new Exception(e.getMessage());
+		}
 		
 		return SUCCESS_RESPONSE;
 	}
@@ -349,19 +358,28 @@ public class Server {
 		}
 
 		switch (userType.toUpperCase()) {
-
 		case SHOPPER_USER:
 			if (!onlineShoppers.containsKey(userId))
-				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
-			Messenger.sendEvent(onlineShoppers.get(userId), command + END_OF_MESSAGE);
+				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + userId);
+			try {
+				Messenger.sendEvent(onlineShoppers.get(userId), command + END_OF_MESSAGE);
+				}catch(Exception e) {
+					onlineShoppers.remove(userId);
+					throw new Exception(e.getMessage());
+				}
 			break;
 
 		case EMPLOYEE_USER:
 			if (!onlineEmployees.containsKey(userId))
-				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + commandArgs);
-			Messenger.sendEvent(onlineEmployees.get(userId), command + END_OF_MESSAGE);
+				throw new Exception(className + EXCEPTION_DELIMITER + OFFLINE_USER + EXCEPTION_DELIMITER + userId);
+			try {
+				Messenger.sendEvent(onlineEmployees.get(userId), command + END_OF_MESSAGE);
+				}catch(Exception e) {
+					onlineEmployees.remove(userId);
+					throw new Exception(e.getMessage());
+				}
 			break;
-
+			
 		default:
 			throw new Exception(className + EXCEPTION_DELIMITER + UNKNONW_USER_TYPE + EXCEPTION_DELIMITER + userType);
 		}

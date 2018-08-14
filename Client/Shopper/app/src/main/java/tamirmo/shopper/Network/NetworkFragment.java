@@ -94,6 +94,16 @@ public class NetworkFragment extends FragmentWithUpdates {
         // It doesn't need to do anything
     }
 
+    // Stops all connections
+    public void exit(){
+        try {
+            eventConnection.interrupt();
+            serverConnection.close();
+        }catch(Exception e){
+            // Nothing to do
+        }
+    }
+
     private class EventConnection extends Thread {
         // Class attributes
         private ServerSocket eventConnection;

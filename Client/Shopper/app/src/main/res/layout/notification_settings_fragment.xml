@@ -20,7 +20,8 @@
         android:layout_margin="20dp"
         android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
-        android:layout_below="@id/notification_settings_header"/>
+        android:layout_below="@id/notification_settings_header"
+        android:theme="@style/SCBSwitch"/>
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/vibrations_switch"
@@ -30,7 +31,8 @@
         android:layout_margin="20dp"
         android:text="@string/vibration_switch_header"
         android:textColor="@color/s_mart_text_color"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:theme="@style/SCBSwitch"/>
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/sound_switch"
@@ -40,6 +42,7 @@
         android:layout_margin="20dp"
         android:textColor="@color/s_mart_text_color"
         android:textSize="20sp"
-        android:layout_below="@id/vibrations_switch"/>
+        android:layout_below="@id/vibrations_switch"
+        android:theme="@style/SCBSwitch" />
 
 </RelativeLayout>
