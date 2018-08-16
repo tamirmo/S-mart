@@ -1,25 +1,24 @@
-package tamirmo.employee.settings;
+package tamirmo.employee.Settings;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import tamirmo.employee.FragmentWithUpdates;
+import tamirmo.employee.MainActivity;
 import tamirmo.employee.R;
+import tamirmo.employee.Settings.NotificationSettings.NotificationSettingsFragment;
+import tamirmo.employee.Settings.UserSettings.ChangeEmailFragment;
+import tamirmo.employee.Settings.UserSettings.ChangePasswordFragment;
 
-/**
- * Created by Tamir on 17/06/2018.
- * The main settings fragment (holds the options button for the settings)
- */
+public class SettingsFragment extends FragmentWithUpdates implements View.OnClickListener{
 
-public class SettingsFragment extends Fragment implements View.OnClickListener{
-
+    // Class Fragments
     private ChangeEmailFragment changeEmailFragment;
     private ChangePasswordFragment changePasswordFragment;
-    // TODO: Notification fragment
     private NotificationSettingsFragment notificationSettingsFragment;
 
     @Override
@@ -41,25 +40,26 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        Fragment selectedFragment = null;
+
         switch (v.getId()){
             case R.id.change_email_btn:
-                moveToFragment(changeEmailFragment);
+                selectedFragment = changeEmailFragment;
                 break;
             case R.id.change_password_btn:
-                moveToFragment(changePasswordFragment);
+                selectedFragment = changePasswordFragment;
                 break;
             case R.id.system_settings_btn:
-                moveToFragment(notificationSettingsFragment);
+                selectedFragment = notificationSettingsFragment;
                 break;
+        }
+        if(selectedFragment != null) {
+            ((MainActivity) getActivity()).replaceFragment(selectedFragment, R.string.different_chain_transaction,true);
         }
     }
 
-    private void moveToFragment(Fragment fragmentToMoveTo){
-        if(fragmentToMoveTo != null && !fragmentToMoveTo.isAdded() && getActivity() != null) {
-            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.container, fragmentToMoveTo);
-            transaction.addToBackStack(fragmentToMoveTo.getClass().getSimpleName());
-            transaction.commit();
-        }
+    @Override
+    public void updateFragment() {
+        // It doesn't need to do anything
     }
 }

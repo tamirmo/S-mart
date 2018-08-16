@@ -8,7 +8,8 @@ android {
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0" }
+        versionName "1.0"
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -18,12 +19,11 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:27.+'
-    compile 'com.android.support:design:27.1.1'
+    compile 'com.android.support:appcompat-v7:27.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile project(':SmartData')
-    compile project(':communication')
-    //include ':SmartData'
-    //include ':communication'
+    compile 'com.android.support:design:27.1.1'
+    compile 'me.relex:circleindicator:1.2.2@aar'
 }

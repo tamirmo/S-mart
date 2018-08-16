@@ -52,7 +52,7 @@
  	- UNIT_AMOUNT : int
  	- BONUS_AMOUNT : int
  
- "place PRODUCT_ID EMPLOYEE_ID" - Places a product on a shelf
+ "place PRODUCT_ID EMPLOYEE_ID" - Places a product correctly on a shelf
  	- PRODUCT_ID : int
  	- EMPLOYEE_ID : int
  

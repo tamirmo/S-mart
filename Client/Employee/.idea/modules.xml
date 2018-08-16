@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Employee.iml" filepath="$PROJECT_DIR$/Employee.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Shopper/SmartData/SmartData.iml" filepath="$PROJECT_DIR$/../Shopper/SmartData/SmartData.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Shopper/communication/communication.iml" filepath="$PROJECT_DIR$/../Shopper/communication/communication.iml" />
     </modules>
   </component>
 </project>

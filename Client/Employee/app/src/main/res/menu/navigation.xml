@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_tasks"
-        android:icon="@drawable/tasks_menu_icon"
-        android:title="@string/tasks_menu_title"/>
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/map_menu_icon"
+        android:title="@string/map_menu_title"/>
 
     <item
         android:id="@+id/navigation_settings"

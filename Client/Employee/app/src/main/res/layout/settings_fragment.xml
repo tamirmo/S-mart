@@ -2,14 +2,17 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background_color"
+    android:background="@drawable/s_mart_background"
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
+        style="@style/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_fragment_header"
-        style="@style/header"/>
+        android:textAlignment="center"
+        android:textColor="@color/s_mart_text_color"
+        android:textSize="30sp" />
 
     <Button
         android:id="@+id/change_email_btn"
@@ -17,7 +20,12 @@
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:layout_margin="10dp"
-        android:text="@string/change_email_header"/>
+        android:text="@string/change_email_header"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:textColor="@color/s_mart_titles_color"
+        android:textStyle="italic"
+        android:theme="@style/AnimatedButton" />
 
     <Button
         android:id="@+id/change_password_btn"
@@ -25,7 +33,12 @@
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:layout_margin="10dp"
-        android:text="@string/change_password_header"/>
+        android:text="@string/change_password_header"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:textColor="@color/s_mart_titles_color"
+        android:textStyle="italic"
+        android:theme="@style/AnimatedButton" />
 
     <Button
         android:id="@+id/system_settings_btn"
@@ -33,5 +46,10 @@
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:layout_margin="10dp"
-        android:text="@string/notifications_settings_header"/>
+        android:text="@string/notifications_settings_header"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:textColor="@color/s_mart_titles_color"
+        android:textStyle="italic"
+        android:theme="@style/AnimatedButton" />
 </LinearLayout>

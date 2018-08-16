@@ -1,38 +1,78 @@
 <resources>
-    <string name="app_name">Employee</string>
+    <!-- Application Strings -->
+    <string name="app_name">S-Mart Employee</string>
 
-    <string name="email_edit_text_title">Enter Email</string>
-    <string name="password_edit_text_title">Enter Password</string>
-    <string name="log_in_btn_text">Log in</string>
-    <string name="connecting">Almost there!</string>
-    <string name="connection_err">Connection error</string>
-    <string name="log_in_err">Log in failed, wrong password or email</string>
-
+    <!-- Bottom Navigation Fragments Names -->
+    <string name="map_menu_title">Map</string>
     <string name="settings_menu_title">Settings</string>
-    <string name="tasks_menu_title">Tasks</string>
 
+    <!-- Fragments Tags -->
+    <string name="network_frag_tag">network</string>
+    <string name="login_frag_tag">login</string>
+    <string name="map_frag_tag">map</string>
+    <string name="settings_frag_tag">settings</string>
+    <string name="change_email_tag">email</string>
+    <string name="change_password_tag">password</string>
+    <string name="change_system_settings_tag">system settings</string>
+    <string name="same_chain_transaction">same</string>
+    <string name="different_chain_transaction">different</string>
+
+    <!-- Login Fragment Strings-->
+    <string name="login_success">Login was successful</string>
+    <string name="email_edit_text_title">Enter E-mail</string>
+    <string name="password_edit_text_title">Enter Password</string>
+    <string name="log_in_btn_text">Login</string>
+    <string name="connecting">Loading...</string>
+    <string name="connection_error">Connection error</string>
+    <string name="login_error">Login values are wrong</string>
+    <string name="data_retrieval_error">Data retrieving error</string>
+
+    <!-- Map Fragment Strings -->
+    <string name="next_item_title">Next: </string>
+    <string name="no_next_item">None</string>
+    <string name="finish_navigation_btn_text">Finish</string>
+    <string name="list_navigation_btn_text">List</string>
+    <string name="dialog_ok_btn_text">OK</string>
+    <string name="empty">empty</string>
+    <string name="misplaced">misplaced</string>
+    <string name="expired">expired</string>
+    <string name="empty_command">Refill the shelf</string>
+    <string name="misplaced_out_command">Remove product from the shelf</string>
+    <string name="misplaced_in_command">Return product to the shelf</string>
+    <string name="expired_command">Throw product to the garbage</string>
+
+    <!-- Settings Fragment Strings -->
     <string name="settings_fragment_header">Configuration</string>
-    <string name="change_email_header">Change email</string>
-    <string name="change_password_header">Change password</string>
-    <string name="change_credit_header">Change credit card</string>
-    <string name="notifications_settings_header">Notifications settings</string>
-
-    <string name="change_email_hint">Enter new email</string>
-    <string name="change_credit_hint">Enter new credit</string>
+    <string name="change_email_header">Change E-mail</string>
+    <string name="change_password_header">Change Password</string>
+    <string name="notifications_settings_header">Notifications Settings</string>
+    <string name="change_email_hint">Enter new e-mail</string>
     <string name="old_password_hint">Enter old password</string>
     <string name="new_password_hint">Enter new password</string>
     <string name="confirm_btn_text">Confirm</string>
-
-    <string name="email_changed_dialog_text">Email changed successfully</string>
+    <string name="email_changed_dialog_text">E-mail changed successfully</string>
     <string name="password_changed_dialog_text">Password changed successfully</string>
-    <string name="credit_changed_dialog_text">Credit changed successfully</string>
+    <string name="changing_email_progress_dialog_text">Changing E-mail...</string>
+    <string name="changing_password_progress_dialog_text">Changing Password...</string>
     <string name="password_change_dialog_err">Password not changed, Try again.</string>
-    <string name="email_change_dialog_err">Email not changed, Try again.</string>
-    <string name="credit_change_dialog_err">Credit not changed, Try again.</string>
-
-    <string name="changing_settings_progress_dialog_text">Working on it</string>
-
+    <string name="email_change_dialog_err">E-mail not changed, Try again.</string>
+    <string name="active_discounts_switch_header">Active Discounts</string>
     <string name="vibration_switch_header">Vibration</string>
     <string name="sound_switch_header">Sound</string>
+
+    <!-- Notifications Strings -->
+    <string name="expire_notification_ticker">S-Mart found an expired product</string>
+    <string name="expire_notification_title">S-Mart found an expired product</string>
+    <string name="expire_notification_message">has expired</string>
+    <string name="misplace_notification_ticker">S-Mart found a misplaced product</string>
+    <string name="misplace_notification_title">S-Mart found a misplaced product</string>
+    <string name="misplace_notification_message">in location </string>
+    <string name="empty_notification_ticker">S-Mart found a product missing</string>
+    <string name="empty_notification_title">S-Mart found a product missing</string>
+    <string name="empty_notification_message">needs a refill</string>
+
+    <!-- Shared Repository Keys -->
+    <string name="shared_settings_file">tamirmo.employee.settings</string>
+    <string name="shared_settings_key">settings</string>
 
 </resources>
