@@ -39,7 +39,7 @@ import tamirmo.shopper.MainMenu.MainMenuFragment;
 import tamirmo.shopper.Discounts.DiscountsFragment;
 import tamirmo.shopper.Settings.ChangeSettingsFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener{
 
     // Class Constants
     private static final long NORMAL_VIBRATE_TIME = 400; // time in milliseconds
@@ -142,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
         loginFragment = new LoginFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.container, loginFragment).commit();
         activeFragment = loginFragment;
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     // Gets IP-Address of current client
@@ -676,5 +678,15 @@ public class MainActivity extends AppCompatActivity {
             // Nothing to do with it
         }
 
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1){
+            Fragment topFrag = getSupportFragmentManager().findFragmentById(R.id.container);
+            if(topFrag instanceof FragmentWithUpdates){
+                this.activeFragment = (FragmentWithUpdates) topFrag;
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package tamirmo.employee.Login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
 
     // Class Constants
     private static final String BASIC_SERVER_IP = "10.0.0.27";
+    private final static String SERVER_IP_KEY = "SERVER_IP";
 
     // Class Widgets
     private EditText emailEditText;
@@ -38,7 +41,9 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         // Sets a basic server IP-Address
-        serverIP = BASIC_SERVER_IP;
+        // Pulling the saved server ip from shared preferences
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        serverIP = sharedPref.getString(SERVER_IP_KEY, BASIC_SERVER_IP);
     }
 
     @Override
@@ -102,6 +107,12 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
                     public void onClick(DialogInterface dialog, int which) {
                         serverIP = serverEditText.getText().toString();
                         dialog.cancel();
+
+                        // Saving the ip entered for next time
+                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(SERVER_IP_KEY, serverIP);
+                        editor.apply();
                     }
                 });
 
