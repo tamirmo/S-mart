@@ -5,13 +5,13 @@ public class CartItem {
     // Class attributes
     private String productID;
     private int amount;
-    private boolean isPicked;
+    private int pickedAmount;
 
     // Class Builder
     public CartItem(String productID){
         this.productID = productID;
         amount = 1;
-        isPicked = false;
+        pickedAmount = 0;
     }
 
     // Returns product id
@@ -29,13 +29,13 @@ public class CartItem {
         this.amount = amount;
     }
 
-    // Returns whether product's items were picked from their shelf
-    public boolean getIsPicked(){
-        return isPicked;
+    // Returns how many products have been taken
+    public int getPickedAmount(){
+        return pickedAmount;
     }
 
-    // Sets product's items picked status
-    public void setIsPicked(boolean isPicked){
-        this.isPicked = isPicked;
+    // Sets how many products have been taken
+    public void setPickedAmount(int pickedAmount){
+        this.pickedAmount = pickedAmount;
     }
 }

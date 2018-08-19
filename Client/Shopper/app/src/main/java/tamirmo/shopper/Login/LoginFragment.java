@@ -1,7 +1,7 @@
 package tamirmo.shopper.Login;
 
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,8 +34,16 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
     private String serverIP;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Sets a basic server IP-Address
+        serverIP = BASIC_SERVER_IP;
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootView = inflater.inflate(R.layout.activity_login, container, false);
+        View rootView = inflater.inflate(R.layout.login_fragment, container, false);
 
         // Gets the widgets on the fragment
         mainFrame = rootView.findViewById(R.id.main_layout);
@@ -43,9 +51,6 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
         loadingLayout = rootView.findViewById(R.id.loading_layout);
         passwordEditText = rootView.findViewById(R.id.password_edit_text);
         emailEditText = rootView.findViewById(R.id.email_edit_text);
-
-        // Sets a basic server IP-Address
-        serverIP = BASIC_SERVER_IP;
 
         // Sets a click listener on login button
         rootView.findViewById(R.id.login_btn).setOnClickListener(this);
@@ -173,6 +178,9 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
                 ((MainActivity)getActivity()).popUpMessageDialog(result);
             }
             else{
+                passwordEditText.setText("");
+                emailEditText.setText("");
+
                 // Starts main application
                 ((MainActivity)getActivity()).start();
             }

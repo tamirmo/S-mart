@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.os.Vibrator;
 
 import java.util.List;
+import java.util.Stack;
 
 import tamirmo.shopper.Database.Class.CartItem;
 import tamirmo.shopper.Database.Class.Department;
@@ -36,7 +37,7 @@ import tamirmo.shopper.Login.LoginFragment;
 import tamirmo.shopper.Network.NetworkFragment;
 import tamirmo.shopper.MainMenu.MainMenuFragment;
 import tamirmo.shopper.Discounts.DiscountsFragment;
-import tamirmo.shopper.Settings.SettingsFragment;
+import tamirmo.shopper.Settings.ChangeSettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,42 +95,28 @@ public class MainActivity extends AppCompatActivity {
     // Bottom Navigation Fragments
     private MainMenuFragment mainMenuFragment;
     private DiscountsFragment discountsFragment;
-    private SettingsFragment settingsFragment;
+    private ChangeSettingsFragment changeSettingsFragment;
+
+    // Fragment stack to allow better movement with the backStack
+    private Stack<FragmentWithUpdates> fragmentStack;
+
+    // Current fragment on screen, to be updated when needed
+    private FragmentWithUpdates activeFragment;
 
     // Class attributes
     private String clientIP;
     private String clientID;
     private Database database;
-    private FragmentWithUpdates activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fragmentStack = new Stack<FragmentWithUpdates>();
+
         // Starts a new database to hold all information from the server locally
         database = new Database();
-
-        // Loads local data from a shared repository
-        SharedPreferences sharedCart = getSharedPreferences(getString(R.string.shared_cart_file), MODE_PRIVATE);
-        SharedPreferences sharedSettings =  getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
-        String defaultValue = null;
-        String cartJson = sharedCart.getString(getString(R.string.shared_cart_key), defaultValue);
-        String settingsJson = sharedSettings.getString(getString(R.string.shared_settings_key), defaultValue);
-        if(cartJson != null){
-            try {
-                database.loadCartFromString(cartJson);
-            }catch(Exception e){
-                // No need to do anything
-            }
-        }
-        if(settingsJson != null){
-            try {
-                database.loadUserSettingsFromString(settingsJson);
-            }catch(Exception e){
-                // No need to do anything
-            }
-        }
 
         // Gets client IP-Address to send messages from the server
         clientIP = getClientIP();
@@ -153,7 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Adds a login fragment on the top of the Fragment stack
         loginFragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.container, loginFragment, getString(R.string.login_frag_tag)).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, loginFragment).commit();
+        activeFragment = loginFragment;
     }
 
     // Gets IP-Address of current client
@@ -243,6 +231,27 @@ public class MainActivity extends AppCompatActivity {
         database.loadDepartmentsFromString(getRequest(DEPARTMENT_ITEM_TYPE));
         database.loadProductsFromString(getRequest(PRODUCT_ITEM_TYPE));
         database.loadDiscountsFromString(getRequest(DISCOUNTS_ITEM_TYPE));
+
+        // Loads local data from a shared repository
+        SharedPreferences sharedCart = getSharedPreferences(getString(R.string.shared_cart_file), MODE_PRIVATE);
+        SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
+        String defaultValue = null;
+        String cartJson = sharedCart.getString(getString(R.string.shared_cart_key) + clientID, defaultValue);
+        String settingsJson = sharedSettings.getString(getString(R.string.shared_settings_key)  + clientID, defaultValue);
+        if (cartJson != null) {
+            try {
+                database.loadCartFromString(cartJson);
+            } catch (Exception e) {
+                // No need to do anything
+            }
+        }
+        if (settingsJson != null) {
+            try {
+                database.loadUserSettingsFromString(settingsJson);
+            } catch (Exception e) {
+                // No need to do anything
+            }
+        }
     }
 
     // Starts S-Mart for work
@@ -250,38 +259,53 @@ public class MainActivity extends AppCompatActivity {
         // Bottom Navigation fragments are created
         mainMenuFragment = new MainMenuFragment();
         discountsFragment = new DiscountsFragment();
-        settingsFragment = new SettingsFragment();
+        changeSettingsFragment = new ChangeSettingsFragment();
 
         // Bottom Navigation buttons are activated
         bottomBar.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        // Checks which fragment should be displayed
-                        switch (item.getItemId()) {
-                            case R.id.navigation_shopping_cart:
-                                if(!mainMenuFragment.isVisible()) {
-                                    replaceFragment(mainMenuFragment, getString(R.string.main_menu_frag_tag), getString(R.string.first_menu), true);
-                                }
-                                break;
-                            case R.id.navigation_settings:
-                                if(!settingsFragment.isVisible()) {
-                                    replaceFragment(settingsFragment, getString(R.string.first_menu),getString(R.string.first_menu), true);
-                                }
-                                break;
-                            case R.id.navigation_discount:
-                                if(!discountsFragment.isVisible()) {
-                                    replaceFragment(discountsFragment, getString(R.string.first_menu),getString(R.string.first_menu), true);
-                                }
-                                break;
+                        if (activeFragment != loginFragment) {
+                            // Checks which fragment should be displayed
+                            switch (item.getItemId()) {
+                                case R.id.navigation_shopping_cart:
+                                    if (activeFragment != mainMenuFragment) {
+                                        reduceStackSize(1);
+                                    }
+                                    break;
+                                case R.id.navigation_discount:
+                                    if (!discountsFragment.isVisible()) {
+                                        if (activeFragment == changeSettingsFragment){
+                                            replaceFragment(discountsFragment, R.string.same_chain_transaction, true);
+                                        } else if (activeFragment instanceof SettingsFragment){
+                                            popBackStack();
+                                            replaceFragment(discountsFragment, R.string.same_chain_transaction, true);
+                                        } else{
+                                            replaceFragment(discountsFragment, R.string.unique_chain_transaction, true);
+                                        }
+                                    }
+                                    break;
+                                case R.id.navigation_settings:
+                                    if (!changeSettingsFragment.isVisible()) {
+                                        if (activeFragment == discountsFragment) {
+                                            replaceFragment(changeSettingsFragment, R.string.same_chain_transaction, true);
+                                        } else if (activeFragment instanceof SettingsFragment) {
+                                            popBackStack();
+                                        } else {
+                                            replaceFragment(changeSettingsFragment, R.string.unique_chain_transaction, true);
+                                        }
+                                    }
+                                    break;
+                            }
+                            return true;
                         }
-                        return true;
+                        return false;
                     }
                 });
 
         // Replaces Login Fragment with Cart Option Fragment
-        replaceFragment(mainMenuFragment, getString(R.string.main_menu_frag_tag), getString(R.string.main_menu_frag_tag), true);
+        replaceFragment(mainMenuFragment, R.string.unique_chain_transaction, true);
     }
 
     // Returns account data as a reference
@@ -315,27 +339,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Returns user location
-    public UserLocation getUserLocation(){ return database.getUserLocation();}
+    public UserLocation getUserLocation() {
+        return database.getUserLocation();
+    }
 
     // Returns user Settings
-    public UserSettings getUserSettings(){ return database.getUserSettings();}
+    public UserSettings getUserSettings() {
+        return database.getUserSettings();
+    }
 
     // Replaces fragments on fragments container
-    public void replaceFragment(Fragment fragmentToReplaceIn, String tagIn, String tagOut, boolean toReturn) {
-        activeFragment = (FragmentWithUpdates)fragmentToReplaceIn;
+    // IF saveTransaction FALSE => Back button returns you to the first saved transaction fragment that was replaced out
+    // IF saveTransaction TRUE & transactionType = unique => Back button returns you to the replaced out fragment
+    // IF saveTransaction TRUE & transactionType = same => Back button returns you to the first replaced out fragment in the chain
+    public void replaceFragment(Fragment fragmentIn, int transactionType, boolean saveTransaction) {
+        String transactionLevel;
 
-        // if tag equals null then pops out the latest fragment
-        getSupportFragmentManager().popBackStack(tagOut, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        // Puts at the top of the stack the new fragment
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, fragmentToReplaceIn, tagIn);
-        if (toReturn) {
-            // Enables us to return back with the return button
-            transaction.addToBackStack(tagOut);
+        if (transactionType == R.string.unique_chain_transaction && saveTransaction) {
+            fragmentStack.add(activeFragment);
         }
+
+        transactionLevel = String.valueOf(fragmentStack.size());
+
+        // Pops out all transactions with the same level until one with a different level
+        getSupportFragmentManager().popBackStack(transactionLevel, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        // Adds a new transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragmentIn);
+
+        if (saveTransaction) {
+            // Saves transaction
+            transaction.addToBackStack(transactionLevel);
+        }
+
+        // Changes active fragment
+        activeFragment = (FragmentWithUpdates) fragmentIn;
+
         transaction.commit();
         getSupportFragmentManager().executePendingTransactions();
+    }
+
+    // Pops back stack until the required size of fragmentStack has been reached
+    public void reduceStackSize(int requiredSize) {
+        int size = fragmentStack.size();
+        while (size > requiredSize) {
+            popBackStack();
+            size--;
+        }
+    }
+
+    // Pops back stack one time
+    public void popBackStack() {
+        int size = fragmentStack.size();
+
+        getSupportFragmentManager().popBackStackImmediate();
+        activeFragment = fragmentStack.pop();
+        activeFragment.updateFragment();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(fragmentStack.size() > 0) {
+            activeFragment = fragmentStack.pop();
+        }
+
+        super.onBackPressed();
+        activeFragment.updateFragment();
     }
 
     // Sets user account information
@@ -410,16 +480,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Starts a sound effect
-    public void playMusic(int musicId){
-        if(database.getUserSettings().getToSound()) {
+    public void playMusic(int musicId) {
+        if (database.getUserSettings().getToSound()) {
             final MediaPlayer mp = MediaPlayer.create(this, musicId);
             mp.start();
         }
     }
 
     // Starts a vibration
-    public void vibrate(long amount){
-        if(database.getUserSettings().getToVibrate()) {
+    public void vibrate(long amount) {
+        if (database.getUserSettings().getToVibrate()) {
             // Get instance of Vibrator from current Context
             Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
@@ -429,13 +499,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Updates current active fragment
-    private void updateFragment(){
-        if(activeFragment != null){
+    private void updateFragment() {
+        if (activeFragment != null) {
             runOnUiThread(new Runnable() {
                 @Override
-                public void run()   {
+                public void run() {
                     activeFragment.updateFragment();
-                    playMusic(R.raw.pick);
                     vibrate(NORMAL_VIBRATE_TIME);
                 }
             });
@@ -452,107 +521,114 @@ public class MainActivity extends AppCompatActivity {
             boolean done = false;
             for (CartItem item : database.getCart()) {
                 if (item.getProductID().equals(productID)) {
-                    if(item.getIsPicked()) {
-                        item.setAmount(item.getAmount()+1);
+                    if (item.getPickedAmount() == item.getAmount()) {
+                        item.setAmount(item.getAmount() + 1);
                     }
-                    item.setIsPicked(true);
+                    item.setPickedAmount(item.getPickedAmount() + 1);
                     done = true;
                     break;
                 }
             }
-            if(!done){
+            if (!done) {
                 CartItem item = new CartItem(productID);
-                item.setIsPicked(true);
+                item.setPickedAmount(1);
                 database.getCart().add(item);
             }
 
+            playMusic(R.raw.pick);
             updateFragment();
         }
     }
 
     // Returns a product to a shelf
-    public void returnRequest (String requestArgs) throws Exception {
-            String[] args = requestArgs.split(MESSAGE_DELIMITER, 2);
-            String productID, shopperID;
+    public void returnRequest(String requestArgs) throws Exception {
+        String[] args = requestArgs.split(MESSAGE_DELIMITER, 2);
+        String productID, shopperID;
 
-            productID = args[0];
-            shopperID = args[1];
-            if (shopperID.equals(clientID)) {
-                for (CartItem item : database.getCart()) {
-                    if (item.getProductID().equals(productID)) {
+        productID = args[0];
+        shopperID = args[1];
+        if (shopperID.equals(clientID)) {
+            for (CartItem item : database.getCart()) {
+                if (item.getProductID().equals(productID)) {
+                    if(item.getPickedAmount() == 0){
                         database.getCart().remove(item);
-                        updateFragment();
-                        break;
+                    }else{
+                        item.setPickedAmount(item.getPickedAmount()-1);
                     }
+                    updateFragment();
+                    playMusic(R.raw.remove);
+                    break;
                 }
             }
         }
+    }
 
-        // Notifies a user for a temporarily sale
-        public void saleRequest (String requestArgs) throws Exception {
-            String[] args = requestArgs.split(MESSAGE_DELIMITER, 4);
-            String productID, shopperID;
-            int unitAmount, bonusAmount;
-            String message = "";
+    // Notifies a user for a temporarily sale
+    public void saleRequest(String requestArgs) throws Exception {
+        String[] args = requestArgs.split(MESSAGE_DELIMITER, 4);
+        String productID, shopperID;
+        int unitAmount, bonusAmount;
+        String message = "";
 
-            productID = args[0];
-            shopperID = args[1];
-            unitAmount = Integer.parseInt(args[2]);
-            bonusAmount = Integer.parseInt(args[3]);
-            if (shopperID.equals(clientID)) {
-                database.getSales().add(new Sale(productID, unitAmount, bonusAmount));
-                updateFragment();
-                for(Product product : getProducts()){
-                    if(product.getProductId().equals(productID)){
-                        message = product.getName()+ " " +product.getAmountPerUnit()+product.getUnitType().name()+ " : " + unitAmount + " + "+ bonusAmount;
-                        break;
-                    }
+        productID = args[0];
+        shopperID = args[1];
+        unitAmount = Integer.parseInt(args[2]);
+        bonusAmount = Integer.parseInt(args[3]);
+        if (shopperID.equals(clientID)) {
+            database.getSales().add(new Sale(productID, unitAmount, bonusAmount));
+            updateFragment();
+            playMusic(R.raw.sale);
+            for (Product product : getProducts()) {
+                if (product.getProductId().equals(productID)) {
+                    message = product.getName() + " " + product.getAmountPerUnit() + product.getUnitType().name() + " : " + unitAmount + " + " + bonusAmount;
+                    break;
                 }
-                sendNotification(getString(R.string.sale_notification_ticker), getString(R.string.sale_notification_title), message);
             }
+            sendNotification(getString(R.string.sale_notification_ticker), getString(R.string.sale_notification_title), message);
+        }
+    }
+
+    // Moves shopper's digital location
+    public void moveRequest(String requestArgs) throws Exception {
+        String[] args = requestArgs.split(MESSAGE_DELIMITER, 4);
+        String userType, shopperID;
+        int locationX, locationY;
+
+        userType = args[0];
+        shopperID = args[1];
+        locationX = Integer.parseInt(args[2]);
+        locationY = Integer.parseInt(args[3]);
+        if (shopperID.equals(clientID)) {
+            UserLocation location = database.getUserLocation();
+            location.setLocationX(locationX);
+            location.setLocationY(locationY);
+            updateFragment();
+        }
+    }
+
+    // Shows a message
+    public void popUpMessageDialog(String message) {
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(MainActivity.this);
         }
 
-        // Moves shopper's digital location
-        public void moveRequest(String requestArgs) throws Exception{
-            String[] args = requestArgs.split(MESSAGE_DELIMITER, 4);
-            String userType, shopperID;
-            int locationX, locationY;
+        builder.setTitle(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
 
-            userType = args[0];
-            shopperID = args[1];
-            locationX = Integer.parseInt(args[2]);
-            locationY = Integer.parseInt(args[3]);
-            if (shopperID.equals(clientID)) {
-                UserLocation location = database.getUserLocation();
-                location.setLocationX(locationX);
-                location.setLocationY(locationY);
-                updateFragment();
-            }
-        }
-
-        // Shows a message
-        public void popUpMessageDialog (String message){
-            AlertDialog.Builder builder;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(MainActivity.this);
-            }
-
-            builder.setTitle(message)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
-
-        // Presents a notification
+    // Presents a notification
     public void sendNotification(String ticker, String title, String message) {
-        if(database.getUserSettings().getToNotify()) {
+        if (database.getUserSettings().getToNotify()) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -581,10 +657,10 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             SharedPreferences sharedCart = getSharedPreferences(getString(R.string.shared_cart_file), MODE_PRIVATE);
-            sharedCart.edit().putString(getString(R.string.shared_cart_key), database.getCartJsonString()).apply();
+            sharedCart.edit().putString(getString(R.string.shared_cart_key) + clientID, database.getCartJsonString()).apply();
             SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
-            sharedSettings.edit().putString(getString(R.string.shared_settings_key), database.getUserSettingsJsonString()).apply();
-        }catch(Exception  e){
+            sharedSettings.edit().putString(getString(R.string.shared_settings_key) + clientID, database.getUserSettingsJsonString()).apply();
+        } catch (Exception e) {
             // Nothing to do with it
         }
     }
@@ -596,7 +672,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             logoutRequest();
             networkFragment.exit();
-        }catch(Exception  e){
+        } catch (Exception e) {
             // Nothing to do with it
         }
 

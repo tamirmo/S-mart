@@ -45,7 +45,7 @@ public class ReceiptListAdapter extends ArrayAdapter<CartItem> {
         List<CartItem> filteredCart = new ArrayList<CartItem>();
 
         for(CartItem item : cart){
-            if(item.getIsPicked()){
+            if(item.getPickedAmount() != 0){
                 filteredCart.add(item);
             }
         }
@@ -113,7 +113,7 @@ public class ReceiptListAdapter extends ArrayAdapter<CartItem> {
             viewHolder.price.setText(String.format("$%s", discount.getDiscountedPrice()));
         else
             viewHolder.price.setText(String.format("$%s", product.getPricePerUnit()));
-        viewHolder.amount.setText(String.valueOf(cartItem.getAmount()));
+        viewHolder.amount.setText(String.valueOf(cartItem.getPickedAmount()));
         viewHolder.amount.setVisibility(View.VISIBLE);
         viewHolder.pickedImage.setVisibility(View.VISIBLE);
 
@@ -137,7 +137,7 @@ public class ReceiptListAdapter extends ArrayAdapter<CartItem> {
         double sum = 0;
 
         String productID = item.getProductID();
-        int amount = item.getAmount();
+        int pickedAmount = item.getPickedAmount();
         Sale sale = saleMap.get(productID);
         Discount discount = discountMap.get(productID);
         Product product = productMap.get(productID);
@@ -147,27 +147,27 @@ public class ReceiptListAdapter extends ArrayAdapter<CartItem> {
         if(sale != null) {
             int salePayAmount = sale.getPayAmount();
             int saleFreeAmount = sale.getFreeAmount();
-            int completedSales = amount / (salePayAmount + saleFreeAmount);
-            amount -= completedSales;
-            payAmount = completedSales;
-            while (amount > 0){
-                for (int i = salePayAmount; i > 0 && amount > 0; i--) {
+            int completedSales = pickedAmount / (salePayAmount + saleFreeAmount);
+            pickedAmount -= completedSales*(salePayAmount+saleFreeAmount);
+            payAmount = completedSales*salePayAmount;
+            while (pickedAmount > 0){
+                for (int i = salePayAmount; i > 0 && pickedAmount > 0; i--) {
                     payAmount++;
-                    amount--;
+                    pickedAmount--;
                 }
-                for (int i = saleFreeAmount; i > 0 && amount > 0; i--) {
-                    amount--;
+                for (int i = saleFreeAmount; i > 0 && pickedAmount > 0; i--) {
+                    pickedAmount--;
                 }
             }
-            amount = payAmount;
+            pickedAmount = payAmount;
         }
 
         // Updates total price
         if(discount != null) {
-            sum += amount * Double.parseDouble(discount.getDiscountedPrice());
+            sum += pickedAmount * Double.parseDouble(discount.getDiscountedPrice());
         }
         else{
-            sum += amount * Double.parseDouble(product.getPricePerUnit());
+            sum += pickedAmount * Double.parseDouble(product.getPricePerUnit());
         }
 
         return sum;
@@ -175,23 +175,25 @@ public class ReceiptListAdapter extends ArrayAdapter<CartItem> {
 
     // Returns a receipt
     public String getReceipt(){
-        StringBuilder reciptBuilder = new StringBuilder();
-        String receipt;
+        StringBuilder receiptBuilder = new StringBuilder();
+        String receipt = "";
         double sum = 0, itemPrice;
 
-        for(CartItem item : paidCart){
-            Product product = productMap.get(item.getProductID());
-            if(product != null){
-                reciptBuilder.append(product.getName()+" "+ product.getAmountPerUnit()+ " "+product.getUnitType().name());
-                reciptBuilder.append(" x "+item.getAmount());
-                itemPrice = calculateSum(item);
-                sum += itemPrice;
-                reciptBuilder.append(String.format(" : $%.2f", itemPrice));
-                reciptBuilder.append(" "+context.getString(R.string.receipt_delimiter)+" ");
+        if(paidCart.size() != 0) {
+            for (CartItem item : paidCart) {
+                Product product = productMap.get(item.getProductID());
+                if (product != null) {
+                    receiptBuilder.append(product.getName() + " " + product.getAmountPerUnit() + " " + product.getUnitType().name());
+                    receiptBuilder.append(" x " + item.getPickedAmount());
+                    itemPrice = calculateSum(item);
+                    sum += itemPrice;
+                    receiptBuilder.append(String.format(" : $%.2f", itemPrice));
+                    receiptBuilder.append(" " + context.getString(R.string.receipt_delimiter) + " ");
+                }
             }
+            receiptBuilder.append(String.format("Total : $%.2f", sum));
+            receipt = receiptBuilder.toString();
         }
-        reciptBuilder.append(String.format("Total : $%.2f", sum));
-        receipt = reciptBuilder.toString();
 
         return receipt;
     }

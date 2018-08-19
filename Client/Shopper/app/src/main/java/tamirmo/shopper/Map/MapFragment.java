@@ -2,6 +2,7 @@ package tamirmo.shopper.Map;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,6 @@ public class MapFragment extends FragmentWithUpdates implements View.OnClickList
 
     public static final int MAP_ROWS_COUNT = 14;
     public static final int MAP_COLS_COUNT = 10;
-    public static final int STARTING_USER_LOCATION_X = MAP_COLS_COUNT/2;
-    public static final int STARTING_USER_LOCATION_Y = MAP_ROWS_COUNT-1;
 
     private MapGridAdapter mapGridAdapter;
 
@@ -40,19 +39,25 @@ public class MapFragment extends FragmentWithUpdates implements View.OnClickList
     private CartListFragment cartItemsFragment;
     private ReceiptFragment receiptFragment;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        List<Discount> discounts = ((MainActivity) getActivity()).getDiscounts();
+        List<Sale> sales = ((MainActivity) getActivity()).getSales();
+        List<Product> products = ((MainActivity) getActivity()).getProducts();
+        List<CartItem> cart = ((MainActivity) getActivity()).getCart();
+        UserLocation userLocation = ((MainActivity) getActivity()).getUserLocation();
+        mapGridAdapter = new MapGridAdapter(getContext(), MAP_ROWS_COUNT, MAP_COLS_COUNT, discounts, sales, products, cart, userLocation);
+
+        cartItemsFragment = new CartListFragment();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.navigation_fragment, container, false);
-
-        List<Discount> discounts = ((MainActivity)getActivity()).getDiscounts();
-        List<Sale> sales = ((MainActivity)getActivity()).getSales();
-        List<Product> products = ((MainActivity)getActivity()).getProducts();
-        List<CartItem> cart = ((MainActivity)getActivity()).getCart();
-        UserLocation userLocation = ((MainActivity)getActivity()).getUserLocation();
-        mapGridAdapter = new MapGridAdapter(getContext(), MAP_ROWS_COUNT, MAP_COLS_COUNT, discounts, sales, products, cart, userLocation);
 
         nextItemTextView = rootView.findViewById(R.id.next_item_text_view);
 
@@ -64,9 +69,6 @@ public class MapFragment extends FragmentWithUpdates implements View.OnClickList
         mapGrid.setNumColumns(MAP_COLS_COUNT);
         mapGrid.setAdapter(mapGridAdapter);
 
-        cartItemsFragment = new CartListFragment();
-        receiptFragment = new ReceiptFragment();
-
         updateNextItem();
 
         return rootView;
@@ -75,27 +77,28 @@ public class MapFragment extends FragmentWithUpdates implements View.OnClickList
     @Override
     public void onClick(View v) {
         FragmentTransaction transaction;
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.show_list_btn:
                 // Moving to cart items fragment (showing current cart)
-                ((MainActivity)getActivity()).replaceFragment(cartItemsFragment, getString(R.string.second_menu),getString(R.string.second_menu), true);
+                ((MainActivity) getActivity()).replaceFragment(cartItemsFragment, R.string.unique_chain_transaction, true);
                 break;
             case R.id.finish_navigation_btn:
+                receiptFragment = new ReceiptFragment();
                 // Moving to receipt fragment (showing final cart)
-                ((MainActivity)getActivity()).replaceFragment(receiptFragment, getString(R.string.second_menu),getString(R.string.second_menu), false);
+                ((MainActivity) getActivity()).replaceFragment(receiptFragment, R.string.same_chain_transaction, true);
                 receiptFragment.sendReceipt();
                 break;
         }
     }
 
     // Updates the fragment
-    public void updateFragment(){
+    public void updateFragment() {
         mapGridAdapter.updateData();
         updateNextItem();
     }
 
     // Selects next Item and
-    private void updateNextItem(){
+    private void updateNextItem() {
         String nextItem = mapGridAdapter.getNextItemText();
         nextItemTextView.setText(nextItem);
     }

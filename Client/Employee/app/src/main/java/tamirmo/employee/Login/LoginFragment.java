@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -33,7 +34,15 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
     private String serverIP;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Sets a basic server IP-Address
+        serverIP = BASIC_SERVER_IP;
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.login_fragment, container, false);
 
         // Gets the widgets on the fragment
@@ -42,9 +51,6 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
         loadingLayout = rootView.findViewById(R.id.loading_layout);
         passwordEditText = rootView.findViewById(R.id.password_edit_text);
         emailEditText = rootView.findViewById(R.id.email_edit_text);
-
-        // Sets a basic server IP-Address
-        serverIP = BASIC_SERVER_IP;
 
         // Sets a click listener on login button
         rootView.findViewById(R.id.login_btn).setOnClickListener(this);
@@ -60,14 +66,14 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
     }
 
     // Shows login screen
-    private void showLoginLayout(){
+    private void showLoginLayout() {
         mainFrame.bringChildToFront(loginLayout);
         loginLayout.setVisibility(View.VISIBLE);
         loadingLayout.setVisibility(View.GONE);
     }
 
     // Shows loading screen
-    private void showLoadingLayout(){
+    private void showLoadingLayout() {
         mainFrame.bringChildToFront(loadingLayout);
         loginLayout.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
@@ -115,7 +121,7 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.login_btn){
+        if (view.getId() == R.id.login_btn) {
             // Starts a login task on a different thread
             // It can't be on the UI main thread, the operating system will kill it because UI stuck
             LoginTask task = new LoginTask();
@@ -134,7 +140,7 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
         private String password;
 
         // Gets all needed information for a login request, and switch to loading layout
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             // Gets all needed information for a login request
             email = emailEditText.getText().toString();
             password = passwordEditText.getText().toString();
@@ -145,17 +151,16 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
 
         // Sends a login request to the server
         // Can't change UI because it isn't the main thread
-        protected String doInBackground(Void... voids){
+        protected String doInBackground(Void... voids) {
             String result = "";
 
-            try{
-                if(((MainActivity)getActivity()).loginRequest(serverIP, email, password)){
-                    ((MainActivity)getActivity()).downloadAllData();
+            try {
+                if (((MainActivity) getActivity()).loginRequest(serverIP, email, password)) {
+                    ((MainActivity) getActivity()).downloadAllData();
                     result = getString(R.string.login_success);
-                }
-                else
+                } else
                     result = getString(R.string.login_error);
-            }catch(Exception e){
+            } catch (Exception e) {
                 result = e.getMessage();
             }
 
@@ -167,13 +172,15 @@ public class LoginFragment extends FragmentWithUpdates implements View.OnClickLi
             // Changes back to login screen
             showLoginLayout();
 
-            if(!result.equals(getString(R.string.login_success))) {
+            if (!result.equals(getString(R.string.login_success))) {
                 // Notifies an error occurred
-                ((MainActivity)getActivity()).popUpMessageDialog(result);
-            }
-            else{
+                ((MainActivity) getActivity()).popUpMessageDialog(result);
+            } else {
+                passwordEditText.setText("");
+                emailEditText.setText("");
+
                 // Starts main application
-                ((MainActivity)getActivity()).start();
+                ((MainActivity) getActivity()).start();
             }
         }
     }

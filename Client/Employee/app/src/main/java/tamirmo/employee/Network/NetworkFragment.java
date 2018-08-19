@@ -36,7 +36,7 @@ public class NetworkFragment extends FragmentWithUpdates {
     }
 
     // Starts to receive events from the server
-    public void startReceivingEvents(int eventsPort) throws Exception{
+    public void startReceivingEvents(int eventsPort) throws Exception {
         eventConnection = new EventConnection(eventsPort);
         eventConnection.start();
     }
@@ -45,7 +45,7 @@ public class NetworkFragment extends FragmentWithUpdates {
     public void startServerConnection(String serverIP, int serverPort) throws IOException {
         //serverConnection = new Socket(serverIP, serverPort);
         serverConnection = new Socket();
-        serverConnection.connect(new InetSocketAddress(serverIP,serverPort),3000);
+        serverConnection.connect(new InetSocketAddress(serverIP, serverPort), 3000);
     }
 
     // Sends a request to the server, and receives its response
@@ -94,11 +94,11 @@ public class NetworkFragment extends FragmentWithUpdates {
     }
 
     // Stops all connections
-    public void exit(){
+    public void exit() {
         try {
             eventConnection.interrupt();
             serverConnection.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             // Nothing to do
         }
     }
@@ -109,33 +109,33 @@ public class NetworkFragment extends FragmentWithUpdates {
         private Socket incomingEvent;
 
         // Class Builder
-        public EventConnection(int eventPort) throws Exception{
+        public EventConnection(int eventPort) throws Exception {
             eventConnection = new ServerSocket(eventPort);
         }
 
         // Starts the thread
-        public void run(){
-            while(true){
+        public void run() {
+            while (true) {
                 try {
                     incomingEvent = eventConnection.accept();
                     processEvent();
-                }catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     break;
-                }catch (Exception e){
+                } catch (Exception e) {
                     // Try again
                 }
             }
         }
 
         // Receives an event request from the server
-        public void processEvent() throws Exception{
+        public void processEvent() throws Exception {
             String event;
 
             // Reads an event request from a server
             event = receiveMessage(incomingEvent);
 
             // Calls main activity to process it
-            ((MainActivity)getActivity()).processEvent(event);
+            ((MainActivity) getActivity()).processEvent(event);
         }
     }
 }

@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/s_mart_text_color"
             android:textSize="30sp"
-            android:text="@string/cart_sum_text"
+            android:text="@string/receipt_sum_text"
             android:layout_marginRight="10sp"/>
             <TextView
             android:id="@+id/receipt_total_sum_text_view"

@@ -8,14 +8,8 @@
 
     <!-- Fragments Tags -->
     <string name="network_frag_tag">network</string>
-    <string name="login_frag_tag">login</string>
-    <string name="map_frag_tag">map</string>
-    <string name="settings_frag_tag">settings</string>
-    <string name="change_email_tag">email</string>
-    <string name="change_password_tag">password</string>
-    <string name="change_system_settings_tag">system settings</string>
     <string name="same_chain_transaction">same</string>
-    <string name="different_chain_transaction">different</string>
+    <string name="unique_chain_transaction">unique</string>
 
     <!-- Login Fragment Strings-->
     <string name="login_success">Login was successful</string>

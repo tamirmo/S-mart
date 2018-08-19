@@ -2,6 +2,7 @@ package tamirmo.shopper.CartList;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class CartListFragment extends FragmentWithUpdates implements View.OnClic
     // Class widgets
     private ListView currItemsListView;
     private TextView totalSumTextView;
+    private TextView currentSumTextView;
 
     // Menu Fragments
     private DepartmentsFragment departmentsFragment;
@@ -33,52 +35,61 @@ public class CartListFragment extends FragmentWithUpdates implements View.OnClic
     private CartListAdapter dataAdapter;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Gets all needed data to create the adapter
+        List<Product> products = ((MainActivity) getActivity()).getProducts();
+        List<Discount> discounts = ((MainActivity) getActivity()).getDiscounts();
+        List<Sale> sales = ((MainActivity) getActivity()).getSales();
+        List<CartItem> cart = ((MainActivity) getActivity()).getCart();
+        dataAdapter = new CartListAdapter(getActivity(), cart, products, discounts, sales);
+        dataAdapter.setDataChangedListener(this);
+
+        // Creates a department fragment
+        departmentsFragment = new DepartmentsFragment();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.cart_items_fragment, container, false);
 
-        // Gets all needed data to create the adapter
-        List<Product> products = ((MainActivity)getActivity()).getProducts();
-        List<Discount> discounts = ((MainActivity)getActivity()).getDiscounts();
-        List<Sale> sales = ((MainActivity)getActivity()).getSales();
-        List<CartItem> cart = ((MainActivity)getActivity()).getCart();
-        dataAdapter = new CartListAdapter(getActivity(), cart, products, discounts, sales);
-        dataAdapter.setDataChangedListener(this);
-
         // Sets the adapter
         currItemsListView = rootView.findViewById(R.id.cart_list_view);
         currItemsListView.setAdapter(dataAdapter);
 
+        currentSumTextView = rootView.findViewById(R.id.cart_current_sum_text_view);
         totalSumTextView = rootView.findViewById(R.id.cart_total_sum_text_view);
-        updateTotalSum(dataAdapter.calculateTotalSum());
+        updateSum(dataAdapter.calculateSum(R.string.total_sum_type), dataAdapter.calculateSum(R.string.current_sum_type));
 
         // Sets a click listener fragment's widgets
         rootView.findViewById(R.id.add_item_btn).setOnClickListener(this);
         rootView.findViewById(R.id.add_item_text_view).setOnClickListener(this);
-
-        // Creates a department fragment
-        departmentsFragment = new DepartmentsFragment();
 
         return rootView;
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             // Moves to the departments fragment
             case R.id.add_item_btn:
             case R.id.add_item_text_view:
-                ((MainActivity)getActivity()).replaceFragment(departmentsFragment, getString(R.string.third_menu), getString(R.string.third_menu), true);
+                ((MainActivity) getActivity()).replaceFragment(departmentsFragment, R.string.unique_chain_transaction, true);
                 break;
         }
     }
 
     @Override
-    public void updateTotalSum(double sum) {
+    public void updateSum(double totalSum, double currentSum) {
         // Updates the sum of the new cart
-        String cartSum = String.format("$%.2f", sum);
+        String cartSum = String.format("$%.2f", totalSum);
         totalSumTextView.setText(cartSum);
+
+        cartSum = String.format("$%.2f", currentSum);
+        currentSumTextView.setText(cartSum);
     }
 
     @Override

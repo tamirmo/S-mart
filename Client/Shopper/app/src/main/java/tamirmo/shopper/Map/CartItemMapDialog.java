@@ -53,16 +53,16 @@ public class CartItemMapDialog extends Dialog {
         itemName.setText(product.getName());
 
         double productAmountPerUnit = Double.parseDouble(product.getAmountPerUnit());
-        if(Math.round(productAmountPerUnit) == productAmountPerUnit){
+        if (Math.round(productAmountPerUnit) == productAmountPerUnit) {
             unit.setText(String.format("%s %s", product.getAmountPerUnit(), product.getUnitType()));
-        }else {
+        } else {
             unit.setText(String.format("%s %s", product.getAmountPerUnit(), product.getUnitType()));
         }
         amount.setText(String.valueOf(cartItem.getAmount()));
 
-        if(cartItem.getIsPicked()) {
+        if (cartItem.getPickedAmount() == cartItem.getAmount()) {
             pickedImage.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             pickedImage.setVisibility(View.INVISIBLE);
         }
     }

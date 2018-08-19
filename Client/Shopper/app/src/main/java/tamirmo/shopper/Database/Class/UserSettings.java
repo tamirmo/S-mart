@@ -7,9 +7,9 @@ public class UserSettings {
     private boolean toNotify;
 
     public UserSettings(){
-        toVibrate = false;
-        toSound = false;
-        toNotify = false;
+        toVibrate = true;
+        toSound = true;
+        toNotify = true;
     }
 
     public boolean getToNotify(){

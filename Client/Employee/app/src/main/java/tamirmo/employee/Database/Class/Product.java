@@ -5,7 +5,7 @@ public class Product {
     // Product's weight type
     public enum UnitType {
         DEFAULT, KG, L, G
-    };
+    }
 
     // Class attributes
     private String productId;

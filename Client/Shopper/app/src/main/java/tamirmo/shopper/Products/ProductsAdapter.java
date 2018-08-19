@@ -128,10 +128,16 @@ public class ProductsAdapter extends ArrayAdapter<Product> implements View.OnCli
         else
             viewHolder.price.setText(String.format("$%s", product.getPricePerUnit()));
 
-        if(cartItem != null)
+        if(cartItem != null) {
             viewHolder.amount.setText(String.valueOf(cartItem.getAmount()));
-        else
+            viewHolder.pickedAmount.setText(context.getString(R.string.curr_cart_picked_amount) + " " + cartItem.getPickedAmount()+" "+context.getString(R.string.products));
+        }
+        else {
             viewHolder.amount.setText("0");
+            viewHolder.pickedAmount.setText(context.getString(R.string.curr_cart_picked_amount) + " 0 " + context.getString(R.string.products));
+        }
+
+
 
         viewHolder.plus.setOnClickListener(this);
         viewHolder.minus.setOnClickListener(this);
@@ -139,7 +145,7 @@ public class ProductsAdapter extends ArrayAdapter<Product> implements View.OnCli
         viewHolder.minus.setTag(position);
 
         if(cartItem != null){
-        if(!cartItem.getIsPicked()) {
+        if(cartItem.getPickedAmount() != cartItem.getAmount()) {
             viewHolder.minus.setVisibility(View.VISIBLE);
             viewHolder.pickedImage.setVisibility(View.INVISIBLE);
         }else{

@@ -45,7 +45,7 @@ public class DiscountMapDialog extends Dialog {
 
         // Filling the views with the discount details
         itemName.setText(product.getName());
-        itemDetails.setText(product.getAmountPerUnit()+" "+ product.getUnitType());
+        itemDetails.setText(product.getAmountPerUnit() + " " + product.getUnitType());
         itemOriginalPrice.setText(String.format("$%s", discount.getNormalPrice()));
         itemDiscountedPrice.setText(String.format("$%s", discount.getDiscountedPrice()));
 

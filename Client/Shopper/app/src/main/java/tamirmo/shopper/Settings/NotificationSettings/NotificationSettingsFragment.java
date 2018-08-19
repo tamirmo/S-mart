@@ -15,20 +15,26 @@ import tamirmo.shopper.Database.Class.UserSettings;
 import tamirmo.shopper.FragmentWithUpdates;
 import tamirmo.shopper.MainActivity;
 import tamirmo.shopper.R;
+import tamirmo.shopper.SettingsFragment;
 
 
-public class NotificationSettingsFragment extends FragmentWithUpdates implements CompoundButton.OnCheckedChangeListener {
+public class NotificationSettingsFragment extends FragmentWithUpdates implements CompoundButton.OnCheckedChangeListener, SettingsFragment {
 
     // Class attributes
     private UserSettings userSettings;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        userSettings = ((MainActivity) getActivity()).getUserSettings();
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.notification_settings_fragment, container, false);
-
-        userSettings = ((MainActivity) getActivity()).getUserSettings();
 
         // Getting the views
         SwitchCompat vibrationSwitch = rootView.findViewById(R.id.vibrations_switch);
@@ -51,7 +57,7 @@ public class NotificationSettingsFragment extends FragmentWithUpdates implements
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        switch (buttonView.getId()){
+        switch (buttonView.getId()) {
             case R.id.vibrations_switch:
                 userSettings.setToVibrate(isChecked);
                 break;

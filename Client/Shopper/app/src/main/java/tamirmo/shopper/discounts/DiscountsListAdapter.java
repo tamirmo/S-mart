@@ -19,7 +19,6 @@ import tamirmo.shopper.Database.Class.Product;
 import tamirmo.shopper.R;
 
 
-
 public class DiscountsListAdapter extends ArrayAdapter<Discount> {
 
     private Context context;
@@ -32,7 +31,7 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
 
     DiscountsListAdapter(@NonNull Context context, List<Discount> discounts, List<Product> products) {
         super(context, R.layout.discount_list_item_layout);
-        layoutinflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        layoutinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
 
         this.discounts = discounts;
@@ -41,10 +40,10 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
     }
 
     // Returns a HashMap from a List of products
-    public HashMap<String, Product> getProductMap(List<Product> productList){
+    public HashMap<String, Product> getProductMap(List<Product> productList) {
         HashMap<String, Product> productMap = new HashMap<String, Product>();
 
-        for(Product product: products){
+        for (Product product : products) {
             productMap.put(product.getProductId(), product);
         }
 
@@ -52,7 +51,7 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
     }
 
     // The items each slot in the listView holds/presents
-    private static class DiscountViewHolder{
+    private static class DiscountViewHolder {
         ImageView image;
         TextView name;
         TextView originalPrice;
@@ -78,7 +77,7 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
         Product product = productMap.get(discount.getProductId());
 
         DiscountViewHolder listViewHolder;
-        if(convertView == null){
+        if (convertView == null) {
             listViewHolder = new DiscountViewHolder();
             convertView = layoutinflater.inflate(R.layout.discount_list_item_layout, parent, false);
             listViewHolder.image = convertView.findViewById(R.id.discount_item_image);
@@ -88,17 +87,17 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
             listViewHolder.personalImage = convertView.findViewById(R.id.personal_discount_icon);
 
             convertView.setTag(listViewHolder);
-        }else{
-            listViewHolder = (DiscountViewHolder)convertView.getTag();
+        } else {
+            listViewHolder = (DiscountViewHolder) convertView.getTag();
         }
 
 
-        listViewHolder.originalPrice.setText( String.format("$%s",discount.getNormalPrice()));
+        listViewHolder.originalPrice.setText(String.format("$%s", discount.getNormalPrice()));
         // Creating a line on top of the original price
         listViewHolder.originalPrice.setPaintFlags(listViewHolder.originalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        listViewHolder.discountedPrice.setText( String.format("$%s",discount.getDiscountedPrice()));
+        listViewHolder.discountedPrice.setText(String.format("$%s", discount.getDiscountedPrice()));
 
-        if(product != null) {
+        if (product != null) {
             listViewHolder.name.setText(product.getName());
             int resourceID = context.getResources().getIdentifier(
                     "item_" + product.getProductId(),
@@ -109,9 +108,9 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
         }
 
         // Shows Personal Discount icon
-        if(!discount.getShopperId().equals(Discount.GENERAL_DISCOUNT_SHOPPER_ID)){
+        if (!discount.getShopperId().equals(Discount.GENERAL_DISCOUNT_SHOPPER_ID)) {
             listViewHolder.personalImage.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             listViewHolder.personalImage.setVisibility(View.INVISIBLE);
         }
 
@@ -120,7 +119,7 @@ public class DiscountsListAdapter extends ArrayAdapter<Discount> {
     }
 
     // Updates the class data
-    public void updateData(){
+    public void updateData() {
         productMap = getProductMap(products);
 
         // Changes the view based on the new data

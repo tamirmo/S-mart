@@ -37,8 +37,8 @@ public class SaleMapDialog extends Dialog {
         TextView itemSale = findViewById(R.id.sale_details);
 
         itemName.setText(product.getName());
-        itemDetails.setText(product.getAmountPerUnit()+ " " + product.getUnitType());
-        itemSale.setText(sale.getPayAmount()+ " + "+ sale.getFreeAmount());
+        itemDetails.setText(product.getAmountPerUnit() + " " + product.getUnitType());
+        itemSale.setText(sale.getPayAmount() + " + " + sale.getFreeAmount());
 
         int resourceID = context.getResources().getIdentifier(
                 "item_" + product.getProductId(),

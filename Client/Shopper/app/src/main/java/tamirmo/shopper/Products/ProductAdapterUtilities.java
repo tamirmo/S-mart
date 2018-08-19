@@ -11,7 +11,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import tamirmo.shopper.Database.Class.CartItem;
-import tamirmo.shopper.Database.Class.Discount;
 import tamirmo.shopper.Database.Class.Product;
 import tamirmo.shopper.R;
 
@@ -28,6 +27,7 @@ public final class ProductAdapterUtilities {
         public ImageView plus;
         public TextView amount;
         public ImageView minus;
+        public TextView pickedAmount;
     }
 
     /**
@@ -68,6 +68,7 @@ public final class ProductAdapterUtilities {
             viewHolder.amount = convertView.findViewById(R.id.curr_cart_item_amount);
             viewHolder.minus = convertView.findViewById(R.id.curr_cart_item_minus);
             viewHolder.pickedImage = convertView.findViewById(R.id.curr_cart_item_picked_image);
+            viewHolder.pickedAmount = convertView.findViewById(R.id.curr_cart_item_picked_amount);
 
             // Saving the view for next time
             convertView.setTag(viewHolder);
@@ -112,12 +113,12 @@ public final class ProductAdapterUtilities {
         switch (clickedButton.getId()){
             case R.id.curr_cart_item_plus:
                 cartItem.setAmount(cartItem.getAmount()+1);
-                cartItem.setIsPicked(false);
                 break;
             case R.id.curr_cart_item_minus:
                 cartItem.setAmount(cartItem.getAmount()-1);
-                if(cartItem.getAmount() == 0)
+                if(cartItem.getAmount() == 0) {
                     cart.remove(cartItem);
+                }
                 break;
         }
     }

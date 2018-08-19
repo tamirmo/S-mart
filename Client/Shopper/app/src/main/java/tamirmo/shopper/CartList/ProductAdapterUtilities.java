@@ -28,24 +28,26 @@ public final class ProductAdapterUtilities {
         public ImageView plus;
         public TextView amount;
         public ImageView minus;
+        public TextView pickedAmount;
     }
 
     /**
      * Holding the view holder and the row view
      */
-    public static class ProductViewObjects{
+    public static class ProductViewObjects {
         public ProductItemViewHolder productItemViewHolder;
         public View convertView;
     }
 
     /**
      * Getting a view holder from the given view (creating if not exist, getting if exist)
+     *
      * @param convertView View, The view of the row in the adapter (null if first created)
-     * @param parent ViewGroup, The parent view of the row
-     * @param context Context, activity context
+     * @param parent      ViewGroup, The parent view of the row
+     * @param context     Context, activity context
      * @return ProductItemViewHolder, A view holder from the given view
      */
-    public static ProductViewObjects createViewHolder(View convertView, @NonNull ViewGroup parent, Context context){
+    public static ProductViewObjects createViewHolder(View convertView, @NonNull ViewGroup parent, Context context) {
         // Check if an existing view is being reused, otherwise inflate the view
         ProductItemViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -68,6 +70,7 @@ public final class ProductAdapterUtilities {
             viewHolder.amount = convertView.findViewById(R.id.curr_cart_item_amount);
             viewHolder.minus = convertView.findViewById(R.id.curr_cart_item_minus);
             viewHolder.pickedImage = convertView.findViewById(R.id.curr_cart_item_picked_image);
+            viewHolder.pickedAmount = convertView.findViewById(R.id.curr_cart_item_picked_amount);
 
             // Saving the view for next time
             convertView.setTag(viewHolder);
@@ -85,11 +88,12 @@ public final class ProductAdapterUtilities {
 
     /**
      * Setting the given holder's views the given product data
+     *
      * @param productData Product, The product to set it's details in the views
-     * @param viewHolder ProductItemViewHolder, Holding the views to fill
-     * @param context Context, activity context
+     * @param viewHolder  ProductItemViewHolder, Holding the views to fill
+     * @param context     Context, activity context
      */
-    public static void setProductData(Product productData, ProductItemViewHolder viewHolder, Context context){
+    public static void setProductData(Product productData, ProductItemViewHolder viewHolder, Context context) {
 
         // The items images has special names: "item_id"
         int resourceID = context.getResources().getIdentifier(
@@ -105,18 +109,18 @@ public final class ProductAdapterUtilities {
 
     /**
      * Handling a plus or minus click
+     *
      * @param clickedButton View, The clicked button
-     * @param cartItem CartItem, The item the button belongs to
+     * @param cartItem      CartItem, The item the button belongs to
      */
-    public static void onPlusMinusClicked(View clickedButton, CartItem cartItem, Context context, List<CartItem> cart){
-        switch (clickedButton.getId()){
+    public static void onPlusMinusClicked(View clickedButton, CartItem cartItem, Context context, List<CartItem> cart) {
+        switch (clickedButton.getId()) {
             case R.id.curr_cart_item_plus:
-                cartItem.setAmount(cartItem.getAmount()+1);
-                cartItem.setIsPicked(false);
+                cartItem.setAmount(cartItem.getAmount() + 1);
                 break;
             case R.id.curr_cart_item_minus:
-                cartItem.setAmount(cartItem.getAmount()-1);
-                if(cartItem.getAmount() == 0)
+                cartItem.setAmount(cartItem.getAmount() - 1);
+                if (cartItem.getAmount() == 0)
                     cart.remove(cartItem);
                 break;
 

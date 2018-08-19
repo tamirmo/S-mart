@@ -5,24 +5,24 @@ public class UserLocation {
     private int locationX;
     private int locationY;
 
-    public UserLocation(){
+    public UserLocation() {
         locationX = 0;
         locationY = 0;
     }
 
-    public void setLocationX(int locationX){
+    public void setLocationX(int locationX) {
         this.locationX = locationX;
     }
 
-    public void setLocationY(int locationY){
+    public void setLocationY(int locationY) {
         this.locationY = locationY;
     }
 
-    public int getLocationX(){
+    public int getLocationX() {
         return locationX;
     }
 
-    public int getLocationY(){
+    public int getLocationY() {
         return locationY;
     }
 }

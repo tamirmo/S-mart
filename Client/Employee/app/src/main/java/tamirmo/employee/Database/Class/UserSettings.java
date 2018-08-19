@@ -6,21 +6,21 @@ public class UserSettings {
     private boolean toSound;
     private boolean toNotify;
 
-    public UserSettings(){
-        toVibrate = false;
-        toSound = false;
-        toNotify = false;
+    public UserSettings() {
+        toVibrate = true;
+        toSound = true;
+        toNotify = true;
     }
 
-    public boolean getToNotify(){
+    public boolean getToNotify() {
         return toNotify;
     }
 
-    public boolean getToVibrate(){
+    public boolean getToVibrate() {
         return toVibrate;
     }
 
-    public boolean getToSound(){
+    public boolean getToSound() {
         return toSound;
     }
 

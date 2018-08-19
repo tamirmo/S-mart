@@ -35,7 +35,7 @@ import tamirmo.employee.Database.Database;
 import tamirmo.employee.Login.LoginFragment;
 import tamirmo.employee.Map.MapFragment;
 import tamirmo.employee.Network.NetworkFragment;
-import tamirmo.employee.Settings.SettingsFragment;
+import tamirmo.employee.Settings.ChangeSettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Bottom Navigation Fragments
     private MapFragment mapFragment;
-    private SettingsFragment settingsFragment;
+    private ChangeSettingsFragment changeSettingsFragment;
 
     // Fragment stack to allow better movement with the backStack
     private Stack<FragmentWithUpdates> fragmentStack;
@@ -113,18 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Starts a new database to hold all information from the server locally
         database = new Database();
-
-        // Loads local data from a shared repository
-        SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
-        String defaultValue = null;
-        String settingsJson = sharedSettings.getString(getString(R.string.shared_settings_key), defaultValue);
-        if (settingsJson != null) {
-            try {
-                database.loadUserSettingsFromString(settingsJson);
-            } catch (Exception e) {
-                // No need to do anything
-            }
-        }
 
         // Gets client IP-Address to send messages from the server
         clientIP = getClientIP();
@@ -148,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Adds a login fragment on the top of the Fragment stack
         loginFragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.container, loginFragment, getString(R.string.login_frag_tag)).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, loginFragment).commit();
         activeFragment = loginFragment;
     }
 
@@ -234,36 +222,48 @@ public class MainActivity extends AppCompatActivity {
         return response;
     }
 
-    // Loads all data from the server
+    // Loads all data from all repositories
     public void downloadAllData() throws Exception {
         database.loadProductsFromString(getRequest(PRODUCT_ITEM_TYPE));
+
+        // Loads local data from a shared repository
+        SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
+        String defaultValue = null;
+        String settingsJson = sharedSettings.getString(getString(R.string.shared_settings_key) + clientID, defaultValue);
+        if (settingsJson != null) {
+            try {
+                database.loadUserSettingsFromString(settingsJson);
+            } catch (Exception e) {
+                // No need to do anything
+            }
+        }
     }
 
     // Starts S-Mart for work
     public void start() {
         // Bottom Navigation fragments are created
         mapFragment = new MapFragment();
-        settingsFragment = new SettingsFragment();
+        changeSettingsFragment = new ChangeSettingsFragment();
 
         // Bottom Navigation buttons are activated
         bottomBar.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        if(activeFragment != loginFragment) {
+                        if (activeFragment != loginFragment) {
                             // Checks which fragment should be displayed
                             switch (item.getItemId()) {
                                 case R.id.navigation_map:
                                     if (activeFragment != mapFragment) {
-                                        replaceFragment(mapFragment, R.string.same_chain_transaction, true);
+                                        reduceStackSize(1);
                                     }
                                     break;
                                 case R.id.navigation_settings:
-                                    if (activeFragment != settingsFragment) {
-                                        if(activeFragment == mapFragment ) {
-                                            replaceFragment(settingsFragment, R.string.different_chain_transaction, true);
-                                        }else{
-                                            replaceFragment(settingsFragment, R.string.same_chain_transaction, true);
+                                    if (activeFragment != changeSettingsFragment) {
+                                        if(activeFragment instanceof SettingsFragment)
+                                            popBackStack();
+                                        else {
+                                            replaceFragment(changeSettingsFragment, R.string.unique_chain_transaction, true);
                                         }
                                     }
                                     break;
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         // Replaces Login Fragment with Map Fragment
-        replaceFragment(mapFragment, R.string.different_chain_transaction,true);
+        replaceFragment(mapFragment, R.string.unique_chain_transaction, true);
     }
 
     // Returns account data as a reference
@@ -315,18 +315,18 @@ public class MainActivity extends AppCompatActivity {
 
     // Replaces fragments on fragments container
     // IF saveTransaction FALSE => Back button returns you to the first saved transaction fragment that was replaced out
-    // IF saveTransaction TRUE & lastTransactionName != newTransactionName => Back button returns you to the replaced out fragment
-    // IF saveTransaction TRUE & lastTransactionName == newTransactionName => Back button returns you to the first replaced out fragment in the chain
+    // IF saveTransaction TRUE & transactionType = unique => Back button returns you to the replaced out fragment
+    // IF saveTransaction TRUE & transactionType = same => Back button returns you to the first replaced out fragment in the chain
     public void replaceFragment(Fragment fragmentIn, int transactionType, boolean saveTransaction) {
         String transactionLevel;
 
-        if(transactionType == R.string.different_chain_transaction){
+        if (transactionType == R.string.unique_chain_transaction && saveTransaction) {
             fragmentStack.add(activeFragment);
         }
 
-        transactionLevel = "" + fragmentStack.size();
+        transactionLevel = String.valueOf(fragmentStack.size());
 
-        // Pops out all transactions with the same name until one with a different name
+        // Pops out all transactions with the same level until one with a different level
         getSupportFragmentManager().popBackStack(transactionLevel, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         // Adds a new transaction
@@ -345,28 +345,32 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
+    // Pops back stack until the required size of fragmentStack has been reached
+    public void reduceStackSize(int requiredSize) {
+        int size = fragmentStack.size();
+        while (size > requiredSize) {
+            popBackStack();
+            size--;
+        }
+    }
+
+    // Pops back stack one time
+    public void popBackStack() {
+        int size = fragmentStack.size();
+
+        getSupportFragmentManager().popBackStackImmediate();
+        activeFragment = fragmentStack.pop();
+        activeFragment.updateFragment();
+    }
+
     @Override
     public void onBackPressed() {
-        FragmentWithUpdates fragment;
-        int size = fragmentStack.size();
-        int limit = INFINITY;
-
-        if(size > 0) {
-            if(activeFragment == mapFragment){
-                limit = 1;
-            }else if(activeFragment == settingsFragment){
-                limit = 2;
-            }
-
-            while(size > limit){
-                getSupportFragmentManager().popBackStack(String.valueOf(size), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragmentStack.pop();
-                size = fragmentStack.size();
-            }
-
+        if(fragmentStack.size() > 0) {
             activeFragment = fragmentStack.pop();
         }
+
         super.onBackPressed();
+        activeFragment.updateFragment();
     }
 
     // Sets user account information
@@ -636,7 +640,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             SharedPreferences sharedSettings = getSharedPreferences(getString(R.string.shared_settings_file), MODE_PRIVATE);
-            sharedSettings.edit().putString(getString(R.string.shared_settings_key), database.getUserSettingsJsonString()).apply();
+            sharedSettings.edit().putString(getString(R.string.shared_settings_key) + clientID, database.getUserSettingsJsonString()).apply();
         } catch (Exception e) {
             // Nothing to do with it
         }

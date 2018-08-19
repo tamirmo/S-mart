@@ -2,6 +2,7 @@ package tamirmo.employee.Map;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,17 +34,23 @@ public class MapFragment extends FragmentWithUpdates {
     private MapGridAdapter mapGridAdapter;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        List<Product> products = ((MainActivity) getActivity()).getProducts();
+        List<EmptyTask> emptyProducts = ((MainActivity) getActivity()).getEmptyProducts();
+        List<ExpiredTask> expiredProducts = ((MainActivity) getActivity()).getExpiredProducts();
+        List<MisplacedTask> misplacedProducts = ((MainActivity) getActivity()).getMisplacedProducts();
+        UserLocation userLocation = ((MainActivity) getActivity()).getUserLocation();
+
+        mapGridAdapter = new MapGridAdapter(getContext(), MAP_ROWS_COUNT, MAP_COLS_COUNT, products, emptyProducts, expiredProducts, misplacedProducts, userLocation);
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.navigation_fragment, container, false);
-
-        List<Product> products = ((MainActivity)getActivity()).getProducts();
-        List<EmptyTask> emptyProducts = ((MainActivity)getActivity()).getEmptyProducts();
-        List<ExpiredTask> expiredProducts = ((MainActivity)getActivity()).getExpiredProducts();
-        List<MisplacedTask> misplacedProducts = ((MainActivity)getActivity()).getMisplacedProducts();
-        UserLocation userLocation = ((MainActivity)getActivity()).getUserLocation();
-        mapGridAdapter = new MapGridAdapter(getContext(), MAP_ROWS_COUNT, MAP_COLS_COUNT, products, emptyProducts, expiredProducts, misplacedProducts, userLocation);
 
         nextItemTextView = rootView.findViewById(R.id.next_item_text_view);
 
@@ -57,13 +64,13 @@ public class MapFragment extends FragmentWithUpdates {
     }
 
     // Updates the fragment
-    public void updateFragment(){
+    public void updateFragment() {
         mapGridAdapter.updateData();
         updateNextItem();
     }
 
     // Selects next Item
-    private void updateNextItem(){
+    private void updateNextItem() {
         String nextItem = mapGridAdapter.getNextTaskText();
         nextItemTextView.setText(nextItem);
     }

@@ -3,6 +3,7 @@ package tamirmo.employee.Settings.UserSettings;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,9 @@ import tamirmo.employee.Database.Class.Employee;
 import tamirmo.employee.FragmentWithUpdates;
 import tamirmo.employee.MainActivity;
 import tamirmo.employee.R;
+import tamirmo.employee.SettingsFragment;
 
-public class ChangePasswordFragment extends FragmentWithUpdates implements View.OnClickListener {
+public class ChangePasswordFragment extends FragmentWithUpdates implements View.OnClickListener, SettingsFragment {
     // Class constants
     private static final String CREDENTIAL_TYPE = "password";
 
@@ -30,10 +32,15 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
     Employee account;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootView = inflater.inflate(R.layout.change_password_fragment, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        account = ((MainActivity)getActivity()).getAccount();
+        account = ((MainActivity) getActivity()).getAccount();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.change_password_fragment, container, false);
 
         // Getting the widgets of the fragment
         mainFrame = rootView.findViewById(R.id.main_layout);
@@ -53,21 +60,21 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.confirm_btn){
-           SetTask task = new SetTask();
-           task.execute();
+        if (view.getId() == R.id.confirm_btn) {
+            SetTask task = new SetTask();
+            task.execute();
         }
     }
 
     // Shows change setting screen
-    private void showChangeSettingLayout(){
+    private void showChangeSettingLayout() {
         mainFrame.bringChildToFront(changeSettingLayout);
         changeSettingLayout.setVisibility(View.VISIBLE);
         loadingLayout.setVisibility(View.GONE);
     }
 
     // Shows loading screen
-    private void showLoadingLayout(){
+    private void showLoadingLayout() {
         mainFrame.bringChildToFront(loadingLayout);
         changeSettingLayout.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
@@ -91,7 +98,7 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
         private String newPassword;
 
         // Gets all needed information for a set request, and switch to loading screen
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             // Gets passwords from their widgets
             oldPassword = oldPasswordEditText.getText().toString();
             newPassword = newPasswordEditText.getText().toString();
@@ -101,16 +108,16 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
         }
 
         // Sends a set request to the server
-        protected Integer doInBackground(Void... voids){
+        protected Integer doInBackground(Void... voids) {
             try {
-                if(oldPassword.equals(account.getPassword())) {
+                if (oldPassword.equals(account.getPassword())) {
                     if (((MainActivity) getActivity()).setRequest(CREDENTIAL_TYPE, newPassword)) {
                         account.setPassword(newPassword);
                         return R.string.password_changed_dialog_text;
                     }
                 }
                 return R.string.password_change_dialog_err;
-            }catch(Exception e) {
+            } catch (Exception e) {
                 return Integer.getInteger(e.getMessage());
             }
         }
@@ -119,7 +126,7 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
         protected void onPostExecute(Integer result) {
             showChangeSettingLayout();
 
-            ((MainActivity)getActivity()).popUpMessageDialog(getResources().getString(result));
+            ((MainActivity) getActivity()).popUpMessageDialog(getResources().getString(result));
         }
     }
 }

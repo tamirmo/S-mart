@@ -2,6 +2,7 @@ package tamirmo.shopper.MainMenu;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,15 @@ public class MainMenuFragment extends FragmentWithUpdates implements View.OnClic
     private MapFragment mapFragment;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Creates menu fragments
+        cartListFragment = new CartListFragment();
+        mapFragment = new MapFragment();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -29,10 +39,6 @@ public class MainMenuFragment extends FragmentWithUpdates implements View.OnClic
         rootView.findViewById(R.id.cart_edit_btn).setOnClickListener(this);
         rootView.findViewById(R.id.start_shopping_btn).setOnClickListener(this);
 
-        // Creates menu fragments
-        cartListFragment = new CartListFragment();
-        mapFragment = new MapFragment();
-
         return rootView;
     }
 
@@ -41,14 +47,14 @@ public class MainMenuFragment extends FragmentWithUpdates implements View.OnClic
         Fragment fragmentToMoveTo = null;
 
         // Checks which fragment should be displayed
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.cart_edit_btn:
-               fragmentToMoveTo = cartListFragment;
-                ((MainActivity) getActivity()).replaceFragment(fragmentToMoveTo, getString(R.string.second_menu), getString(R.string.second_menu), true);
+                fragmentToMoveTo = cartListFragment;
+                ((MainActivity) getActivity()).replaceFragment(fragmentToMoveTo, R.string.unique_chain_transaction, true);
                 break;
             case R.id.start_shopping_btn:
                 fragmentToMoveTo = mapFragment;
-                ((MainActivity) getActivity()).replaceFragment(fragmentToMoveTo, getString(R.string.map_frag_tag),getString(R.string.map_frag_tag), true);
+                ((MainActivity) getActivity()).replaceFragment(fragmentToMoveTo, R.string.unique_chain_transaction, true);
                 break;
         }
     }

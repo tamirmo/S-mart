@@ -2,6 +2,7 @@ package tamirmo.shopper.Products;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -26,16 +27,40 @@ import tamirmo.shopper.R;
 // Displays a department products
 public class ProductsFragment extends FragmentWithUpdates implements TextWatcher {
 
-    // Views
+    // Class widgets
     private EditText searchTextView;
     private ListView departmentsProductsListView;
 
-    private String departmentId;
+    // Class adapter
     private ProductsAdapter departmentProductsAdapter;
 
+    // Class attributes
+    private String departmentId;
+    private String departmentName;
+
     // Sets which department's products should be displayed
-    public void setDepartmentId(String departmentId){
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        List<Department> departments = ((MainActivity) getActivity()).getDepartments();
+        // Sets the headline of the fragment
+        for (Department department : departments) {
+            if (department.getId().equals(departmentId)) {
+                departmentName = department.getName();
+                break;
+            }
+        }
+
+        // Creating the adapter for the list
+        List<Product> products = ((MainActivity) getActivity()).getProducts();
+        List<CartItem> cart = ((MainActivity) getActivity()).getCart();
+        List<Discount> discounts = ((MainActivity) getActivity()).getDiscounts();
+        departmentProductsAdapter = new ProductsAdapter(getActivity(), departmentId, products, discounts, cart);
     }
 
     @Override
@@ -45,20 +70,9 @@ public class ProductsFragment extends FragmentWithUpdates implements TextWatcher
         View rootView = inflater.inflate(R.layout.department_products_fragment, container, false);
         searchTextView = rootView.findViewById(R.id.search_department_edit_text);
 
-        // Sets the headline of the fragment
-        List<Department> departments = ((MainActivity)getActivity()).getDepartments();
-        for(Department department : departments){
-            if(department.getId().equals(departmentId)){
-                ((TextView)(rootView.findViewById(R.id.department_title_text_view))).setText(department.getName());
-                break;
-            }
-        }
+        // Sets department name
+        ((TextView) (rootView.findViewById(R.id.department_title_text_view))).setText(departmentName);
 
-        // Creating the adapter for the list and setting it in the list
-        List<Product> products =  ((MainActivity)getActivity()).getProducts();
-        List<CartItem> cart = ((MainActivity)getActivity()).getCart();
-        List<Discount> discounts = ((MainActivity)getActivity()).getDiscounts();
-        departmentProductsAdapter = new ProductsAdapter(getActivity(), departmentId, products, discounts, cart);
         departmentsProductsListView = rootView.findViewById(R.id.departments_products_list);
         departmentsProductsListView.setAdapter(departmentProductsAdapter);
 
@@ -75,9 +89,12 @@ public class ProductsFragment extends FragmentWithUpdates implements TextWatcher
 
     // These are here because TextWatcher, we don't need them
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    }
 
     @Override
     public void updateFragment() {

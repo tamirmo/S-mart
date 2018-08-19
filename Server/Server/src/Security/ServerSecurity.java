@@ -45,17 +45,12 @@ public class ServerSecurity {
 			userID = messageParts[USER_ID_PART];
 			userCommand = messageParts[USER_COMMAND_PART];
 			
-			// Checks for a man-in-the-middle attack
+			// This is the spot to add some security measures to the server
+			// For example : check for a Man-in-the-Middle attack - test if userIP equals senderIP
+			// For example : check for a DoS attack - save, and ban users by using their IP-Address
+			// For example : Adding a Honeypot, an AI, and so on...
 			response = server.processCommandType(userType, userIP, userID, userCommand);
 			
-			// Checks user recorded IP-Address versus received IP-Address
-			// Close it if you work from android studio or have several IP-Addresses
-			/*
-			if(userIP.equals(senderIP))
-				response = server.processCommandType(userType, userIP, userID, userCommand);
-			else
-				throw new Exception(UNAUTHORIZED_USER_EXCEPTION + EXCEPTION_DELIMITER + senderIP);
-			*/
 		}catch(ArrayIndexOutOfBoundsException e) {
 			error = INVALID_USER_EXCEPTION + EXCEPTION_DELIMITER + message;
 		}catch(Exception e) {

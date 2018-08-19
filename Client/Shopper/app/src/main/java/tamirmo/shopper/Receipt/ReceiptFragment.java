@@ -39,15 +39,15 @@ public class ReceiptFragment extends FragmentWithUpdates {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        List<CartItem> cart = ((MainActivity)getActivity()).getCart();
-        List<Product> products = ((MainActivity)getActivity()).getProducts();
-        List<Sale> sales = ((MainActivity)getActivity()).getSales();
-        List<Discount> discounts = ((MainActivity)getActivity()).getDiscounts();
+        List<CartItem> cart = ((MainActivity) getActivity()).getCart();
+        List<Product> products = ((MainActivity) getActivity()).getProducts();
+        List<Sale> sales = ((MainActivity) getActivity()).getSales();
+        List<Discount> discounts = ((MainActivity) getActivity()).getDiscounts();
         receiptListAdapter = new ReceiptListAdapter(getActivity(), cart, products, discounts, sales);
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.receipt_fragment, container, false);
 
         // Gets the widgets on the fragment
@@ -67,14 +67,14 @@ public class ReceiptFragment extends FragmentWithUpdates {
     }
 
     // Shows login screen
-    private void showReceiptLayout(){
+    private void showReceiptLayout() {
         mainFrame.bringChildToFront(receiptLayout);
         receiptLayout.setVisibility(View.VISIBLE);
         loadingLayout.setVisibility(View.GONE);
     }
 
     // Shows loading screen
-    private void showLoadingLayout(){
+    private void showLoadingLayout() {
         mainFrame.bringChildToFront(loadingLayout);
         receiptLayout.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
@@ -84,7 +84,7 @@ public class ReceiptFragment extends FragmentWithUpdates {
     public HashMap<String, Product> getProductMap(List<Product> productsList) {
         HashMap<String, Product> productMap = new HashMap<String, Product>();
 
-        for(Product product: productsList){
+        for (Product product : productsList) {
             productMap.put(product.getProductId(), product);
         }
 
@@ -97,17 +97,18 @@ public class ReceiptFragment extends FragmentWithUpdates {
     }
 
     // Sends the receipt
-    public void sendReceipt(){
+    public void sendReceipt() {
         SendReceiptTask task = new SendReceiptTask();
         task.execute();
     }
 
     // AsyncTask is used because main thread can't be used for communication with the server
     private class SendReceiptTask extends AsyncTask<Void, Void, String> {
-        String receipt, result;
+        private String receipt;
+        private String result;
 
         // Switches to loading layout
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             // Shows the loading screen while the message is being sent to the server
             showLoadingLayout();
 
@@ -117,15 +118,17 @@ public class ReceiptFragment extends FragmentWithUpdates {
 
         // Sends receipt to the server
         // Can't change UI because it isn't the main thread
-        protected String doInBackground(Void... voids){
+        protected String doInBackground(Void... voids) {
             String result = "";
 
-            try{
-                if(((MainActivity)getActivity()).sendReceiptRequest(receipt))
-                    result = getString(R.string.receipt_sent_dialog);
-                else
-                    result = getString(R.string.receipt_sent_dialog_err);
-            }catch(Exception e){
+            try {
+                if(!receipt.isEmpty()) {
+                    if (((MainActivity) getActivity()).sendReceiptRequest(receipt))
+                        result = getString(R.string.receipt_sent_dialog);
+                    else
+                        result = getString(R.string.receipt_sent_dialog_err);
+                }
+            } catch (Exception e) {
                 result = e.getMessage();
             }
 
@@ -136,13 +139,13 @@ public class ReceiptFragment extends FragmentWithUpdates {
         protected void onPostExecute(String result) {
             // Changes back to login screen
             showReceiptLayout();
-
-            if(!result.equals(getString(R.string.receipt_sent_dialog))) {
-                // Notifies an error occurred
-                ((MainActivity)getActivity()).popUpMessageDialog(result);
-            }
-            else{
-                ((MainActivity)getActivity()).sendNotification(getString(R.string.receipt_notification_ticker), getString(R.string.receipt_notification_title),getString(R.string.receipt_notification_message));
+            if (!result.isEmpty()) {
+                if (!result.equals(getString(R.string.receipt_sent_dialog))) {
+                    // Notifies an error occurred
+                    ((MainActivity) getActivity()).popUpMessageDialog(result);
+                } else {
+                    ((MainActivity) getActivity()).sendNotification(getString(R.string.receipt_notification_ticker), getString(R.string.receipt_notification_title), getString(R.string.receipt_notification_message));
+                }
             }
         }
     }

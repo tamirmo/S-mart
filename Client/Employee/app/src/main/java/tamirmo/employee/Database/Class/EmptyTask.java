@@ -6,12 +6,12 @@ public class EmptyTask {
     private String productID;
 
     // Class Builder
-    public EmptyTask(String productID){
+    public EmptyTask(String productID) {
         this.productID = productID;
     }
 
     // Returns product's ID
-    public String getProductID(){
+    public String getProductID() {
         return productID;
     }
 }

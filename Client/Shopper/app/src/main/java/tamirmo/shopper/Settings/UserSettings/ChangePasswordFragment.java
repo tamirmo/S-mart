@@ -3,6 +3,7 @@ package tamirmo.shopper.Settings.UserSettings;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,9 @@ import tamirmo.shopper.Database.Class.Shopper;
 import tamirmo.shopper.FragmentWithUpdates;
 import tamirmo.shopper.MainActivity;
 import tamirmo.shopper.R;
+import tamirmo.shopper.SettingsFragment;
 
-public class ChangePasswordFragment extends FragmentWithUpdates implements View.OnClickListener {
+public class ChangePasswordFragment extends FragmentWithUpdates implements View.OnClickListener, SettingsFragment {
     // Class constants
     private static final String CREDENTIAL_TYPE = "password";
 
@@ -31,10 +33,15 @@ public class ChangePasswordFragment extends FragmentWithUpdates implements View.
     Shopper account;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootView = inflater.inflate(R.layout.change_password_fragment, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         account = ((MainActivity)getActivity()).getAccount();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        View rootView = inflater.inflate(R.layout.change_password_fragment, container, false);
 
         // Getting the widgets of the fragment
         mainFrame = rootView.findViewById(R.id.main_layout);

@@ -1,6 +1,7 @@
 package tamirmo.shopper.Departments;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -26,15 +27,20 @@ public class DepartmentsFragment extends FragmentWithUpdates implements IOnDepar
     private DepartmentsPagerAdapter departmentsPagerAdapter;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Gets all needed data to create the adapter
+        List<Department> departments = ((MainActivity)getActivity()).getDepartments();
+        departmentsPagerAdapter = new DepartmentsPagerAdapter(getActivity(), departments);
+        departmentsPagerAdapter.setDepartmentClickedListener(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.choose_department_fragment, container, false);
-
-        // Gets all needed data to create the adapter
-        List<Department> deparments = ((MainActivity)getActivity()).getDepartments();
-        departmentsPagerAdapter = new DepartmentsPagerAdapter(getActivity(), deparments);
-        departmentsPagerAdapter.setDepartmentClickedListener(this);
 
         // Sets the adapter
         ViewPager viewPager = rootView.findViewById(R.id.departments_view_pager);
@@ -52,7 +58,7 @@ public class DepartmentsFragment extends FragmentWithUpdates implements IOnDepar
         departmentProductsFragment.setDepartmentId(""+departmentId);
 
         // Replaces current fragment
-        ((MainActivity)getActivity()).replaceFragment(departmentProductsFragment, getString(R.string.fourth_menu),getString(R.string.fourth_menu),true);
+        ((MainActivity)getActivity()).replaceFragment(departmentProductsFragment, R.string.unique_chain_transaction,true);
     }
 
     @Override

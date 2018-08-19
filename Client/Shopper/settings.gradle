@@ -1,1 +1,1 @@
-include ':app', ':communication', ':Database'
+include ':app'

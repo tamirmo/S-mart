@@ -69,7 +69,7 @@ public class Messenger {
 		PrintWriter writer;
 		
 		try(Socket connection = new Socket()){
-			connection.connect(new InetSocketAddress(userIP,CLIENT_PORT),3000);
+			connection.connect(new InetSocketAddress(userIP,CLIENT_PORT), 6000);
 			output = connection.getOutputStream();
 			writer = new PrintWriter(output, true);
 			writer.println(message);

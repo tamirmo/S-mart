@@ -18,11 +18,10 @@
         android:id="@+id/navigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
+        android:background="@color/s_mart_ui_color"
         app:itemBackground="@color/s_mart_ui_color"
         app:itemIconTint="@color/s_mart_titles_color"
         app:itemTextColor="@color/s_mart_titles_color"
         app:menu="@menu/navigation" />
-
 
 </LinearLayout>

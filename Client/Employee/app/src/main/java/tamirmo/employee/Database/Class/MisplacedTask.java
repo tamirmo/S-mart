@@ -8,7 +8,7 @@ public class MisplacedTask {
     private int locationY;
 
     // Class Builder
-    public MisplacedTask(String productID, int locationX, int locationY){
+    public MisplacedTask(String productID, int locationX, int locationY) {
         this.productID = productID;
         this.locationX = locationX;
         this.locationY = locationY;
@@ -20,12 +20,12 @@ public class MisplacedTask {
     }
 
     // Returns product's wrong location X
-    public int getLocationX(){
+    public int getLocationX() {
         return locationX;
     }
 
     // Returns product's wrong location Y
-    public int getLocationY(){
+    public int getLocationY() {
         return locationY;
     }
 }

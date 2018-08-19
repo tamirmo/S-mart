@@ -1,5 +1,5 @@
 package tamirmo.shopper.CartList;
 
 public interface IOnListChange {
-    void updateTotalSum(double sum);
+    void updateSum(double totalSum, double currentSum);
 }

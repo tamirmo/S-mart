@@ -6,7 +6,7 @@ public class ExpiredTask {
     private String productID;
 
     // Class Builder
-    public ExpiredTask(String productID){
+    public ExpiredTask(String productID) {
         this.productID = productID;
     }
 

@@ -3,6 +3,7 @@ package tamirmo.shopper.Settings.UserSettings;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,9 @@ import tamirmo.shopper.Database.Class.Shopper;
 import tamirmo.shopper.FragmentWithUpdates;
 import tamirmo.shopper.MainActivity;
 import tamirmo.shopper.R;
+import tamirmo.shopper.SettingsFragment;
 
-public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnClickListener {
+public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnClickListener, SettingsFragment {
     // Class constants
     private static final String CREDENTIAL_TYPE = "email";
 
@@ -30,10 +32,15 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
     Shopper account;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootView = inflater.inflate(R.layout.change_email_fragment, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        account = ((MainActivity)getActivity()).getAccount();
+        account = ((MainActivity) getActivity()).getAccount();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.change_email_fragment, container, false);
 
         // Getting the widgets of the fragment
         mainFrame = rootView.findViewById(R.id.main_layout);
@@ -52,21 +59,21 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.confirm_btn){
+        if (view.getId() == R.id.confirm_btn) {
             SetTask task = new SetTask();
             task.execute();
         }
     }
 
     // Shows change setting screen
-    private void showChangeSettingLayout(){
+    private void showChangeSettingLayout() {
         mainFrame.bringChildToFront(changeSettingLayout);
         changeSettingLayout.setVisibility(View.VISIBLE);
         loadingLayout.setVisibility(View.GONE);
     }
 
     // Shows loading screen
-    private void showLoadingLayout(){
+    private void showLoadingLayout() {
         mainFrame.bringChildToFront(loadingLayout);
         changeSettingLayout.setVisibility(View.GONE);
         loadingLayout.setVisibility(View.VISIBLE);
@@ -74,7 +81,7 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
 
     // Clears text fields to start fresh
     public void clearFields() {
-            emailEditText.setText("");
+        emailEditText.setText("");
     }
 
     @Override
@@ -88,7 +95,7 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
         private String email;
 
         // Gets all needed information for a set request, and switch to loading screen
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             // Gets email from its widget
             email = emailEditText.getText().toString();
 
@@ -97,14 +104,14 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
         }
 
         // Sends a set request to the server
-        protected Integer doInBackground(Void... voids){
+        protected Integer doInBackground(Void... voids) {
             try {
                 if (((MainActivity) getActivity()).setRequest(CREDENTIAL_TYPE, email)) {
                     account.setEmail(email);
                     return R.string.email_changed_dialog_text;
                 }
                 return R.string.email_change_dialog_err;
-            }catch(Exception e) {
+            } catch (Exception e) {
                 return Integer.getInteger(e.getMessage());
             }
         }
@@ -113,7 +120,7 @@ public class ChangeEmailFragment extends FragmentWithUpdates implements View.OnC
         protected void onPostExecute(Integer result) {
             showChangeSettingLayout();
 
-            ((MainActivity)getActivity()).popUpMessageDialog(getResources().getString(result));
+            ((MainActivity) getActivity()).popUpMessageDialog(getResources().getString(result));
         }
     }
 }

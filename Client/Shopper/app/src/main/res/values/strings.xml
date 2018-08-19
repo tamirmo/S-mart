@@ -9,13 +9,9 @@
 
     <!-- Fragments Tags -->
     <string name="network_frag_tag">network</string>
-    <string name="login_frag_tag">login</string>
-    <string name="main_menu_frag_tag">main menu</string>
-    <string name="map_frag_tag">map</string>
-    <string name="first_menu">first menu</string>
-    <string name="second_menu">second menu</string>
-    <string name="third_menu">third menu</string>
-    <string name="fourth_menu">fourth menu</string>
+
+    <string name="same_chain_transaction">same</string>
+    <string name="unique_chain_transaction">unique</string>
 
     <!-- Login Fragment Strings-->
     <string name="login_success">Login was successful</string>
@@ -27,8 +23,6 @@
     <string name="login_error">Login values are wrong</string>
     <string name="data_retrieval_error">Data retrieving error</string>
 
-    <!-- Settings Fragment Strings-->
-
     <!-- Main Menu Fragment Strings-->
     <string name="edit_current_cart_btn_text">Edit Shopping list</string>
     <string name="start_shopping_cart_btn_text">Start Shopping!</string>
@@ -36,7 +30,12 @@
     <!-- Cart List Fragment Strings -->
     <string name="curr_cart_header_text">Current cart</string>
     <string name="add_item_btn_text">Add item</string>
-    <string name="cart_sum_text">Total : </string>
+    <string name="cart_total_sum_text">Total : </string>
+    <string name="cart_current_sum_text">Current : </string>
+    <string name="curr_cart_picked_amount">You have taken</string>
+    <string name="products">products</string>
+    <string name="current_sum_type">current</string>
+    <string name="total_sum_type">total</string>
 
     <!-- Departments Fragment Strings -->
     <string name="choose_department_text">Choose Department</string>
@@ -55,6 +54,8 @@
     <string name="receipt_sent_dialog">Receipt was sent successfully</string>
     <string name="receipt_sent_dialog_err">Receipt was not sent, Try again</string>
     <string name="receipt_delimiter">DELIMITER</string>
+    <string name="receipt_sum_text">Total : </string>
+
 
     <!-- Discounts Fragment Strings -->
     <string name="discounts_fragment_header">Discounts</string>
@@ -95,6 +96,5 @@
     <string name="shared_cart_key">cart</string>
     <string name="shared_settings_file">tamirmo.shopper.settings</string>
     <string name="shared_settings_key">settings</string>
-
 
 </resources>

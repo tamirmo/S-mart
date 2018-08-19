@@ -17,7 +17,7 @@ import tamirmo.shopper.Database.Class.Product;
 import tamirmo.shopper.Database.Class.Sale;
 import tamirmo.shopper.R;
 
-public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnClickListener{
+public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnClickListener {
 
     // Class listener
     private IOnListChange dataChangedListener;
@@ -75,12 +75,13 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
         ProductAdapterUtilities.ProductItemViewHolder viewHolder = productViewObjects.productItemViewHolder;
         ProductAdapterUtilities.setProductData(product, viewHolder, context);
 
-        if(discount != null){
+        if (discount != null) {
             viewHolder.price.setText(String.format("$%s", discount.getDiscountedPrice()));
-        }
-        else if(product != null) {
+        } else if (product != null) {
             viewHolder.price.setText(String.format("$%s", product.getPricePerUnit()));
         }
+
+        viewHolder.pickedAmount.setText(context.getString(R.string.curr_cart_picked_amount) + " " + cartItem.getPickedAmount()+" "+context.getString(R.string.products));
 
         viewHolder.amount.setText(String.valueOf(cartItem.getAmount()));
         viewHolder.plus.setOnClickListener(this);
@@ -90,10 +91,10 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
         viewHolder.amount.setVisibility(View.VISIBLE);
         viewHolder.plus.setVisibility(View.VISIBLE);
 
-        if(!cartItem.getIsPicked()) {
+        if (cartItem.getPickedAmount() != cartItem.getAmount()) {
             viewHolder.minus.setVisibility(View.VISIBLE);
             viewHolder.pickedImage.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             viewHolder.minus.setVisibility(View.INVISIBLE);
             viewHolder.pickedImage.setVisibility(View.VISIBLE);
         }
@@ -107,20 +108,20 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
         // Checks which button was clicked
         int position = (Integer) v.getTag();
         Object object = getItem(position);
-        CartItem dataModel = (CartItem)object;
+        CartItem dataModel = (CartItem) object;
 
         ProductAdapterUtilities.onPlusMinusClicked(v, dataModel, context, cart);
-        dataChangedListener.updateTotalSum(calculateTotalSum());
+        dataChangedListener.updateSum(calculateSum(R.string.total_sum_type), calculateSum(R.string.current_sum_type));
 
         // Refresh the slot that its buttons were clicked
         this.notifyDataSetChanged();
     }
 
     // Creates HashMap from a list of products
-    private HashMap<String, Product> getProducts(List<Product> productsList){
+    private HashMap<String, Product> getProducts(List<Product> productsList) {
         HashMap<String, Product> products = new HashMap<String, Product>();
 
-        for(Product product : productsList){
+        for (Product product : productsList) {
             products.put(product.getProductId(), product);
         }
 
@@ -128,10 +129,10 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
     }
 
     // Creates HashMap from a list of discounts
-    private HashMap<String, Discount> getDiscounts(List<Discount> discountsList){
+    private HashMap<String, Discount> getDiscounts(List<Discount> discountsList) {
         HashMap<String, Discount> discounts = new HashMap<String, Discount>();
 
-        for(Discount discount : discountsList){
+        for (Discount discount : discountsList) {
             discounts.put(discount.getProductId(), discount);
         }
 
@@ -139,52 +140,56 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
     }
 
     // Creates HashMap from a list of sales
-    private HashMap<String, Sale> getSales(List<Sale> salesList){
+    private HashMap<String, Sale> getSales(List<Sale> salesList) {
         HashMap<String, Sale> sales = new HashMap<String, Sale>();
 
-        for(Sale sale : salesList){
+        for (Sale sale : salesList) {
             sales.put(sale.getProductID(), sale);
         }
 
         return sales;
     }
 
-    // Calculates total sum of list
-    public double calculateTotalSum() {
+    // Calculates sum of a cart
+    public double calculateSum(int sumType) {
         double sum = 0;
+        int amount;
 
-        for ( CartItem item : cart){
+        for (CartItem item : cart) {
             String productID = item.getProductID();
-            int amount = item.getAmount();
+            if(sumType == R.string.current_sum_type) {
+                amount = item.getPickedAmount();
+            }else{
+                amount = item.getAmount();
+            }
             Sale sale = saleMap.get(productID);
             Discount discount = discountMap.get(productID);
             Product product = productMap.get(productID);
             int payAmount = 0;
 
             // Calculates how many products need to be paid
-            if(sale != null) {
+            if (sale != null) {
                 int salePayAmount = sale.getPayAmount();
                 int saleFreeAmount = sale.getFreeAmount();
                 int completedSales = amount / (salePayAmount + saleFreeAmount);
-                amount -= completedSales;
-                payAmount = completedSales;
-                while (amount > 0){
+                amount -= completedSales*(salePayAmount+saleFreeAmount);
+                payAmount = completedSales*salePayAmount;
+                while (amount > 0) {
                     for (int i = salePayAmount; i > 0 && amount > 0; i--) {
                         payAmount++;
                         amount--;
                     }
-                for (int i = saleFreeAmount; i > 0 && amount > 0; i--) {
-                    amount--;
+                    for (int i = saleFreeAmount; i > 0 && amount > 0; i--) {
+                        amount--;
                     }
                 }
                 amount = payAmount;
             }
 
             // Updates total price
-            if(discount != null) {
+            if (discount != null) {
                 sum += amount * Double.parseDouble(discount.getDiscountedPrice());
-            }
-            else{
+            } else {
                 sum += amount * Double.parseDouble(product.getPricePerUnit());
             }
         }
@@ -193,12 +198,12 @@ public class CartListAdapter extends ArrayAdapter<CartItem> implements View.OnCl
     }
 
     // Updates the class data
-    public void updateData(){
+    public void updateData() {
         productMap = getProducts(products);
         discountMap = getDiscounts(discounts);
         saleMap = getSales(sales);
 
-        dataChangedListener.updateTotalSum(calculateTotalSum());
+        dataChangedListener.updateSum(calculateSum(R.string.total_sum_type), calculateSum(R.string.current_sum_type));
 
         // Changes the view based on the new data
         this.notifyDataSetChanged();

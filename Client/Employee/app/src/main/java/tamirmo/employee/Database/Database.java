@@ -37,7 +37,7 @@ public class Database {
     private UserSettings userSettings;
 
     // Class Builder
-    public Database(){
+    public Database() {
         emptyTasks = new ArrayList<EmptyTask>();
         expiredTasks = new ArrayList<ExpiredTask>();
         misplacedTasks = new ArrayList<MisplacedTask>();
@@ -62,7 +62,7 @@ public class Database {
     }
 
     // Loads a list of cart items from a JSON string
-    public void loadUserSettingsFromString(String content) throws Exception{
+    public void loadUserSettingsFromString(String content) throws Exception {
         JsonReader jsonReader = new JsonReader(new StringReader(content));
         Gson gson = new Gson();
         userSettings = gson.fromJson(jsonReader, SETTINGS_TYPE);
@@ -70,19 +70,19 @@ public class Database {
     }
 
     // Returns a JSON string of user settings data
-    public String getUserSettingsJsonString() throws Exception{
+    public String getUserSettingsJsonString() throws Exception {
         Gson gson = new Gson();
 
         return gson.toJson(userSettings, SETTINGS_TYPE);
     }
 
     // Returns user account
-    public Employee getAccount(){
+    public Employee getAccount() {
         return account;
     }
 
     // Returns products data
-    public List<Product> getProducts(){
+    public List<Product> getProducts() {
         return products;
     }
 
@@ -102,7 +102,9 @@ public class Database {
     }
 
     // Returns user location
-    public UserLocation getUserLocation(){return userLocation;}
+    public UserLocation getUserLocation() {
+        return userLocation;
+    }
 
     // Returns user settings
     public UserSettings getUserSettings() {

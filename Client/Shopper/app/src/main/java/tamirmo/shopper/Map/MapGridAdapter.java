@@ -112,7 +112,7 @@ public class MapGridAdapter extends BaseAdapter implements View.OnClickListener 
         String nextItemText = context.getString(R.string.no_next_item);
 
         if(nextItem != null)
-            nextItemText = productMap.get(nextItem.getProductID()).getName()+ " X " + nextItem.getAmount();
+            nextItemText = productMap.get(nextItem.getProductID()).getName()+ " X " + (nextItem.getAmount()-nextItem.getPickedAmount());
 
         return nextItemText;
     }
@@ -124,7 +124,7 @@ public class MapGridAdapter extends BaseAdapter implements View.OnClickListener 
         Product product = null;
 
         for(CartItem item : cart){
-            if(!item.getIsPicked()){
+            if(item.getPickedAmount() != item.getAmount()){
                 product = productMap.get(item.getProductID());
                 productDistance = calculateDistance(Integer.parseInt(product.getLocationX()), Integer.parseInt(product.getLocationY()));
                 if(productDistance < nextItemDistance){
@@ -169,15 +169,15 @@ public class MapGridAdapter extends BaseAdapter implements View.OnClickListener 
             gridViewModel = (GridViewModel) convertView.getTag();
         }
 
-        // Getting the cart items and the next cart
         CartItem cartItem = (CartItem) getItem(position);
         CartItem nextCartItem = selectNextItem();
+
         // If there is a cart item for the
         if (cartItem != null) {
             int itemImageResourceId = R.drawable.cart_item_location;
             gridViewModel.cartItemIcon.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
 
-            if (cartItem.getIsPicked()) {
+            if (cartItem.getPickedAmount() == cartItem.getAmount()) {
                 itemImageResourceId = R.drawable.picked_item_v_green;
                 gridViewModel.cartItemIcon.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
             }
@@ -188,9 +188,8 @@ public class MapGridAdapter extends BaseAdapter implements View.OnClickListener 
 
             gridViewModel.cartItemIcon.setImageResource(itemImageResourceId);
 
-            // Hiding the discount, and sale images and displaying the item image
-            gridViewModel.cartItemIcon.setVisibility(View.VISIBLE);
             gridViewModel.discountIcon.setVisibility(View.INVISIBLE);
+            gridViewModel.cartItemIcon.setVisibility(View.VISIBLE);
             gridViewModel.saleIcon.setVisibility(View.INVISIBLE);
         } else{
             Sale positionSale = getSaleFromMatrix(position);
@@ -277,19 +276,17 @@ public class MapGridAdapter extends BaseAdapter implements View.OnClickListener 
 
         // Checking if the user clicked on a cart item
         if (clickedCartItem != null) {
-            // Displaying a dialog with the item details
-            CartItemMapDialog dialog = new CartItemMapDialog(context, clickedCartItem, productMap.get(clickedCartItem.getProductID()));
-            dialog.show();
+                // Displaying a dialog with the item details
+                CartItemMapDialog dialog = new CartItemMapDialog(context, clickedCartItem, productMap.get(clickedCartItem.getProductID()));
+                dialog.show();
         } else {
             Sale clickedSale = getSaleFromMatrix(itemClickedPosition);
-            if(clickedSale!= null){
+            if(clickedSale != null){
                 SaleMapDialog dialog = new SaleMapDialog(context, clickedSale, productMap.get(clickedSale.getProductID()));
                 dialog.show();
             }
             else{
-                // Getting the discount in this position
                 Discount positionDiscount = getDiscountFromMatrix(itemClickedPosition);
-
                 // If the user has clicked on a discount
                 if (positionDiscount != null) {
                     // Displaying a dialog with the discount details
